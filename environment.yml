@@ -1,0 +1,24 @@
+name: oat
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - artic-network::rampart=1.2.0
+  - snakemake-minimal>=5.13
+  - bcftools=1.14
+  - samtools=1.14
+  - python=3.9
+  - minimap2
+  - artic-porechop
+  - longshot
+  - pip
+  - imagemagick
+  - filtlong
+  - pip:
+    - colorlog
+    - biopython>=1.78
+    - pandas
+    - psutil
+    - pygraphviz
+    - pygments

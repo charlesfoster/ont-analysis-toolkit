@@ -1,0 +1,12 @@
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - tensorflow-base==2.2.0
+  - tensorflow==2.2.0
+  - tensorflow-estimator==2.2.0
+  - libdeflate>=1.7,<1.8.0a0
+  - htslib
+  - medaka=1.4.4
+  - biopython
