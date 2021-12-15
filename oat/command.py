@@ -18,7 +18,7 @@ import argparse
 from oat.scripts.helper_functions import find_runDirs, check_arguments, initiate_colorlog, printc
 import pandas as pd
 from psutil import virtual_memory
-
+from oat import __version__
 #=============================================================#
 # %%GLOBAL VARIABLES AND DEPENDENCIES                            #
 #=============================================================#
@@ -57,7 +57,7 @@ def main(sysargs=sys.argv[1:]):
     print(
         """\n\033[95m OAT: ONT Analysis Toolkit (version {})\033[0m
     """.format(
-            '0.1.0'#__version__
+            __version__
         )
     )
     
