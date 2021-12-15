@@ -127,6 +127,23 @@ All input files for RAMPART are generated based on your input spreadsheet, and a
 Reads are mapped to the relevant reference genome with `minimap2`. Amplicon primers are trimmed using `samtools ampliconclip`. Variants are called using `medaka` and `longshot`, followed by filtering and consensus genome assembly using `bcftools`. The amino acid consequences of SNPs are inferred using `bcftools csq`. If analysing SARS-CoV-2, lineages are inferred using `pangolin`. Finally, a variety of sample QC metrics are combined into a final QC file.
 
 # Other Notes
+**Protocols**
+
+A protocol for the amplicon scheme needs (a) to be installed in the pipeline, and (b) named in the run_data.csv spreadsheet for analyses to work correctly. The pipeline comes with the Midnight protocol for SARS-CoV-2 pre-installed (https://www.protocols.io/view/sars-cov2-genome-sequencing-protocol-1200bp-amplic-bwyppfvn). Adding additional protocols is fairly easy:
+
+1. Make a directory called /path/to/ont-analysis-toolkit/oat/protocols/ARTICV3 (needs to be in all caps)
+2. Make a directory within ARTICV3 called 'rampart'
+
+   (a) Put the normal rampart files within that directory (genome.json, primers.json, protocol.json, README.md, references.fasta)
+3. Make a directory within ARTICV3 called 'schemes'
+
+    (a) Put the 'scheme.bed' file with primer coordinates in the 'schemes' directory
+4. Make sure you're in /path/to/ont-analysis-toolkit/, then activate the conda environment and use the following command: `pip install .`
+
+Done!
+
+**Amino acid consequences**
+
 For the amino acid consequences step to work, a requirement is an annotation file for the chosen reference genome. The annotations must be in gff3 format, and must be in the 'Ensembl flavour' of gff3. There is a script included in the repository that can convert an NCBI gff3 file into an 'Ensembl flavour' gff3 file: `/path/to/ont-analysis-toolkit/oat/scripts/gff2gff.py`.
 
 # Credits
