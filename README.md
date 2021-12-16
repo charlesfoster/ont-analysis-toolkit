@@ -134,7 +134,7 @@ A protocol for the amplicon scheme needs (a) to be installed in the pipeline, an
 1. Make a directory called /path/to/ont-analysis-toolkit/oat/protocols/ARTICV3 (needs to be in all caps)
 2. Make a directory within ARTICV3 called 'rampart'
 
-   (a) Put the normal rampart files within that directory (genome.json, primers.json, protocol.json, README.md, references.fasta)
+   (a) Put the normal rampart files within that directory (genome.json, primers.json, protocol.json, references.fasta)
 3. Make a directory within ARTICV3 called 'schemes'
 
     (a) Put the 'scheme.bed' file with primer coordinates in the 'schemes' directory
@@ -148,6 +148,7 @@ For the amino acid consequences step to work, a requirement is an annotation fil
 
 # Credits
 * When this pipeline is used, citations should be found for the programs used internally.
+* The gff3 file I included for SARS-CoV-2 was originally sent to me by Torsten Seemann.
 * Being new to using snakemake + wrapper scripts, I used `pangolin` as a guide for directory structure and rule creation - so thanks to them.
 * The analysis module was heavily influenced by the ARTIC team, especially the `artic minion` pipeline.
 * `gff2gff.py` is based on work by Damien Farrell https://dmnfarrell.github.io/bioinformatics/bcftools-csq-gff-format
