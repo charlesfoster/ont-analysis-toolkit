@@ -23,7 +23,6 @@ from oat import __version__
 # %%GLOBAL VARIABLES AND DEPENDENCIES                            #
 #=============================================================#
 global main_dir
-version='0.1.0'
 TODAY = date.today().strftime("%Y-%m-%d")
 hash_line = "#"*46
 
@@ -55,7 +54,16 @@ def bytesto(bytes, to, bsize=1024):
 # %% main
 def main(sysargs=sys.argv[1:]):
     print(
-        """\n\033[95m OAT: ONT Analysis Toolkit (version {})\033[0m
+        """\n\033[95m 
+                                       ,d
+                                       88
+              ,adPPYba,  ,adPPYYba, MM88MMM
+              a8"     "8a ""     `Y8   88   
+              8b       d8 ,adPPPPP88   88   
+              "8a,   ,a8" 88,    ,88   88,  
+              `"YbbdP"'  `"8bbdP"Y8   "Y888
+        
+        OAT: ONT Analysis Toolkit (version {})\033[0m
     """.format(
             __version__
         )
@@ -140,7 +148,7 @@ def main(sysargs=sys.argv[1:]):
         "--print_dag",
         action="store_true",
         default=False,
-        help="Save directed acyclic graph (DAG) of workflow (currently not functional)",
+        help="Save directed acyclic graph (DAG) of workflow to outdir",
     )
     parser.add_argument(
         "-r",
@@ -209,7 +217,7 @@ def main(sysargs=sys.argv[1:]):
     )
     parser.add_argument("--quiet", action="store_true", help="Stop printing of snakemake commands to screen.")
     parser.add_argument("--report", action="store_true", help="Generate report (currently non-functional).")
-
+    
     if len(sysargs) < 1:
         parser.print_help()
         sys.exit(-1)
@@ -217,9 +225,13 @@ def main(sysargs=sys.argv[1:]):
         args = parser.parse_args(sysargs)
 
     args = parser.parse_args()
+
+    ### end parsing of command args ###
+
+    if args.print_dag:      
+        args.module = "analysis"
     args.module = args.module.upper()
     os.environ['NUMEXPR_MAX_THREADS'] = str(args.threads)
-    
     
     minknow_dir = args.minknow_data
     if not os.path.exists(minknow_dir):
@@ -227,7 +239,7 @@ def main(sysargs=sys.argv[1:]):
             "#####\n\033[91mError\033[0m: The 'minknow_data' path appears to be incorrect. Check.\n#####\n"
         )
         sys.exit(1)
-      
+
     variable_dict = vars(args)
     variable_dict["max_mem"] = max_mem
     initiate_colorlog(variable_dict, main_dir)
@@ -248,7 +260,7 @@ def main(sysargs=sys.argv[1:]):
         printc("\n Pipeline complete\n", "HEADER")
     elif args.module == 'ANALYSIS' or args.module == 'ALL':
         if args.outdir:
-            analysis_outdir = ''.join(args.args.outdir)
+            analysis_outdir = ''.join(args.outdir)
         else:   
             analysis_outdir = os.path.join(os.getcwd(), "analysis_results",variable_dict["run_name"])
         variable_dict['outdir'] = analysis_outdir
@@ -292,6 +304,25 @@ def main(sysargs=sys.argv[1:]):
             from oat.scripts.demux_and_filter import relocate_and_filter_reads
             relocate_and_filter_reads(variable_dict)        
         
+        if args.print_dag:
+            flat_config = []
+            variable_dict["run_data"] = ''.join(args.samples_file)
+            del variable_dict["my_log"]
+            del variable_dict["barcodes_used"]
+            for key in variable_dict:
+                flat_config.append(key + "=" + str(variable_dict[key]))
+            flat_config = " ".join(flat_config)
+            cmd = 'snakemake -j1 -s {0} --quiet --config {1} --dag | grep -v "No negative control samples detected" | dot -Tpdf > {2}'.format(
+                snakefile, 
+                flat_config,
+                os.path.join(variable_dict["outdir"], "workflow_DAG.pdf")
+            )
+            os.system(cmd)
+            my_log.info("Saving directed acyclic graph of to {}".format(os.path.join(variable_dict["outdir"], "workflow_DAG.pdf")))
+            my_log.info("To run the analysis, use the same command but omit '-p' / '--print_dag'")
+            printc("\n Pipeline complete\n", "HEADER")
+            sys.exit(0)
+
         # time for some snakemake action
         import snakemake
         my_log.info("Running analysis pipeline using snakemake")

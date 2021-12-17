@@ -164,7 +164,11 @@ def check_arguments(variable_dict, args):
     variable_dict["reference"] = reference
     variable_dict["annotation"] = annotation
     my_log.info("Run metadata: " + "".join(args.samples_file))
-    my_log.info("Running the " + "".join(args.module + " module"))
+    if args.print_dag:
+        my_log.info("Generating workflow DAG")
+        my_log.info("First checking for demultiplexed reads")
+    else:
+        my_log.info("Running the " + "".join(args.module + " module"))
     my_log.debug("Command used: " + " ".join(sys.argv))
     files = {"Run data": args.samples_file, "Module": "".join(args.module)}
     my_log.debug(files)

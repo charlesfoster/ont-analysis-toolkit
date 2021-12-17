@@ -48,7 +48,7 @@ def rampart_json(variable_dict):
     if not os.path.exists(rampart_outdir):
         os.makedirs(rampart_outdir)
     my_log.info(
-        "Preparing json files for RAMPART: one for each amplicon protocol used."
+        "Preparing json files for RAMPART"
     )
     protocol = variable_dict["protocol"]
     p_string = os.path.join(rampart_outdir, run_name + "_" + protocol)
@@ -93,7 +93,7 @@ def rampart_run(variable_dict):
     """
     Run RAMPART, one process for each protocol
     """
-    my_log.info("Running RAMPART: one instance for each amplicon protocol used.")
+    my_log.info("Running RAMPART")
     rampart_exe = shutil.which("rampart")
     protocol_name = variable_dict["protocol"]
     json_location = os.path.join(rampart_outdir, run_name + "_" + protocol_name)
@@ -119,6 +119,7 @@ def rampart_run(variable_dict):
     fname = os.path.join(rampart_outdir, TODAY + "_" + run_name + "_RAMPART_cmd.txt")
     with open(fname, "w") as f:
         f.write("\n".join(map(str, cmd)))
+    my_log.info("Opening default web browser")
     my_log.info("Sequencing information should appear after ~10 seconds")
     my_log.info("When finished monitoring the run with RAMPART, press enter")
     run_time = input("Press enter when ready to finish RAMPART ")

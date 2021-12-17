@@ -44,7 +44,8 @@ pip install .
 ```
 
 Other dependencies:
-* If analysing SARS-CoV-2 data, lineages are typed using `pangolin`. Accordingly, `pangolin` needs to be installed according to instructions at https://github.com/cov-lineages/pangolin.
+* Demultiplexing is done using `guppy_barcoder`. The program will need to be installed and in your path.
+* If analysing SARS-CoV-2 data, lineages are typed using `pangolin`. Accordingly, `pangolin` needs to be installed according to instructions at https://github.com/cov-lineages/pangolin. The pipeline will fail if the `pangolin` environment can't be activated.
 * Variants are called using `medaka` and `longshot`. Ideally we could install these via `mamba` in the main `environment.yml` file, but there are sadly some necessary libraries for `medaka` that are incompatible with our main `oat` environment. Consequently, I have written the analysis pipeline so that `snakemake` automatically installs `medaka` and its dependencies into an isolated environment during execution of the `oat` pipeline. The environment is only created the first time you run the pipeline, *but* if you run the pipeline from a different working directory in the future, the environment will be created again. Solution: always run `oat` from the same working directory
 
 **tl;dr**: you don't need to do anything for variant calling to work; just don't get confused during the initial pipeline run when the terminal indicates creation of a new conda environment. You should run `oat` from the same directory each time, otherwise a new conda environment will be created each time.
@@ -67,51 +68,81 @@ where <input_spreadsheet.csv> should be replaced with the full path to a spreads
 Note that there are many additional options/settings to take advantage of:
 
 ```
-OAT: ONT Analysis Toolkit (version 0.1.0)
+
+                                       ,d
+                                       88
+              ,adPPYba,  ,adPPYYba, MM88MMM
+              a8"     "8a ""     `Y8   88   
+              8b       d8 ,adPPPPP88   88   
+              "8a,   ,a8" 88,    ,88   88,  
+              `"YbbdP"'  `"8bbdP"Y8   "Y888
+
+        OAT: ONT Analysis Toolkit (version 0.2.0)
 
 usage: oat [options] <samples_file>
 
 A pipeline for sequencing and analysis of viral genomes using an ONT MinION
 
 positional arguments:
- samples_file          Path to file with sample metadata (.csv format). See example spreadsheet for minimum necessary information.
+  samples_file          Path to file with sample metadata (.csv format). See
+                        example spreadsheet for minimum necessary information.
 
 optional arguments:
- -h, --help            show this help message and exit
- -b <int>, --barcode_kit <int>
-                       Barcode kit that you used: '12' (SQK-RBK004) or '96' (SQK-RBK110-96) (default: 12)
- -c <int>, --consensus_freq <int>
-                       Variant allele frequency threshold for a variant to be incorporated into consensus genome. Variants below this frequency will be
-                       incorporated with an IUPAC ambiguity. Default: 0.8
- -d, --demultiplex     Demultiplex reads using guppy_barcoder. By default, assumes reads were already demultiplexed by MinKNOW. Reads are demultiplexed into the
-                       output directory.
- -f, --force           Force overwriting of completed files in snakemake analysis (Default: files not overwritten)
- -n, --dry_run         Dry run only
- -m rampart | analysis | all, --module rampart | analysis | all
-                       Pipeline module to run: 'rampart', 'analysis' or 'all' (rampart followed by analysis). Default: 'all'
- -o OUTDIR, --outdir OUTDIR
-                       Output directory. Default: /home/cfos/Programs/ont-analysis-toolkit/analysis_results + 'run_name' from samples spreadsheet
- --rampart_outdir RAMPART_OUTDIR
-                       Output directory. Default: /home/cfos/Programs/ont-analysis-toolkit/rampart_files
- -p, --print_dag       Save directed acyclic graph (DAG) of workflow (currently not functional)
- -r REFERENCE, --reference REFERENCE
-                       Reference genome to use: 'MN908947.3' (SARS-CoV-2), 'NC_006273.2' (CMV Merlin). Other references can be used, but the corresponding
-                       assembly (fasta) and annotation (gff3 from Ensembl) must be added to /home/cfos/miniconda3/envs/oat/lib/python3.9/site-
-                       packages/oat/references (Default: MN908947.3)
- -t <int>, --threads <int>
-                       Number of threads to use
- -v VARIANT_CALLER, --variant_caller VARIANT_CALLER
-                       Variant caller to use. Choices: 'medaka-longshot'. Default: 'medaka-longshot'
- --create_envs_only    Create conda environments for snakemake analysis, but do no further analysis. Useful for initial pipeline setup. Default: False
- --snv_min SNV_MIN     Minimum variant allele frequency for an SNV to be kept Default: 0.2
- --delete_reads        Delete demultiplexed reads after analysis
- --redo_analysis       Delete entire analysis output directory and contents for a fresh run
- --version             show program's version number and exit
- --minknow_data MINKNOW_DATA
-                       Location of MinKNOW data root. Default: /var/lib/minknow/data
- --max_memory <int>    Maximum memory (in MB) that you would like to provide to snakemake. Default: 57286MB
- --quiet               Stop printing of snakemake commands to screen.
- --report              Generate report (currently non-functional).
+  -h, --help            show this help message and exit
+  -b <int>, --barcode_kit <int>
+                        Barcode kit that you used: '12' (SQK-RBK004) or '96'
+                        (SQK-RBK110-96) (default: 12)
+  -c <int>, --consensus_freq <int>
+                        Variant allele frequency threshold for a variant to be
+                        incorporated into consensus genome. Variants below
+                        this frequency will be incorporated with an IUPAC
+                        ambiguity. Default: 0.8
+  -d, --demultiplex     Demultiplex reads using guppy_barcoder. By default,
+                        assumes reads were already demultiplexed by MinKNOW.
+                        Reads are demultiplexed into the output directory.
+  -f, --force           Force overwriting of completed files in snakemake
+                        analysis (Default: files not overwritten)
+  -n, --dry_run         Dry run only
+  -m rampart | analysis | all, --module rampart | analysis | all
+                        Pipeline module to run: 'rampart', 'analysis' or 'all'
+                        (rampart followed by analysis). Default: 'all'
+  -o OUTDIR, --outdir OUTDIR
+                        Output directory. Default: /path/to/ont-
+                        analysis-toolkit/analysis_results + 'run_name' from
+                        samples spreadsheet
+  --rampart_outdir RAMPART_OUTDIR
+                        Output directory. Default: /path/to/ont-
+                        analysis-toolkit/rampart_files
+  -p, --print_dag       Save directed acyclic graph (DAG) of workflow to
+                        outdir
+  -r REFERENCE, --reference REFERENCE
+                        Reference genome to use: 'MN908947.3' (SARS-CoV-2),
+                        'NC_006273.2' (CMV Merlin). Other references can be
+                        used, but the corresponding assembly (fasta) and
+                        annotation (gff3 from Ensembl) must be added to
+                        /home/cfos/miniconda3/envs/oat/lib/python3.9/site-
+                        packages/oat/references (Default: MN908947.3)
+  -t <int>, --threads <int>
+                        Number of threads to use
+  -v VARIANT_CALLER, --variant_caller VARIANT_CALLER
+                        Variant caller to use. Choices: 'medaka-longshot'.
+                        Default: 'medaka-longshot'
+  --create_envs_only    Create conda environments for snakemake analysis, but
+                        do no further analysis. Useful for initial pipeline
+                        setup. Default: False
+  --snv_min SNV_MIN     Minimum variant allele frequency for an SNV to be kept
+                        Default: 0.2
+  --delete_reads        Delete demultiplexed reads after analysis
+  --redo_analysis       Delete entire analysis output directory and contents
+                        for a fresh run
+  --version             show program's version number and exit
+  --minknow_data MINKNOW_DATA
+                        Location of MinKNOW data root. Default:
+                        /var/lib/minknow/data
+  --max_memory <int>    Maximum memory (in MB) that you would like to provide
+                        to snakemake. Default: 53456MB
+  --quiet               Stop printing of snakemake commands to screen.
+  --report              Generate report (currently non-functional).
 ```
 
 # What does the pipeline do?
