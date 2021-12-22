@@ -39,9 +39,7 @@ def rampart_json(variable_dict):
     Prepare json files for RAMPART, one for each protocol
     """
     global my_log, run_data, run_name, rampart_outdir
-
     rampart_outdir = variable_dict["rampart_outdir"]
-    barcode_kit = variable_dict["barcode_kit"]
     my_log = variable_dict["my_log"]
     run_data = variable_dict["run_data"]
     run_name = variable_dict["run_name"]
@@ -59,13 +57,13 @@ def rampart_json(variable_dict):
         os.makedirs(p_string)
     samples = []
     for i in range(0, len(run_data)):
-        if barcode_kit == "12":
+        if not variable_dict['demultiplexed']:
             tmp_dict = {
                 "name": run_data["id"].iloc[i],
                 "description": "",
                 "barcodes": [run_data["barcode"].iloc[i]],
             }
-        elif barcode_kit == "96":
+        else:
             barcode = run_data["barcode"].iloc[i]
             fixed_barcode = re.sub("BC", "barcode", barcode)
             tmp_dict = {
@@ -73,11 +71,6 @@ def rampart_json(variable_dict):
                 "description": "",
                 "barcodes": [fixed_barcode],
             }
-        else:
-            my_log.error(
-                "Could not determine barcode kit that you used (only '12' or '96' supported as options)"
-            )
-            sys.exit()
         samples.append(tmp_dict)
         rampart_input = {}
         rampart_input["title"] = run_name + "_" + protocol

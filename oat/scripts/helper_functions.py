@@ -137,22 +137,14 @@ def check_arguments(variable_dict, args):
             "Module does not exist. Allowed values are 'rampart', 'analysis', or 'all'. Please check the spelling and try again."
         )
         sys.exit()
-    if "".join(args.barcode_kit) == "12":
-        barcode_kit_name = "SQK-RBK004"
-    elif "".join(args.barcode_kit) == "96":
-        barcode_kit_name = "SQK-RBK110-96"
-    else:
-        my_log.error(
-            "Could not determine barcode kit that you used (only '12' or '96' supported as options)"
+    if args.barcode_kit not in ['SQK-RBK004','SQK-RBK110-96','EXP-NBD104','EXP-NBD114','EXP-NBD196']:
+        my_log.warning(
+                "Barcode kit is not in the list of commonly used kits. Assuming kit exists and supported by guppy_barcoder."
         )
-        sys.exit()
-    variable_dict["barcode_kit_name"] = barcode_kit_name
-    if args.demultiplex:
-        variable_dict["demultiplex"] = True
+    if args.demultiplexed:
+        variable_dict["demultiplexed"] = True
     else:
-        variable_dict["demultiplex"] = False
-    #    if not args.outdir:
-    #        variable_dict['outdir'] = os.path.join(main_dir, "analysis_results", variable_dict['run_name'])
+        variable_dict["demultiplexed"] = False
 
     reference = os.path.join(reference_dir, variable_dict["reference"] + ".fasta")
     annotation = os.path.join(reference_dir, variable_dict["reference"] + ".gff3")

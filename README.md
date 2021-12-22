@@ -69,78 +69,80 @@ Note that there are many additional options/settings to take advantage of:
 
 ```
 
-                                       ,d
-                                       88
-              ,adPPYba,  ,adPPYYba, MM88MMM
-              a8"     "8a ""     `Y8   88   
-              8b       d8 ,adPPPPP88   88   
-              "8a,   ,a8" 88,    ,88   88,  
-              `"YbbdP"'  `"8bbdP"Y8   "Y888
+[95m
+                                        ,d
+                                        88
+               ,adPPYba,   ,adPPYYba, MM88MMM
+              a8"     "8a ""     `Y8    88   
+              8b       d8 ,adPPPPP88    88   
+              "8a,   ,a8" 88,    ,88    88,  
+               `"YbbdP"'  `"8bbdP"Y8   "Y888
 
-        OAT: ONT Analysis Toolkit (version 0.2.0)
+        OAT: ONT Analysis Toolkit (version 0.2.0)[0m
 
 usage: oat [options] <samples_file>
 
 A pipeline for sequencing and analysis of viral genomes using an ONT MinION
 
 positional arguments:
-  samples_file          Path to file with sample metadata (.csv format). See
-                        example spreadsheet for minimum necessary information.
+  samples_file          Path to file with sample metadata (.csv format). See example spreadsheet for minimum necessary information.
 
 optional arguments:
   -h, --help            show this help message and exit
-  -b <int>, --barcode_kit <int>
-                        Barcode kit that you used: '12' (SQK-RBK004) or '96'
-                        (SQK-RBK110-96) (default: 12)
-  -c <int>, --consensus_freq <int>
-                        Variant allele frequency threshold for a variant to be
-                        incorporated into consensus genome. Variants below
-                        this frequency will be incorporated with an IUPAC
-                        ambiguity. Default: 0.8
-  -d, --demultiplex     Demultiplex reads using guppy_barcoder. By default,
-                        assumes reads were already demultiplexed by MinKNOW.
-                        Reads are demultiplexed into the output directory.
-  -f, --force           Force overwriting of completed files in snakemake
-                        analysis (Default: files not overwritten)
+  -b BARCODE_KIT, --barcode_kit BARCODE_KIT
+
+                                    Barcode kit that you used: necessary for demultiplexing.
+
+                                    Common options include:
+                                    - rapid 12-barcode kit (SQK-RBK004)
+                                    - rapid 96-barcode kit (SQK-RBK110-96)
+                                    - native 12-barcode kit (EXP-NBD104)
+                                    - native 12-barcode expansion kit 13-24 (EXP-NBD114)
+                                    - native 96-barcode kit (EXP-NBD196)
+
+                                    Please ensure your version of guppy_barcoder supports the kit name. Try: 'guppy_barcoder --print_kits'
+
+                                    Default: SQK-RBK004
+
+  -c <float>, --consensus_freq <float>
+
+                                    Variant allele frequency threshold for a variant to be incorporated into consensus genome.
+                                    Variants below this frequency will be incorporated with an IUPAC ambiguity.
+                                    Default: 0.8
+
+  -d, --demultiplexed   
+                                    Reads already demultiplexed using guppy_barcoder into '/var/lib/minknow/data/<run_name>'.
+                                    By default, assumes reads need to be demultiplexed and reads are demultiplexed into the output directory.
+
+  -f, --force           Force overwriting of completed files in snakemake analysis (Default: files not overwritten)
   -n, --dry_run         Dry run only
   -m rampart | analysis | all, --module rampart | analysis | all
-                        Pipeline module to run: 'rampart', 'analysis' or 'all'
-                        (rampart followed by analysis). Default: 'all'
+                        Pipeline module to run: 'rampart', 'analysis' or 'all' (rampart followed by analysis). Default: 'all'
   -o OUTDIR, --outdir OUTDIR
-                        Output directory. Default: /path/to/ont-
-                        analysis-toolkit/analysis_results + 'run_name' from
-                        samples spreadsheet
+                        Output directory. Default: /home/cfos/Programs/ont-analysis-toolkit/analysis_results + 'run_name' from samples spreadsheet
   --rampart_outdir RAMPART_OUTDIR
-                        Output directory. Default: /path/to/ont-
-                        analysis-toolkit/rampart_files
-  -p, --print_dag       Save directed acyclic graph (DAG) of workflow to
-                        outdir
+                        Output directory. Default: /home/cfos/Programs/ont-analysis-toolkit/rampart_files
+  -p, --print_dag       Save directed acyclic graph (DAG) of workflow to outdir
   -r REFERENCE, --reference REFERENCE
-                        Reference genome to use: 'MN908947.3' (SARS-CoV-2),
-                        'NC_006273.2' (CMV Merlin). Other references can be
-                        used, but the corresponding assembly (fasta) and
-                        annotation (gff3 from Ensembl) must be added to
-                        /home/cfos/miniconda3/envs/oat/lib/python3.9/site-
-                        packages/oat/references (Default: MN908947.3)
+
+                                    Reference genome to use. Supported references:
+                                        - 'MN908947.3' (SARS-CoV-2)
+                                        - 'NC_006273.2' (CMV Merlin) (planned support, but not yet implemented)
+                                    Other references can be used, but the corresponding assembly (fasta) and annotation (gff3 from Ensembl) must be added. See README.
+                                    Default: MN908947.3
+
   -t <int>, --threads <int>
                         Number of threads to use
   -v VARIANT_CALLER, --variant_caller VARIANT_CALLER
-                        Variant caller to use. Choices: 'medaka-longshot'.
-                        Default: 'medaka-longshot'
-  --create_envs_only    Create conda environments for snakemake analysis, but
-                        do no further analysis. Useful for initial pipeline
-                        setup. Default: False
-  --snv_min SNV_MIN     Minimum variant allele frequency for an SNV to be kept
-                        Default: 0.2
+                        Variant caller to use. Choices: 'medaka-longshot'. Default: 'medaka-longshot'
+  --create_envs_only    Create conda environments for snakemake analysis, but do no further analysis. Useful for initial pipeline setup. Default: False
+  --snv_min SNV_MIN     Minimum variant allele frequency for an SNV to be kept Default: 0.2
   --delete_reads        Delete demultiplexed reads after analysis
-  --redo_analysis       Delete entire analysis output directory and contents
-                        for a fresh run
+  --redo_analysis       Delete entire analysis output directory and contents for a fresh run
   --version             show program's version number and exit
   --minknow_data MINKNOW_DATA
-                        Location of MinKNOW data root. Default:
-                        /var/lib/minknow/data
-  --max_memory <int>    Maximum memory (in MB) that you would like to provide
-                        to snakemake. Default: 53456MB
+                        Location of MinKNOW data root. Default: /var/lib/minknow/data
+  --max_memory <int>    Maximum memory (in MB) that you would like to provide to snakemake. Default: 53852MB
   --quiet               Stop printing of snakemake commands to screen.
   --report              Generate report (currently non-functional).
 ```
@@ -158,6 +160,14 @@ All input files for RAMPART are generated based on your input spreadsheet, and a
 Reads are mapped to the relevant reference genome with `minimap2`. Amplicon primers are trimmed using `samtools ampliconclip`. Variants are called using `medaka` and `longshot`, followed by filtering and consensus genome assembly using `bcftools`. The amino acid consequences of SNPs are inferred using `bcftools csq`. If analysing SARS-CoV-2, lineages are inferred using `pangolin`. Finally, a variety of sample QC metrics are combined into a final QC file.
 
 # Other Notes
+**Run metadata spreadsheet**
+The run metadata spreadsheet should be styled after provided csv file ('run_data_example.csv'), with the minimum columns to include "barcode", "id", "neg_control", "protocol", and "run_name". Regardless of whether you use the ONT "native" (ligation) barcodes or the "rapid" (transposase-based) barcodes, the barcodes in the spreadsheet should be named in the form of "BCXX", where "XX" represents a number from 01 onwards.
+
+**Barcodes**
+By default, the pipeline assumes you are using the ONT 12-barcode rapid kit ("SQK-RBK004"). However, other kits are supported, including:
+- SQK-LSK109 (up to 12 samples ligation/native barcodes)
+- SQK-RBK110-96 (up to 96 samples rapid barcodes)
+
 **Protocols**
 
 A protocol for the amplicon scheme needs (a) to be installed in the pipeline, and (b) named in the run_data.csv spreadsheet for analyses to work correctly. The pipeline comes with the Midnight protocol for SARS-CoV-2 pre-installed (https://www.protocols.io/view/sars-cov2-genome-sequencing-protocol-1200bp-amplic-bwyppfvn). Adding additional protocols is fairly easy:

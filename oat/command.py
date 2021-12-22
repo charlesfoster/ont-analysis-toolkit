@@ -15,6 +15,7 @@ import sys
 import psutil
 from datetime import date
 import argparse
+from argparse import RawTextHelpFormatter
 from oat.scripts.helper_functions import find_runDirs, check_arguments, initiate_colorlog, printc
 import pandas as pd
 from psutil import virtual_memory
@@ -55,13 +56,13 @@ def bytesto(bytes, to, bsize=1024):
 def main(sysargs=sys.argv[1:]):
     print(
         """\n\033[95m 
-                                       ,d
-                                       88
-              ,adPPYba,  ,adPPYYba, MM88MMM
-              a8"     "8a ""     `Y8   88   
-              8b       d8 ,adPPPPP88   88   
-              "8a,   ,a8" 88,    ,88   88,  
-              `"YbbdP"'  `"8bbdP"Y8   "Y888
+                                        ,d
+                                        88
+               ,adPPYba,   ,adPPYYba, MM88MMM
+              a8"     "8a ""     `Y8    88   
+              8b       d8 ,adPPPPP88    88   
+              "8a,   ,a8" 88,    ,88    88,  
+               `"YbbdP"'  `"8bbdP"Y8   "Y888
         
         OAT: ONT Analysis Toolkit (version {})\033[0m
     """.format(
@@ -74,6 +75,7 @@ def main(sysargs=sys.argv[1:]):
     parser = argparse.ArgumentParser(
         description="A pipeline for sequencing and analysis of viral genomes using an ONT MinION",
         usage="""oat [options] <samples_file> """,
+        formatter_class=RawTextHelpFormatter,
     )
 
     parser.add_argument(
@@ -84,11 +86,23 @@ def main(sysargs=sys.argv[1:]):
         "--barcode_kit",
         action="store",
         required=False,
-        default="12",
-        help="Barcode kit that you used: '12' (SQK-RBK004) or '96' (SQK-RBK110-96) (default: {})".format(
-            '12'
+        default="SQK-RBK004",
+        help="""
+            Barcode kit that you used: necessary for demultiplexing.
+            
+            Common options include:
+            - rapid 12-barcode kit (SQK-RBK004)
+            - rapid 96-barcode kit (SQK-RBK110-96)
+            - native 12-barcode kit (EXP-NBD104)
+            - native 12-barcode expansion kit 13-24 (EXP-NBD114)
+            - native 96-barcode kit (EXP-NBD196)
+            
+            Please ensure your version of guppy_barcoder supports the kit name. Try: 'guppy_barcoder --print_kits'
+            
+            Default: {}
+            """.format(
+            'SQK-RBK004'
         ),
-        metavar="<int>",
     )
     parser.add_argument(
         "-c",
@@ -96,18 +110,25 @@ def main(sysargs=sys.argv[1:]):
         action="store",
         required=False,
         default=float(0.8),
-        help="Variant allele frequency threshold for a variant to be incorporated into consensus genome. Variants below this frequency will be incorporated with an IUPAC ambiguity. Default: {}".format(
+        help="""
+            Variant allele frequency threshold for a variant to be incorporated into consensus genome.
+            Variants below this frequency will be incorporated with an IUPAC ambiguity. 
+            Default: {}
+            """.format(
             float(0.80)
         ),
-        metavar="<int>",
+        metavar="<float>",
     )
     parser.add_argument(
         "-d",
-        "--demultiplex",
+        "--demultiplexed",
         action="store_true",
         default=False,
         required=False,
-        help="Demultiplex reads using guppy_barcoder. By default, assumes reads were already demultiplexed by MinKNOW. Reads are demultiplexed into the output directory.",
+        help="""
+            Reads already demultiplexed using guppy_barcoder into '/var/lib/minknow/data/<run_name>'.
+            By default, assumes reads need to be demultiplexed and reads are demultiplexed into the output directory.
+            """,
     )
     parser.add_argument(
         "-f",
@@ -156,8 +177,14 @@ def main(sysargs=sys.argv[1:]):
         action="store",
         required=False,
         default="MN908947.3",
-        help="Reference genome to use: 'MN908947.3' (SARS-CoV-2), 'NC_006273.2' (CMV Merlin). Other references can be used, but the corresponding assembly (fasta) and annotation (gff3 from Ensembl) must be added to {0} (Default: {1})".format(
-            os.path.join(thisdir,"references"), "MN908947.3"
+        help="""
+            Reference genome to use. Supported references:
+                - 'MN908947.3' (SARS-CoV-2)
+                - 'NC_006273.2' (CMV Merlin) (planned support, but not yet implemented)
+            Other references can be used, but the corresponding assembly (fasta) and annotation (gff3 from Ensembl) must be added. See README.
+            Default: {0}
+            """.format(
+            "MN908947.3"
         ),
     )
     parser.add_argument(
@@ -296,7 +323,7 @@ def main(sysargs=sys.argv[1:]):
         variable_dict['max_len'] = length_params.loc[variable_dict['protocol'], 'max_length']     
         variable_dict["run_data"].to_csv(os.path.join(variable_dict["outdir"],"metadata.csv"))
         
-        if args.demultiplex:
+        if not args.demultiplexed:
             from oat.scripts.demux_and_filter import demultiplex_reads, filter_reads
             demultiplex_reads(variable_dict)
             filter_reads(variable_dict)

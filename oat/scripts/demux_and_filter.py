@@ -44,7 +44,7 @@ def demultiplex_reads(variable_dict):
     protocol = variable_dict["protocol"]
     guppy_barcoder = shutil.which("guppy_barcoder")
     basecalledPath = variable_dict["basecalledPath"]
-    barcode_kit_name = variable_dict["barcode_kit_name"]
+    barcode_kit_name = variable_dict["barcode_kit"]
 
     my_log.info("Working with {0} protocol samples".format(protocol))
     protocol = protocol.upper()
@@ -187,6 +187,8 @@ def relocate_and_filter_reads(variable_dict):
     outdir = variable_dict["outdir"]
     if not os.path.exists(outdir):
         os.makedirs(outdir)
+    if not os.path.exists(os.path.join(outdir, "reads")):
+        os.makedirs(os.path.join(outdir, "reads"))
     run_data = variable_dict["run_data"]
     bcodeDir = os.path.join(outdir, "barcodes")
     if not os.path.exists(bcodeDir):
@@ -199,7 +201,8 @@ def relocate_and_filter_reads(variable_dict):
         fqdir = os.path.join(bcodeDir, bcode)
         if not os.path.isdir(fqdir):
             os.makedirs(fqdir)
-        if not os.path.isfile(os.path.join(outdir, sample + ".fastq")):
+        outfile = os.path.join(outdir, "reads", sample + ".fastq")
+        if not os.path.isfile(outfile):
             readsDir = os.path.join(variable_dict["basecalledPath"] + "/" + bcode)
             if not os.path.exists(readsDir):
                 variable_dict["my_log"].error(
@@ -216,14 +219,13 @@ def relocate_and_filter_reads(variable_dict):
                 for file in os.listdir(readsDir)
                 if file.endswith(".fastq")
             ]
-            outfile = os.path.join(outdir, sample + ".fastq")
             for fastq in fastqs:
                 cmd = "filtlong --min_length {0} --max_length {1} {2} >> {3}".format(
                     variable_dict["min_len"], variable_dict["max_len"], fastq, outfile
                 )
                 subprocess.Popen(
                     cmd,
-                    shell=False,
+                    shell=True,
                     stdin=subprocess.PIPE,
                     stdout=subprocess.PIPE,
                     stderr=subprocess.STDOUT,
