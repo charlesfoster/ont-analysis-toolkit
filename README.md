@@ -69,7 +69,7 @@ Note that there are many additional options/settings to take advantage of:
 
 ```
 
-[95m
+
                                         ,d
                                         88
                ,adPPYba,   ,adPPYYba, MM88MMM
@@ -78,7 +78,7 @@ Note that there are many additional options/settings to take advantage of:
               "8a,   ,a8" 88,    ,88    88,  
                `"YbbdP"'  `"8bbdP"Y8   "Y888
 
-        OAT: ONT Analysis Toolkit (version 0.2.0)[0m
+        OAT: ONT Analysis Toolkit (version 0.3.1)
 
 usage: oat [options] <samples_file>
 
@@ -182,6 +182,10 @@ A protocol for the amplicon scheme needs (a) to be installed in the pipeline, an
 4. Make sure you're in /path/to/ont-analysis-toolkit/, then activate the conda environment and use the following command: `pip install .`
 
 Done!
+
+Note: I've provided two script to help generate the `genome.json` file:
+- /path/to/ont-analysis-toolkit/oat/scripts/genbank2json.py: converts a genbank-format file into the necessary json format for RAMPART
+- /path/to/ont-analysis-toolkit/oat/scripts/gff2json.py: converts a gff3-format file into the necessary json format for RAMPART. Works from limited testing with either NCBI or Ensembl gff3 files.
 
 **Amino acid consequences**
 

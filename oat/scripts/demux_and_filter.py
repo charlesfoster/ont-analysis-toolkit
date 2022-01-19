@@ -136,7 +136,7 @@ def demultiplex_reads(variable_dict):
 
 
 def filter_reads(variable_dict):
-    my_log.info("Filtering reads by length with 'filtlong'.")
+    my_log.info("Filtering reads by length with 'nanoq'.")
     if not os.path.exists(os.path.join(outdir, "reads")):
         os.makedirs(os.path.join(outdir, "reads"))
     for sample in sample_dict:
@@ -155,7 +155,7 @@ def filter_reads(variable_dict):
             )
         else:
             for fastq in fastqs:
-                cmd = "filtlong --min_length {0} --max_length {1} {2} >> {3}".format(
+                cmd = "nanoq --min-len {0} --max-len {1} -i {2} >> {3}".format(
                     variable_dict["min_len"], variable_dict["max_len"], fastq, outfile
                 )
                 subprocess.Popen(
@@ -220,7 +220,7 @@ def relocate_and_filter_reads(variable_dict):
                 if file.endswith(".fastq")
             ]
             for fastq in fastqs:
-                cmd = "filtlong --min_length {0} --max_length {1} {2} >> {3}".format(
+                cmd = "nanoq --min-len {0} --max-len {1} -i {2} >> {3}".format(
                     variable_dict["min_len"], variable_dict["max_len"], fastq, outfile
                 )
                 subprocess.Popen(

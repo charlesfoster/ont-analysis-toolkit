@@ -14,7 +14,7 @@ dependencies:
   - longshot
   - pip
   - imagemagick
-  - filtlong
+  - nanoq
   - pip:
     - colorlog
     - biopython>=1.78
