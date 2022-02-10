@@ -363,7 +363,7 @@ rule filter_vcf:
         bcftools index -f {input.vcf_file}
         bcftools +fill-tags {input.vcf_file} -Ou -- -t "TYPE" | \
         bcftools norm -Ou -a -m -  2> /dev/null | \
-        bcftools view -f 'PASS,dp,.' -i "INFO/AF >= {params.snv_freq} && INFO/DP >= {params.snv_min}" -Oz -o {output.vcf_file}
+        bcftools view -f 'PASS,dn,dp,.' -i "INFO/AF >= {params.snv_freq} && INFO/DP >= {params.snv_min}" -Oz -o {output.vcf_file}
         bcftools +setGT {output.vcf_file} -o {output.vcf_file} -- -t a -n 'c:1/1' 2>> {log}
         bcftools index {output.vcf_file}
         """
