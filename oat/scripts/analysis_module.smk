@@ -237,7 +237,7 @@ rule trim_amplicon_primers:
         cpus=4,
     shell:
         """
-        samtools ampliconclip --soft-clip --filter-len 30 -@ 20 -u -b {params.bed} {input.bam} 2>{log} | \
+        samtools ampliconclip --both-ends --soft-clip --filter-len 30 -@ 20 -u -b {params.bed} {input.bam} 2>{log} | \
         samtools sort -u -@ 20 -n 2>>{log} | \
         samtools fixmate -u -@ 20 - - 2>>{log} | \
         samtools calmd -u -@ 20 - {params.reference} 2>>{log} | \
@@ -332,7 +332,7 @@ rule add_rough_VAF:
         cpus=4,
     shell:
         """
-        sed -e '4i##INFO=<ID=AF,Number=1,Type=Float,Description="Allele Frequency">' -e "s/SAMPLE/{wildcards.sample}/g" {input.vcf} | \
+        sed -e '4i##INFO=<ID=AF,Number=1,Type=Float,Description="Allele Frequency">' -e "s/SAMPLE/{wildcards.sample}/g" {input.vcf} | grep -v "DP\=0;" | \
         awk -v OFS="\t" -F"\t" '
         /^[^#]/{{ AC=$8; DP=$8;
         sub("DP=[0-9]*;", "", AC); 
