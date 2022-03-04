@@ -29,11 +29,6 @@ import os
 ###############
 # Configuration
 ###############
-# set up conda path for pangolin
-cmd = 'eval "$(conda shell.bash hook)" && echo $(conda info --base)'
-conda_path = os.popen(cmd).read()
-conda_root = os.path.split(conda_path)[0]
-
 # set up env variable & threads for tensorflow / medaka
 os.environ["TF_FORCE_GPU_ALLOW_GROWTH"] = "true"
 medaka_con_threads = int(config["threads"] / 2)
@@ -60,6 +55,10 @@ if not os.path.isfile(config["reference"] + ".bwt"):
 # conda env for lofreq - not used currently
 if config["variant_caller"] == "lofreq":
     variant_conda_env = "../envs/lofreq.yaml"
+
+# set up column name for coverage - dependent on input parameter
+config["min_depth"] = int(config["min_depth"])
+coverage_colname = "ref_cov_"+str(config["min_depth"])
 
 ################
 # Optional removal of trimmed reads (to save space)
@@ -165,7 +164,7 @@ rule final_qc:
                 "lineage",
                 "scorpio_call",
                 "ref_cov_20",
-                "mean_depth",
+                coverage_colname,
                 "num_reads",
                 "num_mapped_reads",
                 "percent_total_reads",
@@ -178,7 +177,7 @@ rule final_qc:
                 "run_name",
                 "id",
                 "barcode",
-                "ref_cov_20",
+                coverage_colname,
                 "mean_depth",
                 "num_reads",
                 "num_mapped_reads",
@@ -335,11 +334,11 @@ rule add_rough_VAF:
         sed -e '4i##INFO=<ID=AF,Number=1,Type=Float,Description="Allele Frequency">' -e "s/SAMPLE/{wildcards.sample}/g" {input.vcf} | grep -v "DP\=0;" | \
         awk -v OFS="\t" -F"\t" '
         /^[^#]/{{ AC=$8; DP=$8;
-        sub("DP=[0-9]*;", "", AC); 
-        sub("AC=[0-9]*,", "", AC); 
-        gsub(";.*", "", AC); 
-        sub(";.*", "", DP); 
-        sub("DP=", "", DP); 
+        sub("DP=[0-9]*;", "", AC);
+        sub("AC=[0-9]*,", "", AC);
+        gsub(";.*", "", AC);
+        sub(";.*", "", DP);
+        sub("DP=", "", DP);
         $8 = $8"AF="AC/DP; }}1' | \
         bgzip -c > {output.vcf}
         """
@@ -353,9 +352,8 @@ rule filter_vcf:
     log:
         os.path.join(RESULT_DIR, "{sample}/logs/{sample}.bcftools_filtering.log"),
     params:
-        snv_freq=config["snv_min"],
-        con_freq=config["consensus_freq"],
-        snv_min=20,
+        snv_freq=config["snv_min_freq"],
+        snv_min_depth=config["min_depth"],
     message:
         "setting conditional GT for {wildcards.sample}"
     shell:
@@ -363,7 +361,7 @@ rule filter_vcf:
         bcftools index -f {input.vcf_file}
         bcftools +fill-tags {input.vcf_file} -Ou -- -t "TYPE" | \
         bcftools norm -Ou -a -m -  2> /dev/null | \
-        bcftools view -f 'PASS,dn,dp,.' -i "INFO/AF >= {params.snv_freq} && INFO/DP >= {params.snv_min}" -Oz -o {output.vcf_file}
+        bcftools view -f 'PASS,dn,dp,.' -i "INFO/AF >= {params.snv_freq} && INFO/DP >= {params.snv_min_depth}" -Oz -o {output.vcf_file}
         bcftools +setGT {output.vcf_file} -o {output.vcf_file} -- -t a -n 'c:1/1' 2>> {log}
         bcftools index {output.vcf_file}
         """
@@ -377,13 +375,13 @@ rule set_vcf_genotype:
     log:
         os.path.join(RESULT_DIR, "{sample}/logs/{sample}.bcftools_setGT.log"),
     params:
-        snv_freq=config["snv_min"],
+        snv_freq=config["snv_min_freq"],
         con_freq=config["consensus_freq"],
     message:
         "setting conditional GT for {wildcards.sample}"
     shell:
         """
-        cp {input.vcf_file} {output.vcf_file} 
+        cp {input.vcf_file} {output.vcf_file}
         bcftools +setGT {output.vcf_file} -- -t q -i 'GT="1/1" && INFO/AF < {params.con_freq}' -n 'c:0/1' 2>> {log} | \
         bcftools +setGT -- -t q -i 'TYPE="indel" && INFO/AF < {params.con_freq}' -n . 2>> {log} | \
         bcftools +setGT -o {output.vcf_file} -- -t q -i 'GT="1/1" && INFO/AF >= {params.con_freq}' -n 'c:1/1' 2>> {log}
@@ -408,6 +406,7 @@ rule generate_consensus:
         prefix="{sample}",
         reference=config["reference"],
         freq=config["consensus_freq"],
+        min_depth=config["min_depth"],
     resources:
         cpus=1,
     shell:
@@ -423,7 +422,7 @@ rule generate_consensus:
         else
             bedtools genomecov -bga -ibam {input.bam} | awk '$4 < 20' | \
             bedtools subtract -a - -b {output.variants_bed} > {output.mask}
-            bcftools consensus -p {params.prefix} -f {params.reference} --mark-del '-' -m {output.mask} -H I -i 'INFO/DP >= 20 & GT!="mis"' {input.vcf_file} 2> {log} | \
+            bcftools consensus -p {params.prefix} -f {params.reference} --mark-del '-' -m {output.mask} -H I -i 'INFO/DP >= {params.min_depth} & GT!="mis"' {input.vcf_file} 2> {log} | \
             sed "/^>/s/{params.prefix}.*/{params.prefix}/" > {output.consensus}
         fi
         """
@@ -450,14 +449,14 @@ rule amino_acid_consequences:
         bcftools csq -f {params.reference} -g {params.annotation} --force {input.vcf} 2>{log} | \
         bcftools query -f'[%CHROM\t%SAMPLE\t%POS\t%REF\t%ALT\t%DP\t%AF\t%TBCSQ\n]' 2>{log} | \
         awk -F'|' -v OFS="\t" '{{ print $1,$2,$6 }}' | \
-        awk -v OFS="\t" -F"\t" ' 
-        {{ POS=$10; REF=$10; 
-        gsub("[A-Z*].*", "", POS); 
-        gsub("[0-9]*", "", REF); 
-        ALT=REF; 
-        gsub(">.*", "", REF); 
-        gsub(".*>", "", ALT); 
-        NEW = sprintf("%s%s%s", REF, POS, ALT); 
+        awk -v OFS="\t" -F"\t" '
+        {{ POS=$10; REF=$10;
+        gsub("[A-Z*].*", "", POS);
+        gsub("[0-9]*", "", REF);
+        ALT=REF;
+        gsub(">.*", "", REF);
+        gsub(".*>", "", ALT);
+        NEW = sprintf("%s%s%s", REF, POS, ALT);
         $11 = NEW ; }} 1 ' | \
         awk -v OFS="\t" '{{ print $1,$2,$9,$3,$4,$5,$8,$10,$11,$7,$6 }}' >> {output.tsv}
         """
@@ -468,14 +467,11 @@ rule pangolin:
         fasta=os.path.join(RESULT_DIR, "{sample}/{sample}.consensus.fasta"),
     output:
         report=os.path.join(RESULT_DIR, "{sample}/{sample}.lineage_report.csv"),
-    params:
-        pangolin_path=os.path.join(conda_root, "pangolin"),
+    conda:
+        "../envs/pangolin.yaml"
     shell:
         """
-        set +eu
-        #eval "$(conda shell.bash hook)" && conda activate {params.pangolin_path} && pangolin --outfile {output.report} {input.fasta} &> /dev/null
-        eval "$(conda shell.bash hook)" && conda activate pangolin && pangolin --outfile {output.report} {input.fasta} &> /dev/null
-        set -eu
+        pangolin --outfile {output.report} {input.fasta} &> /dev/null
         """
 
 
@@ -522,6 +518,7 @@ rule sample_qc:
         sars_analysis=SARS_ANALYSIS,
         fastq=os.path.join(config["reads_dir"], "{sample}.fastq"),
         sample="{sample}",
+        min_depth=config["min_depth"],
     resources:
         cpus=1,
     threads: 1
@@ -534,7 +531,7 @@ rule sample_qc:
         )
         sam_df = pd.read_csv(input.samtools_coverage, sep="\t")
         num_mapped_reads = sam_df.loc[0, "numreads"]
-        ref_cov_20 = (df[df["depth"] >= 20].shape[0]) / (df.shape[0]) * 100
+        coverage_value = (df[df["depth"] >= params.min_depth].shape[0]) / (df.shape[0]) * 100
         mean_depth = df["depth"].mean()
         cmd = "echo $(cat {0}|wc -l)/4|bc".format(params.fastq)
         num_reads = int(os.popen(cmd).read().strip())
@@ -544,18 +541,18 @@ rule sample_qc:
                 "id",
                 "num_reads",
                 "num_mapped_reads",
-                "ref_cov_20",
+                coverage_colname,
                 "mean_depth",
                 "coverage_QC",
             ]
         )
 
-        if ref_cov_20 > 79:
+        if coverage_value > 79:
             out_df.loc[0] = [
                 params.sample,
                 num_reads,
                 num_mapped_reads,
-                ref_cov_20,
+                coverage_value,
                 mean_depth,
                 "PASS",
             ]
@@ -564,7 +561,7 @@ rule sample_qc:
                 params.sample,
                 num_reads,
                 num_mapped_reads,
-                ref_cov_20,
+                coverage_value,
                 mean_depth,
                 "FAIL",
             ]

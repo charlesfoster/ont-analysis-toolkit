@@ -209,10 +209,16 @@ def main(sysargs=sys.argv[1:]):
         help="Create conda environments for snakemake analysis, but do no further analysis. Useful for initial pipeline setup. Default: False",
     )
     parser.add_argument(
-        "--snv_min",
+        "--snv_min_freq",
         action="store",
-        help="Minimum variant allele frequency for an SNV to be kept Default: 0.2",
-        default=float(0.4),
+        help="Minimum variant allele frequency for an SNV to be kept. Default: 0.2",
+        default=float(0.2),
+    )
+    parser.add_argument(
+        "--min_depth",
+        action="store",
+        help="Minimum depth for (1) an SNV to be kept; and (2) consensus genome generation. Default: 20",
+        default=int(20),
     )
     parser.add_argument(
         "--delete_reads", action="store_true", help="Delete demultiplexed reads after analysis", default=False

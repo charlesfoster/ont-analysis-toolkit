@@ -194,6 +194,7 @@ def relocate_and_filter_reads(variable_dict):
     if not os.path.exists(bcodeDir):
         os.makedirs(bcodeDir)
     sample_dict = dict(tuple(run_data.groupby("id")))
+    variable_dict["my_log"].info("Filtering reads by length with 'nanoq'")
     for sample in sample_dict:
         bcode = "".join(sample_dict[sample]["barcode"].to_list()).replace(
             "BC", "barcode"
