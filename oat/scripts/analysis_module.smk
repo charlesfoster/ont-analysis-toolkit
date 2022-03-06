@@ -75,14 +75,14 @@ onsuccess:
 
     print("\n\033[92mRemoving unwanted and/or empty files\033[0m\n")
     for file in glob.glob(RESULT_DIR + "/**", recursive=True):
-        if os.path.getsize(file) == 0 or file.endswith(
+        if file.endswith(
             (
                 ".all.vcf.gz.csi",
                 "draft.vcf.gz.tbi",
                 ".filtered.vcf.gz.csi",
                 ".mapped.bam.csi",
             )
-        ):
+        ) or (os.path.getsize(file) == 0 and not file.endswith(".fastq")):
             os.remove(file)
 
 
@@ -98,7 +98,13 @@ if SARS_ANALYSIS:
             sample=SAMPLES,
         )
     )
-
+else:
+    potential_pangolin.append(
+        expand(
+            os.path.join(RESULT_DIR, "{sample}/{sample}.qc_results.csv"),
+            sample=SAMPLES,
+        )
+    )
 
 rule final_qc:
     input:
@@ -500,8 +506,9 @@ if SARS_ANALYSIS:
         RESULT_DIR, "{sample}/{sample}.lineage_report.csv"
     )
 else:
-    sample_qc_lineages = ([None],)
-
+    sample_qc_lineages = os.path.join(
+        RESULT_DIR, "{sample}/{sample}.consensus.fasta"
+    )
 
 rule sample_qc:
     input:
