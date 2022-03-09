@@ -112,7 +112,8 @@ def main(sysargs=sys.argv[1:]):
         default=float(0.8),
         help="""
             Variant allele frequency threshold for a variant to be incorporated into consensus genome.
-            Variants below this frequency will be incorporated with an IUPAC ambiguity. 
+            Variants below this frequency will be incorporated with an IUPAC ambiguity.
+            Set to 0 to incorporate the majority or most common base.
             Default: {}
             """.format(
             float(0.80)
@@ -327,7 +328,7 @@ def main(sysargs=sys.argv[1:]):
         length_params= pd.read_csv(os.path.join(thisdir,"protocols","length_params.csv")).set_index("name")
         variable_dict['min_len'] = length_params.loc[variable_dict['protocol'], 'min_length']
         variable_dict['max_len'] = length_params.loc[variable_dict['protocol'], 'max_length']     
-        variable_dict["run_data"].to_csv(os.path.join(variable_dict["outdir"],"metadata.csv"))
+        variable_dict["run_data"].to_csv(os.path.join(variable_dict["outdir"],"metadata.csv"), index=False)
         
         if not args.demultiplexed:
             from oat.scripts.demux_and_filter import demultiplex_reads, filter_reads

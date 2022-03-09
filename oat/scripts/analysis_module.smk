@@ -169,8 +169,8 @@ rule final_qc:
                 "barcode",
                 "lineage",
                 "scorpio_call",
-                "ref_cov_20",
                 coverage_colname,
+                "mean_depth",
                 "num_reads",
                 "num_mapped_reads",
                 "percent_total_reads",
@@ -305,7 +305,8 @@ rule longshot:
         bam=os.path.join(RESULT_DIR, "{sample}/{sample}.trimmed.bam"),
         vcf=os.path.join(RESULT_DIR, "{sample}/{sample}.draft.vcf.gz"),
     output:
-        vcf=temp(os.path.join(RESULT_DIR, "{sample}/{sample}.all.vcf")),
+        vcf=os.path.join(RESULT_DIR, "{sample}/{sample}.all.vcf"),
+        #vcf=temp(os.path.join(RESULT_DIR, "{sample}/{sample}.all.vcf")),
     message:
         "neater longshot variant calls for {wildcards.sample}"
     threads: 4
