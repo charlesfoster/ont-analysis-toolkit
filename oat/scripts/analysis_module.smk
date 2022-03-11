@@ -31,7 +31,9 @@ import os
 ###############
 # set up env variable & threads for tensorflow / medaka
 os.environ["TF_FORCE_GPU_ALLOW_GROWTH"] = "true"
-medaka_con_threads = int(config["threads"] / 2)
+#medaka_con_threads = int(config["threads"] / 2)
+# medaka log consistently says more than 2 threads is a waste, so...
+medaka_con_threads = int(2)
 
 # define some key variables
 RESULT_DIR = config["outdir"]
@@ -135,9 +137,18 @@ rule final_qc:
 
         for fa in fa_files:
             os.system("cat {0} >> {1}".format(fa, multifasta))
-        qc_files = glob.glob(RESULT_DIR + "/**/*qc_results.csv", recursive=True)
-        combined_qc = pd.concat([pd.read_csv(f) for f in qc_files]).set_index(["id"])
         run_metadata = pd.read_csv(params.run_metadata)
+        qc_files = []
+        for sample in SAMPLES:
+            sample_dir = os.path.join(RESULT_DIR, sample)
+            qc_file = glob.glob(sample_dir + "/*qc_results.csv")
+            if len(qc_file) == 1:
+                qc_file = qc_files.append(qc_file[0])
+            else:
+                print(f'Error: investigate duplicated sample_qc file found for {sample}')
+                sys.exit(-1)
+        #qc_files = glob.glob(RESULT_DIR + "/**/*qc_results.csv", recursive=True)
+        combined_qc = pd.concat([pd.read_csv(f) for f in qc_files]).set_index(["id"])
         outdata = run_metadata.join(combined_qc, on=["id"])
         outdata = outdata.set_index("id", drop=False)
         outdata.index.name = None
@@ -270,7 +281,7 @@ rule medaka_consensus:
         "../envs/medaka.yaml"
     shell:
         """
-        medaka consensus --model {params.model} --threads {threads} --chunk_len 800 --chunk_ovlp 400 {input.bam} {output.hdf} 2>{log}
+        export TF_FORCE_GPU_ALLOW_GROWTH=true; medaka consensus --model {params.model} --threads {threads} --chunk_len 800 --chunk_ovlp 400 {input.bam} {output.hdf} 2>{log}
         """
 
 
@@ -294,7 +305,7 @@ rule medaka_variant:
         "../envs/medaka.yaml"
     shell:
         """
-        medaka variant {params.reference} {input.hdf} {output.medaka_vcf} 2>{log}
+        export TF_FORCE_GPU_ALLOW_GROWTH=true; medaka variant {params.reference} {input.hdf} {output.medaka_vcf} 2>{log}
         bgzip -c {output.medaka_vcf} > {output.vcf} 2>>{log}
         tabix -p vcf {output.vcf} 2>>{log}
         """
