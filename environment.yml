@@ -5,20 +5,22 @@ channels:
   - defaults
 dependencies:
   - artic-network::rampart=1.2.0
-  - snakemake-minimal>=5.13
+  - snakemake-minimal=7.2.1
   - bcftools=1.14
   - samtools=1.14
   - python=3.9
-  - minimap2
-  - artic-porechop
-  - longshot
+  - mamba=0.22.1
+  - minimap2=2.24
+  - artic-porechop=0.3.2pre
+  - longshot=0.4.1
   - pip
-  - imagemagick
-  - nanoq
+  - imagemagick=7.1.0_27
+  - nanoq=0.8.6
   - pip:
-    - colorlog
+    - colorlog==6.6.0
     - biopython>=1.78
-    - pandas
-    - psutil
-    - pygraphviz
-    - pygments
+    - pandas==1.4.1
+    - psutil==5.9.0
+    - pygraphviz==1.9
+    - pygments==2.11.2
+    - GPUtil==1.4.0
