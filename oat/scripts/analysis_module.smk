@@ -481,9 +481,22 @@ rule amino_acid_consequences:
         awk -v OFS="\t" '{{ print $1,$2,$9,$3,$4,$5,$8,$10,$11,$7,$6 }}' >> {output.tsv}
         """
 
+rule update_pangolin:
+    output:
+        update_info = os.path.join(RESULT_DIR, "pangolin_update_info.txt"),
+    conda:
+        "../envs/pangolin.yaml"
+    shell:
+        """
+        echo "Attempting to update pangolin..." > {output.update_info}
+        pangolin --update &>> {output.update_info} || echo "pangolin couldn't update. Investigate." >> {output.update_info}
+        echo "Pangolin versions after attempted update..." >> {output.update_info}
+        pangolin --all-versions &>> {output.update_info}
+        """
 
 rule pangolin:
     input:
+        update_info = os.path.join(RESULT_DIR, "pangolin_update_info.txt"),
         fasta=os.path.join(RESULT_DIR, "{sample}/{sample}.consensus.fasta"),
     output:
         report=os.path.join(RESULT_DIR, "{sample}/{sample}.lineage_report.csv"),

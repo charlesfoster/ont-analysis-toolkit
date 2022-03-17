@@ -10,6 +10,7 @@ Last edited on Thur December 02 2021
 # %% Import Modules                                               #
 #==============================================================#
 import os
+import glob
 import shutil
 import sys
 import psutil
@@ -374,6 +375,17 @@ def main(sysargs=sys.argv[1:]):
         # time for some snakemake action
         import snakemake
         my_log.info("Running analysis pipeline using snakemake")
+        
+        # if a SARS-CoV-2 analysis, delete previous lineage files to trigger re-run
+        if os.path.basename(variable_dict["reference"]) == "MN908947.3.fasta":
+            SAMPLES = [
+                os.path.basename(x).replace(".fastq", "")
+                for x in glob.glob(variable_dict["reads_dir"] + "/*.fastq")
+            ]
+            [os.remove(f) for f in glob.glob(variable_dict["outdir"] + "/**/*.lineage_report.csv", recursive=True) if any(s in f for s in SAMPLES)]
+            # delete previous pangolin update file so it'll update again
+            if os.path.exists(os.path.join(variable_dict["outdir"], "pangolin_update_info.txt")):
+                os.remove(os.path.join(variable_dict["outdir"], "pangolin_update_info.txt"))
 
         #check if user only wants to create conda environments     
         if args.create_envs_only:
