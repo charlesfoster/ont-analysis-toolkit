@@ -78,7 +78,11 @@ def check_arguments(variable_dict, args):
     Check to make sure command line arguments are valid
     """
     global run_data, run_name, neg_controls, barcodes_used, barcode_kit_name
-
+    if variable_dict['resources']['gpu'] == 0:
+        my_log.error(
+            "No GPU detected. A GPU is necessary for variant calling with medaka."
+        )
+        sys.exit()
     if shutil.which("rampart") is None:
         my_log.error(
             "Some necessary programs cannot be detected. Have you activated the conda environment?"

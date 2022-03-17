@@ -20,6 +20,8 @@ from oat.scripts.helper_functions import find_runDirs, check_arguments, initiate
 import pandas as pd
 from psutil import virtual_memory
 from oat import __version__
+import GPUtil
+
 #=============================================================#
 # %%GLOBAL VARIABLES AND DEPENDENCIES                            #
 #=============================================================#
@@ -69,8 +71,9 @@ def main(sysargs=sys.argv[1:]):
             __version__
         )
     )
-    
+    # initial resource wrangling
     max_mem = round(bytesto(virtual_memory().available, "m"))
+    num_gpu = len(GPUtil.getGPUs())
     
     parser = argparse.ArgumentParser(
         description="A pipeline for sequencing and analysis of viral genomes using an ONT MinION",
@@ -230,8 +233,8 @@ def main(sysargs=sys.argv[1:]):
     parser.add_argument(
         "--version",
         action="version",
-        version="covid illumina pipeline snakemake edition:  0.1.0",
-        #version=f"covid illumina pipeline snakemake edition:  {__version__}",
+        #version="covid illumina pipeline snakemake edition:  0.1.0",
+        version=f"covid illumina pipeline snakemake edition:  {__version__}",
     )
     parser.add_argument(
         "--minknow_data",
@@ -261,7 +264,6 @@ def main(sysargs=sys.argv[1:]):
     args = parser.parse_args()
 
     ### end parsing of command args ###
-
     if args.print_dag:      
         args.module = "analysis"
     args.module = args.module.upper()
@@ -275,8 +277,15 @@ def main(sysargs=sys.argv[1:]):
         sys.exit(1)
 
     variable_dict = vars(args)
-    variable_dict["max_mem"] = max_mem
-    initiate_colorlog(variable_dict, main_dir)
+
+    if args.max_memory:
+        max_mem = int(args.max_memory)
+    resources_dict = {'mem_mb':max_mem,
+                     'gpu':num_gpu}
+
+    variable_dict["resources"] = resources_dict
+    
+    initiate_colorlog(variable_dict, os.getcwd())
     check_arguments(variable_dict, args)
     find_runDirs(variable_dict, main_dir, minknow_dir)
     my_log = variable_dict["my_log"]
@@ -290,7 +299,12 @@ def main(sysargs=sys.argv[1:]):
         variable_dict['rampart_outdir'] = rampart_outdir
         rampart_json(variable_dict)
         rampart_run(variable_dict)
-        shutil.move(variable_dict['logfile'], os.path.join(main_dir,TODAY+'_'+variable_dict['run_name']+'_RAMPART.log'))
+        #set up correct log destination
+        if args.outdir:
+            logdir = args.outdir
+        else:
+            logdir = os.getcwd()
+        shutil.move(variable_dict['logfile'], os.path.join(logdir,TODAY+'_'+variable_dict['run_name']+'_RAMPART.log'))
         printc("\n Pipeline complete\n", "HEADER")
     elif args.module == 'ANALYSIS' or args.module == 'ALL':
         if args.outdir:
@@ -308,9 +322,9 @@ def main(sysargs=sys.argv[1:]):
             variable_dict['rampart_outdir'] = rampart_outdir
             rampart_json(variable_dict)
             rampart_run(variable_dict)
-            final_log_name = os.path.join(main_dir,TODAY+'_'+variable_dict['run_name']+'_ALL.log')
+            final_log_name = os.path.join(variable_dict['outdir'],TODAY+'_'+variable_dict['run_name']+'_ALL.log')
         else:
-            final_log_name = os.path.join(main_dir,TODAY+'_'+variable_dict['run_name']+'_ANALYSIS.log')
+            final_log_name = os.path.join(variable_dict['outdir'],TODAY+'_'+variable_dict['run_name']+'_ANALYSIS.log')
         if args.redo_analysis:
             my_log.info("You have chosen to redo the analyses for {0}".format(variable_dict["run_name"]))
             decision = input("Are you sure you want to redo the analysis? This option will delete all analysis data for {0}. Type 'yes' to continue, or anything else to abort.\n> ".format(variable_dict["run_name"]))
@@ -396,7 +410,7 @@ def main(sysargs=sys.argv[1:]):
                 printshellcmds=False,
                 forceall=args.force,
                 force_incomplete=True,
-               # resources=max_mem,
+                resources=variable_dict['resources'],
                 config=variable_dict,
                 quiet=True,
                 cores=args.threads,
@@ -416,6 +430,8 @@ def main(sysargs=sys.argv[1:]):
                 printshellcmds=True,
                 forceall=args.force,
                 force_incomplete=True,
+                resources=variable_dict['resources'],
+                list_resources=False,
                 config=variable_dict,
                 quiet=False,
                 cores=args.threads,

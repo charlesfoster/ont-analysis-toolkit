@@ -277,6 +277,7 @@ rule medaka_consensus:
         model="r941_min_high_g360",
     resources:
         cpus=medaka_con_threads,
+        gpu=1,
     conda:
         "../envs/medaka.yaml"
     shell:
@@ -301,6 +302,7 @@ rule medaka_variant:
         model="r941_min_high_g360",
     resources:
         cpus=4,
+        gpu=1,
     conda:
         "../envs/medaka.yaml"
     shell:
