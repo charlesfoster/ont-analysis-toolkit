@@ -17,7 +17,7 @@ import psutil
 from datetime import date
 import argparse
 from argparse import RawTextHelpFormatter
-from oat.scripts.helper_functions import find_runDirs, check_arguments, initiate_colorlog, printc
+from oat.scripts.helper_functions import find_runDirs, check_arguments, initiate_colorlog, printc, check_prior_pangolin
 import pandas as pd
 from psutil import virtual_memory
 from oat import __version__
@@ -120,7 +120,7 @@ def main(sysargs=sys.argv[1:]):
             Set to 0 to incorporate the majority or most common base.
             Default: {}
             """.format(
-            float(0.80)
+            float(0.75)
         ),
         metavar="<float>",
     )
@@ -254,7 +254,7 @@ def main(sysargs=sys.argv[1:]):
         metavar="<int>",
     )
     parser.add_argument("--quiet", action="store_true", help="Stop printing of snakemake commands to screen.")
-    parser.add_argument("--report", action="store_true", help="Generate report (currently non-functional).")
+    parser.add_argument("--report", action="store_true", help="Generate report (currently minimally functional).")
     
     if len(sysargs) < 1:
         parser.print_help()
@@ -371,6 +371,36 @@ def main(sysargs=sys.argv[1:]):
             my_log.info("To run the analysis, use the same command but omit '-p' / '--print_dag'")
             printc("\n Pipeline complete\n", "HEADER")
             sys.exit(0)
+        elif args.report:
+            my_log.info("Generating snakemake report")
+            my_log.warning("Reporting is currently minimal/not very useful")
+            import snakemake
+            if not os.path.exists(variable_dict['outdir']):
+                os.makedirs(variable_dict['outdir'])
+            status = snakemake.snakemake(
+                snakefile,
+                report=os.path.join(variable_dict['outdir'], "pipeline_report.html"),
+                use_conda=True,
+                conda_frontend="mamba",
+                dryrun=args.dry_run,
+                printshellcmds=True,
+                forceall=args.force,
+                force_incomplete=True,
+                resources=variable_dict['resources'],
+                config=variable_dict,
+                quiet=True,
+                cores=1,
+                lock=False,
+            )
+            if status:
+                my_log.info("View report: {}".format(os.path.join(variable_dict['outdir'], "pipeline_report.html")))
+                print(
+                    "\033[92m\nReport created!\033[0m\n"
+                    )
+                sys.exit(0)
+            else:
+                my_log.error("Something went wrong with report creation. Investigate.")
+                sys.exit(1)
 
         # time for some snakemake action
         import snakemake
@@ -378,15 +408,8 @@ def main(sysargs=sys.argv[1:]):
         
         # if a SARS-CoV-2 analysis, delete previous lineage files to trigger re-run
         if os.path.basename(variable_dict["reference"]) == "MN908947.3.fasta":
-            SAMPLES = [
-                os.path.basename(x).replace(".fastq", "")
-                for x in glob.glob(variable_dict["reads_dir"] + "/*.fastq")
-            ]
-            [os.remove(f) for f in glob.glob(variable_dict["outdir"] + "/**/*.lineage_report.csv", recursive=True) if any(s in f for s in SAMPLES)]
-            # delete previous pangolin update file so it'll update again
-            if os.path.exists(os.path.join(variable_dict["outdir"], "pangolin_update_info.txt")):
-                os.remove(os.path.join(variable_dict["outdir"], "pangolin_update_info.txt"))
-
+            check_prior_pangolin(variable_dict)
+            
         #check if user only wants to create conda environments     
         if args.create_envs_only:
             status = snakemake.snakemake(
@@ -405,7 +428,7 @@ def main(sysargs=sys.argv[1:]):
             )
             if status:
                 print(
-                    "\033[Environments created!\033[0m\n"
+                    "\033[92m\nEnvironments created!\033[0m\n"
                     )
                 sys.exit(0)
             else:
@@ -450,10 +473,16 @@ def main(sysargs=sys.argv[1:]):
                 lock=False,
             )
         shutil.move(variable_dict['logfile'], final_log_name)
+
+        if status:
+            my_log.info("Analysis module complete")
+            my_log.info("Final results summary: {}".format(os.path.join(variable_dict['outdir'],variable_dict['run_name']+'_qc.csv')))
+            printc("\n Pipeline complete\n", "HEADER")
+            sys.exit(0)
+        else:
+            my_log.error("Something went wrong with the analysis. Investigate.")
+            sys.exit(1)
         
-        my_log.info("Analysis module complete")
-        my_log.info("Final results summary: {}".format(os.path.join(variable_dict['outdir'],variable_dict['run_name']+'_qc.csv')))
-        printc("\n Pipeline complete\n", "HEADER")
 ##########
 # %% run analysis                                                     #
 
