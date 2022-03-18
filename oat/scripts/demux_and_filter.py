@@ -184,7 +184,9 @@ def filter_reads(variable_dict):
 
 
 def relocate_and_filter_reads(variable_dict):
+    my_log = variable_dict["my_log"]
     outdir = variable_dict["outdir"]
+    variable_dict["reads_dir"] = os.path.join(outdir, "reads")
     if not os.path.exists(outdir):
         os.makedirs(outdir)
     if not os.path.exists(os.path.join(outdir, "reads")):
@@ -194,6 +196,18 @@ def relocate_and_filter_reads(variable_dict):
     if not os.path.exists(bcodeDir):
         os.makedirs(bcodeDir)
     sample_dict = dict(tuple(run_data.groupby("id")))
+    if variable_dict['demultiplexed']:
+        my_log.info("Option 'demultiplexed' chosen")
+        my_log.info("Checking to see if reads previously demultiplexed and filtered by 'oat'")
+        outfile_list = []
+        for sample in sample_dict:
+            outfile_list.append(os.path.join(outdir, "reads", sample + ".fastq"))
+        if all([os.path.exists(x) for x in outfile_list]):
+            my_log.info("All reads found. Continuing.")
+            return
+        else:
+            my_log.warning("Not all reads can be located in the 'oat' outdir")
+            my_log.warning("Working with reads in {0}".format(variable_dict['basecalledPath']))
     variable_dict["my_log"].info("Filtering reads by length with 'nanoq'")
     for sample in sample_dict:
         bcode = "".join(sample_dict[sample]["barcode"].to_list()).replace(
@@ -243,4 +257,3 @@ def relocate_and_filter_reads(variable_dict):
                 stderr=subprocess.STDOUT,
                 universal_newlines=True,
             ).communicate()
-    variable_dict["reads_dir"] = os.path.join(outdir, "reads")

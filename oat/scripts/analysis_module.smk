@@ -127,7 +127,7 @@ rule final_qc:
         sars_analysis=SARS_ANALYSIS,
     run:
         # combine fasta files into one multifasta
-        fa_files = glob.glob(RESULT_DIR + "/**/*.consensus.fasta", recursive=True)
+        fa_files = [f for f in glob.glob(RESULT_DIR + "/**/*.consensus.fasta", recursive=True) if (s in f for s in SAMPLES)]
 
         multifasta = os.path.join(
             RESULT_DIR, config["run_name"] + ".consensus_genomes.fa"
@@ -138,41 +138,62 @@ rule final_qc:
         for fa in fa_files:
             os.system("cat {0} >> {1}".format(fa, multifasta))
         run_metadata = pd.read_csv(params.run_metadata)
+       
+        # collect QC files
         qc_files = []
         for sample in SAMPLES:
             sample_dir = os.path.join(RESULT_DIR, sample)
             qc_file = glob.glob(sample_dir + "/*qc_results.csv")
             if len(qc_file) == 1:
-                qc_file = qc_files.append(qc_file[0])
+                qc_files.append(qc_file[0])
             else:
                 print(f'Error: investigate duplicated sample_qc file found for {sample}')
                 sys.exit(-1)
+
+        # combine into one final_qc
         #qc_files = glob.glob(RESULT_DIR + "/**/*qc_results.csv", recursive=True)
         combined_qc = pd.concat([pd.read_csv(f) for f in qc_files]).set_index(["id"])
         outdata = run_metadata.join(combined_qc, on=["id"])
         outdata = outdata.set_index("id", drop=False)
         outdata.index.name = None
 
-        # add analysis metadata
+        # add analysis date
         outdata["analysis_date"] = date.today().strftime("%Y-%m-%d")
 
-        # do qc of number of reads
-        reads_qc = pd.DataFrame(columns=["percent_total_reads", "reads_qc"])
-        outdata = outdata.join(reads_qc, how="outer")
-
-        total_reads = combined_qc["num_reads"].sum()
-        sample_dict = dict(tuple(outdata.groupby("id")))
-        for sample in sample_dict:
-            percent = (sample_dict[sample]["num_reads"].squeeze() / total_reads) * 100
-            outdata.at[sample, "percent_total_reads"] = percent
-            if sample_dict[sample]["neg_control"].bool() == True:
-                qc_result = "PASS" if percent < 5 else "FAIL"
-            else:
-                qc_result = "PASS" if percent > 5 else "FAIL"
-            outdata.at[sample, "reads_qc"] = qc_result
-
-        # define order of columns
+        # define order of columns in final_qc file
         if params.sars_analysis:
+
+            # collect lineage files
+            lineage_files = []
+            for sample in SAMPLES:
+                sample_dir = os.path.join(RESULT_DIR, sample)
+                lineage_file = glob.glob(sample_dir + "/*lineage_report.csv")
+                if len(lineage_file) == 1:
+                    lineage_files.append(lineage_file[0])
+                else:
+                    print(f'Error: investigate duplicated lineage_report file found for {sample}')
+                    sys.exit(-1)
+            
+            # read in the lineage files
+            lineages = pd.concat([pd.read_csv(f) for f in lineage_files]).drop(
+                ["conflict", "note", "scorpio_conflict"], axis=1
+            )
+           
+            lineages.columns = [
+                "id",
+                "lineage",
+                "pangolin_ambiguity_score",
+                "scorpio_call",
+                "scorpio_support",
+                "lineage_designation_version",
+                "pangolin_version",
+                "pangoLEARN_version",
+                "pango_version",
+                "pangolin_status",
+            ]
+
+            outdata = outdata.join(lineages.set_index(["id"]), on=["id"])
+            
             compulsory_col_order = [
                 "analysis_date",
                 "run_name",
@@ -201,6 +222,21 @@ rule final_qc:
                 "percent_total_reads",
                 "reads_qc",
             ]
+
+        # do qc of number of reads
+        reads_qc = pd.DataFrame(columns=["percent_total_reads", "reads_qc"])
+        outdata = outdata.join(reads_qc, how="outer")
+
+        total_reads = combined_qc["num_reads"].sum()
+        sample_dict = dict(tuple(outdata.groupby("id")))
+        for sample in sample_dict:
+            percent = (sample_dict[sample]["num_reads"].squeeze() / total_reads) * 100
+            outdata.at[sample, "percent_total_reads"] = percent
+            if sample_dict[sample]["neg_control"].bool() == True:
+                qc_result = "PASS" if percent < 5 else "FAIL"
+            else:
+                qc_result = "PASS" if percent > 5 else "FAIL"
+            outdata.at[sample, "reads_qc"] = qc_result
 
         input_cols = outdata.columns.to_list()
         extra_input_cols = list(set(input_cols) - set(compulsory_col_order))
@@ -528,18 +564,8 @@ rule get_coverage:
         """
 
 
-if SARS_ANALYSIS:
-    sample_qc_lineages = os.path.join(
-        RESULT_DIR, "{sample}/{sample}.lineage_report.csv"
-    )
-else:
-    sample_qc_lineages = os.path.join(
-        RESULT_DIR, "{sample}/{sample}.consensus.fasta"
-    )
-
 rule sample_qc:
     input:
-        lineages=sample_qc_lineages,
         bedtools_coverage=os.path.join(
             RESULT_DIR, "{sample}/{sample}.bedtools_coverage.tsv"
         ),
@@ -549,7 +575,6 @@ rule sample_qc:
     output:
         report=os.path.join(RESULT_DIR, "{sample}/{sample}.qc_results.csv"),
     params:
-        sars_analysis=SARS_ANALYSIS,
         fastq=os.path.join(config["reads_dir"], "{sample}.fastq"),
         sample="{sample}",
         min_depth=config["min_depth"],
@@ -599,26 +624,5 @@ rule sample_qc:
                 mean_depth,
                 "FAIL",
             ]
-
-        if params.sars_analysis:
-
-            lineages = pd.read_csv(input.lineages).drop(
-                ["conflict", "note", "scorpio_conflict"], axis=1
-            )
-            lineages.columns = [
-                "id",
-                "lineage",
-                "pangolin_ambiguity_score",
-                "scorpio_call",
-                "scorpio_support",
-                "lineage_designation_version",
-                "pangolin_version",
-                "pangoLEARN_version",
-                "pango_version",
-                "pangolin_status",
-            ]
-            lineages.loc[0, "id"] = wildcards.sample
-
-            out_df = out_df.join(lineages.set_index(["id"]), on=["id"])
 
         out_df.to_csv(output.report, header=True, index=False)

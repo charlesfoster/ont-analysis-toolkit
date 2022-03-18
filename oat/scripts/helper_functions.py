@@ -199,3 +199,24 @@ def find_runDirs(variable_dict, script_dir, minknow_dir):
         my_log.error(msg)
         sys.exit(1)
     return ()
+
+# %% check for prior pangolin output files
+def check_prior_pangolin(variable_dict):
+    global my_log, sample_dict, outdir, bcodeDir, protocol
+
+    SAMPLES = [
+        os.path.basename(x).replace(".fastq", "")
+        for x in glob.glob(variable_dict["reads_dir"] + "/*.fastq")
+    ]
+    
+    previous_lineage_reports = [f for f in glob.glob(variable_dict["outdir"] + "/**/*.lineage_report.csv", recursive=True) if (s in f for s in SAMPLES)]
+    
+    if len(previous_lineage_reports) > 0:
+        my_log.warning(
+            "Removing previous pangolin output to estimate lineages again"
+        )   
+        [os.remove(f) for f in glob.glob(variable_dict["outdir"] + "/**/*.lineage_report.csv", recursive=True) if (s in f for s in SAMPLES)]
+        
+        # delete previous pangolin update file so it'll update again
+        if os.path.exists(os.path.join(variable_dict["outdir"], "pangolin_update_info.txt")):
+            os.remove(os.path.join(variable_dict["outdir"], "pangolin_update_info.txt"))
