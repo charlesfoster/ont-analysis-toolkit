@@ -59,8 +59,11 @@ if config["variant_caller"] == "lofreq":
     variant_conda_env = "../envs/lofreq.yaml"
 
 # set up column name for coverage - dependent on input parameter
+# update: for simplifying reporting purposes, changing to just 'coverage'
+# depth value will still be in the config
 config["min_depth"] = int(config["min_depth"])
-coverage_colname = "ref_cov_"+str(config["min_depth"])
+#coverage_colname = "ref_cov_"+str(config["min_depth"])
+coverage_colname = "coverage"
 
 ################
 # Optional removal of trimmed reads (to save space)
@@ -248,6 +251,9 @@ rule final_qc:
             na_rep="NA",
         )
         os.remove(params.run_metadata)
+        with open(os.path.join(RESULT_DIR, "config.yaml"), "w") as outfile:
+            yaml.dump(config, outfile, default_flow_style=False)
+
 
 
 rule map_reads:
@@ -603,6 +609,7 @@ rule sample_qc:
                 coverage_colname,
                 "mean_depth",
                 "coverage_QC",
+                "technology",
             ]
         )
 
@@ -614,6 +621,7 @@ rule sample_qc:
                 coverage_value,
                 mean_depth,
                 "PASS",
+                "Oxford Nanopore MinION",
             ]
         else:
             out_df.loc[0] = [
@@ -623,6 +631,7 @@ rule sample_qc:
                 coverage_value,
                 mean_depth,
                 "FAIL",
+                "Oxford Nanopore MinION",
             ]
 
         out_df.to_csv(output.report, header=True, index=False)
