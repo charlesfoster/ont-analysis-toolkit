@@ -3,9 +3,9 @@
                                        ,d
                                        88
               ,adPPYba,  ,adPPYYba, MM88MMM
-              a8"     "8a ""     `Y8   88   
-              8b       d8 ,adPPPPP88   88   
-              "8a,   ,a8" 88,    ,88   88,  
+              a8"     "8a ""     `Y8   88
+              8b       d8 ,adPPPPP88   88
+              "8a,   ,a8" 88,    ,88   88,
               `"YbbdP"'  `"8bbdP"Y8   "Y888
 
 ```
@@ -73,9 +73,9 @@ Note that there are many additional options/settings to take advantage of:
                                         ,d
                                         88
                ,adPPYba,   ,adPPYYba, MM88MMM
-              a8"     "8a ""     `Y8    88   
-              8b       d8 ,adPPPPP88    88   
-              "8a,   ,a8" 88,    ,88    88,  
+              a8"     "8a ""     `Y8    88
+              8b       d8 ,adPPPPP88    88
+              "8a,   ,a8" 88,    ,88    88,
                `"YbbdP"'  `"8bbdP"Y8   "Y888
 
         OAT: ONT Analysis Toolkit (version 0.3.1)
@@ -110,7 +110,7 @@ optional arguments:
                                     Variants below this frequency will be incorporated with an IUPAC ambiguity.
                                     Default: 0.8
 
-  -d, --demultiplexed   
+  -d, --demultiplexed
                                     Reads already demultiplexed using guppy_barcoder into '/var/lib/minknow/data/<run_name>'.
                                     By default, assumes reads need to be demultiplexed and reads are demultiplexed into the output directory.
 
@@ -169,7 +169,6 @@ By default, the pipeline assumes you are using the ONT 12-barcode rapid kit ("SQ
 - SQK-RBK110-96 (up to 96 samples rapid barcodes)
 
 **Protocols**
-
 A protocol for the amplicon scheme needs (a) to be installed in the pipeline, and (b) named in the run_data.csv spreadsheet for analyses to work correctly. The pipeline comes with the Midnight protocol for SARS-CoV-2 pre-installed (https://www.protocols.io/view/sars-cov2-genome-sequencing-protocol-1200bp-amplic-bwyppfvn). Adding additional protocols is fairly easy:
 
 1. Make a directory called /path/to/ont-analysis-toolkit/oat/protocols/ARTICV3 (needs to be in all caps)
@@ -188,8 +187,10 @@ Note: I've provided two script to help generate the `genome.json` file:
 - /path/to/ont-analysis-toolkit/oat/scripts/gff2json.py: converts a gff3-format file into the necessary json format for RAMPART. Works from limited testing with either NCBI or Ensembl gff3 files.
 
 **Amino acid consequences**
-
 For the amino acid consequences step to work, a requirement is an annotation file for the chosen reference genome. The annotations must be in gff3 format, and must be in the 'Ensembl flavour' of gff3. There is a script included in the repository that can convert an NCBI gff3 file into an 'Ensembl flavour' gff3 file: `/path/to/ont-analysis-toolkit/oat/scripts/gff2gff.py`.
+
+**Adding another reference organism**
+To add a reference organism/assembly other than the provided references for SARS-CoV-2 and CMV Merlin, a reference genome is needed (fasta format), as well as an annotation file in 'Ensembl flavour' gff3 format (see [section on amino acid consequences](#Amino-acid-consequences)). Both files need to be added to `/path/to/ont-analysis-toolkit/oat/references`, and should be named consistently, e.g. `my_reference.fasta` and `my_reference.gff3`. After adding the files, make sure you're in /path/to/ont-analysis-toolkit/, then activate the conda environment and use the following command: `pip install .` The next time you run the pipeline, you can then specify your new reference like so: `oat -r new_reference input_spreadsheet.csv`.
 
 # Credits
 * When this pipeline is used, citations should be found for the programs used internally.

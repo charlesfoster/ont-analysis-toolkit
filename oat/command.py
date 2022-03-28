@@ -158,7 +158,7 @@ def main(sysargs=sys.argv[1:]):
         "-o",
         "--outdir",
         action="store",
-        help="Output directory. Default: {} + 'run_name' from samples spreadsheet".format(
+        help="Output directory. Default: {} + 'organism_name' + 'run_name' from samples spreadsheet".format(
             os.path.join(os.getcwd(), "analysis_results")
         ),
     )
@@ -311,7 +311,7 @@ def main(sysargs=sys.argv[1:]):
         if args.outdir:
             analysis_outdir = ''.join(args.outdir)
         else:   
-            analysis_outdir = os.path.join(os.getcwd(), "analysis_results",variable_dict["run_name"])
+            analysis_outdir = os.path.join(os.getcwd(), "analysis_results",variable_dict['organism_name'],variable_dict["run_name"])
         variable_dict['outdir'] = analysis_outdir
         if args.module == 'ALL':
             #first run rampart
