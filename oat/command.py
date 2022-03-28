@@ -311,13 +311,7 @@ def main(sysargs=sys.argv[1:]):
         if args.outdir:
             analysis_outdir = ''.join(args.outdir)
         else:   
-            if args.reference == "MN908947.3":
-                organism_name = 'SARS-CoV-2'
-            elif args.reference == "MN908947.3":
-                organism_name = 'CMV'
-            else:
-                organism_name = os.path.basename(args.reference)
-            analysis_outdir = os.path.join(os.getcwd(), "analysis_results",organism_name,variable_dict["run_name"])
+            analysis_outdir = os.path.join(os.getcwd(), "analysis_results",variable_dict['organism_name'],variable_dict["run_name"])
         variable_dict['outdir'] = analysis_outdir
         if args.module == 'ALL':
             #first run rampart

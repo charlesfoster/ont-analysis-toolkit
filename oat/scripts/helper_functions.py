@@ -150,6 +150,13 @@ def check_arguments(variable_dict, args):
     else:
         variable_dict["demultiplexed"] = False
 
+    if args.reference == "MN908947.3":
+        organism_name = 'SARS-CoV-2'
+    elif args.reference == "MN908947.3":
+        organism_name = 'CMV'
+    else:
+        organism_name = os.path.basename(args.reference)
+    variable_dict['organism_name'] = organism_name
     reference = os.path.join(reference_dir, variable_dict["reference"] + ".fasta")
     annotation = os.path.join(reference_dir, variable_dict["reference"] + ".gff3")
     if not os.path.isfile(reference) or not os.path.isfile(annotation):
