@@ -94,7 +94,7 @@ def demultiplex_reads(variable_dict):
                 time.sleep(10)
             my_log.info("Demultiplexing with guppy_barcoder.")
             try:
-                cmd = "{0} --input_path {1} --save_path {2} --detect_mid_strand_barcodes -x auto --barcode_kits {3}".format(
+                cmd = "{0} --input_path {1} --save_path {2} --detect_mid_strand_barcodes -x auto --barcode_kits {3} --trim_barcodes".format(
                     guppy_barcoder, basecalledPath, bcodeDir, barcode_kit_name
                 )
                 my_log.debug(cmd)
@@ -108,7 +108,7 @@ def demultiplex_reads(variable_dict):
                 ).communicate()
             except:
                 # just in case gpu can't be detected
-                cmd = "{0} --input_path {1} --save_path {2} --detect_mid_strand_barcodes --barcode_kits {3}".format(
+                cmd = "{0} --input_path {1} --save_path {2} --detect_mid_strand_barcodes --barcode_kits {3} --trim_barcodes".format(
                     guppy_barcoder, basecalledPath, bcodeDir, barcode_kit_name
                 )
                 my_log.debug(cmd)

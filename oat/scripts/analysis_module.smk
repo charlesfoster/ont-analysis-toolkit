@@ -218,7 +218,8 @@ rule map_reads:
     input:
         fastq=os.path.join(config["reads_dir"], "{sample}.fastq"),
     output:
-        bam=temp(os.path.join(RESULT_DIR, "{sample}/{sample}.mapped.bam")),
+        #bam=temp(os.path.join(RESULT_DIR, "{sample}/{sample}.mapped.bam")),
+        bam=os.path.join(RESULT_DIR, "{sample}/{sample}.mapped.bam"),
     message:
         "mapping reads for {wildcards.sample} to reference"
     threads: 4
@@ -253,7 +254,7 @@ rule trim_amplicon_primers:
         cpus=4,
     shell:
         """
-        samtools ampliconclip --both-ends --soft-clip --filter-len 30 -@ 20 -u -b {params.bed} {input.bam} 2>{log} | \
+        samtools ampliconclip --both-ends --strand --soft-clip --filter-len 30 -@ 20 -u -b {params.bed} {input.bam} 2>{log} | \
         samtools sort -u -@ 20 -n 2>>{log} | \
         samtools fixmate -u -@ 20 - - 2>>{log} | \
         samtools calmd -u -@ 20 - {params.reference} 2>>{log} | \
