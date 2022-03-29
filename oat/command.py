@@ -10,16 +10,19 @@ Last edited on Thur December 02 2021
 # %% Import Modules                                               #
 #==============================================================#
 import os
+import glob
 import shutil
 import sys
 import psutil
 from datetime import date
 import argparse
 from argparse import RawTextHelpFormatter
-from oat.scripts.helper_functions import find_runDirs, check_arguments, initiate_colorlog, printc
+from oat.scripts.helper_functions import find_runDirs, check_arguments, initiate_colorlog, printc, check_prior_pangolin
 import pandas as pd
 from psutil import virtual_memory
 from oat import __version__
+import GPUtil
+
 #=============================================================#
 # %%GLOBAL VARIABLES AND DEPENDENCIES                            #
 #=============================================================#
@@ -69,8 +72,9 @@ def main(sysargs=sys.argv[1:]):
             __version__
         )
     )
-    
+    # initial resource wrangling
     max_mem = round(bytesto(virtual_memory().available, "m"))
+    num_gpu = len(GPUtil.getGPUs())
     
     parser = argparse.ArgumentParser(
         description="A pipeline for sequencing and analysis of viral genomes using an ONT MinION",
@@ -116,7 +120,7 @@ def main(sysargs=sys.argv[1:]):
             Set to 0 to incorporate the majority or most common base.
             Default: {}
             """.format(
-            float(0.80)
+            float(0.75)
         ),
         metavar="<float>",
     )
@@ -154,7 +158,7 @@ def main(sysargs=sys.argv[1:]):
         "-o",
         "--outdir",
         action="store",
-        help="Output directory. Default: {} + 'run_name' from samples spreadsheet".format(
+        help="Output directory. Default: {} + 'organism_name' + 'run_name' from samples spreadsheet".format(
             os.path.join(os.getcwd(), "analysis_results")
         ),
     )
@@ -230,8 +234,8 @@ def main(sysargs=sys.argv[1:]):
     parser.add_argument(
         "--version",
         action="version",
-        version="covid illumina pipeline snakemake edition:  0.1.0",
-        #version=f"covid illumina pipeline snakemake edition:  {__version__}",
+        #version="covid illumina pipeline snakemake edition:  0.1.0",
+        version=f"covid illumina pipeline snakemake edition:  {__version__}",
     )
     parser.add_argument(
         "--minknow_data",
@@ -250,7 +254,7 @@ def main(sysargs=sys.argv[1:]):
         metavar="<int>",
     )
     parser.add_argument("--quiet", action="store_true", help="Stop printing of snakemake commands to screen.")
-    parser.add_argument("--report", action="store_true", help="Generate report (currently non-functional).")
+    parser.add_argument("--report", action="store_true", help="Generate report (currently minimally functional).")
     
     if len(sysargs) < 1:
         parser.print_help()
@@ -261,7 +265,6 @@ def main(sysargs=sys.argv[1:]):
     args = parser.parse_args()
 
     ### end parsing of command args ###
-
     if args.print_dag:      
         args.module = "analysis"
     args.module = args.module.upper()
@@ -275,8 +278,15 @@ def main(sysargs=sys.argv[1:]):
         sys.exit(1)
 
     variable_dict = vars(args)
-    variable_dict["max_mem"] = max_mem
-    initiate_colorlog(variable_dict, main_dir)
+
+    if args.max_memory:
+        max_mem = int(args.max_memory)
+    resources_dict = {'mem_mb':max_mem,
+                     'gpu':num_gpu}
+
+    variable_dict["resources"] = resources_dict
+    
+    initiate_colorlog(variable_dict, os.getcwd())
     check_arguments(variable_dict, args)
     find_runDirs(variable_dict, main_dir, minknow_dir)
     my_log = variable_dict["my_log"]
@@ -290,13 +300,18 @@ def main(sysargs=sys.argv[1:]):
         variable_dict['rampart_outdir'] = rampart_outdir
         rampart_json(variable_dict)
         rampart_run(variable_dict)
-        shutil.move(variable_dict['logfile'], os.path.join(main_dir,TODAY+'_'+variable_dict['run_name']+'_RAMPART.log'))
+        #set up correct log destination
+        if args.outdir:
+            logdir = args.outdir
+        else:
+            logdir = os.getcwd()
+        shutil.move(variable_dict['logfile'], os.path.join(logdir,TODAY+'_'+variable_dict['run_name']+'_RAMPART.log'))
         printc("\n Pipeline complete\n", "HEADER")
     elif args.module == 'ANALYSIS' or args.module == 'ALL':
         if args.outdir:
             analysis_outdir = ''.join(args.outdir)
         else:   
-            analysis_outdir = os.path.join(os.getcwd(), "analysis_results",variable_dict["run_name"])
+            analysis_outdir = os.path.join(os.getcwd(), "analysis_results",variable_dict['organism_name'],variable_dict["run_name"])
         variable_dict['outdir'] = analysis_outdir
         if args.module == 'ALL':
             #first run rampart
@@ -308,9 +323,9 @@ def main(sysargs=sys.argv[1:]):
             variable_dict['rampart_outdir'] = rampart_outdir
             rampart_json(variable_dict)
             rampart_run(variable_dict)
-            final_log_name = os.path.join(main_dir,TODAY+'_'+variable_dict['run_name']+'_ALL.log')
+            final_log_name = os.path.join(variable_dict['outdir'],TODAY+'_'+variable_dict['run_name']+'_ALL.log')
         else:
-            final_log_name = os.path.join(main_dir,TODAY+'_'+variable_dict['run_name']+'_ANALYSIS.log')
+            final_log_name = os.path.join(variable_dict['outdir'],TODAY+'_'+variable_dict['run_name']+'_ANALYSIS.log')
         if args.redo_analysis:
             my_log.info("You have chosen to redo the analyses for {0}".format(variable_dict["run_name"]))
             decision = input("Are you sure you want to redo the analysis? This option will delete all analysis data for {0}. Type 'yes' to continue, or anything else to abort.\n> ".format(variable_dict["run_name"]))
@@ -356,11 +371,45 @@ def main(sysargs=sys.argv[1:]):
             my_log.info("To run the analysis, use the same command but omit '-p' / '--print_dag'")
             printc("\n Pipeline complete\n", "HEADER")
             sys.exit(0)
+        elif args.report:
+            my_log.info("Generating snakemake report")
+            my_log.warning("Reporting is currently minimal/not very useful")
+            import snakemake
+            if not os.path.exists(variable_dict['outdir']):
+                os.makedirs(variable_dict['outdir'])
+            status = snakemake.snakemake(
+                snakefile,
+                report=os.path.join(variable_dict['outdir'], "pipeline_report.html"),
+                use_conda=True,
+                conda_frontend="mamba",
+                dryrun=args.dry_run,
+                printshellcmds=True,
+                forceall=args.force,
+                force_incomplete=True,
+                resources=variable_dict['resources'],
+                config=variable_dict,
+                quiet=True,
+                cores=1,
+                lock=False,
+            )
+            if status:
+                my_log.info("View report: {}".format(os.path.join(variable_dict['outdir'], "pipeline_report.html")))
+                print(
+                    "\033[92m\nReport created!\033[0m\n"
+                    )
+                sys.exit(0)
+            else:
+                my_log.error("Something went wrong with report creation. Investigate.")
+                sys.exit(1)
 
         # time for some snakemake action
         import snakemake
         my_log.info("Running analysis pipeline using snakemake")
-
+        
+        # if a SARS-CoV-2 analysis, delete previous lineage files to trigger re-run
+        if os.path.basename(variable_dict["reference"]) == "MN908947.3.fasta":
+            check_prior_pangolin(variable_dict)
+            
         #check if user only wants to create conda environments     
         if args.create_envs_only:
             status = snakemake.snakemake(
@@ -379,7 +428,7 @@ def main(sysargs=sys.argv[1:]):
             )
             if status:
                 print(
-                    "\033[Environments created!\033[0m\n"
+                    "\033[92m\nEnvironments created!\033[0m\n"
                     )
                 sys.exit(0)
             else:
@@ -396,7 +445,7 @@ def main(sysargs=sys.argv[1:]):
                 printshellcmds=False,
                 forceall=args.force,
                 force_incomplete=True,
-               # resources=max_mem,
+                resources=variable_dict['resources'],
                 config=variable_dict,
                 quiet=True,
                 cores=args.threads,
@@ -416,16 +465,24 @@ def main(sysargs=sys.argv[1:]):
                 printshellcmds=True,
                 forceall=args.force,
                 force_incomplete=True,
+                resources=variable_dict['resources'],
+                list_resources=False,
                 config=variable_dict,
                 quiet=False,
                 cores=args.threads,
                 lock=False,
             )
         shutil.move(variable_dict['logfile'], final_log_name)
+
+        if status:
+            my_log.info("Analysis module complete")
+            my_log.info("Final results summary: {}".format(os.path.join(variable_dict['outdir'],variable_dict['run_name']+'_qc.csv')))
+            printc("\n Pipeline complete\n", "HEADER")
+            sys.exit(0)
+        else:
+            my_log.error("Something went wrong with the analysis. Investigate.")
+            sys.exit(1)
         
-        my_log.info("Analysis module complete")
-        my_log.info("Final results summary: {}".format(os.path.join(variable_dict['outdir'],variable_dict['run_name']+'_qc.csv')))
-        printc("\n Pipeline complete\n", "HEADER")
 ##########
 # %% run analysis                                                     #
 
