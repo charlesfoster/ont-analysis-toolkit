@@ -317,7 +317,7 @@ rule medaka_consensus:
         os.path.join(RESULT_DIR, "{sample}/logs/medaka_consensus.log.txt"),
     params:
         reference=config["reference"],
-        model="r941_min_high_g360",
+        model=config["guppy_model"],
     resources:
         cpus=medaka_con_threads,
         gpu=1,
@@ -342,7 +342,7 @@ rule medaka_variant:
         os.path.join(RESULT_DIR, "{sample}/logs/medaka_variant.log.txt"),
     params:
         reference=config["reference"],
-        model="r941_min_high_g360",
+        model=config["guppy_model"],
     resources:
         cpus=4,
         gpu=1,

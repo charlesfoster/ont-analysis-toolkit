@@ -220,6 +220,12 @@ def main(sysargs=sys.argv[1:]):
         default=float(0.2),
     )
     parser.add_argument(
+        "--guppy_model",
+        action="store",
+        help="Model used within guppy for basecalling - needed for medaka analyses",
+        default="r941_min_high_g360",
+    )
+    parser.add_argument(
         "--min_depth",
         action="store",
         help="Minimum depth for (1) an SNV to be kept; and (2) consensus genome generation. Default: 20",
