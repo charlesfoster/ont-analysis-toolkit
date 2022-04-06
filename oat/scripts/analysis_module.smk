@@ -141,7 +141,7 @@ rule final_qc:
         for fa in fa_files:
             os.system("cat {0} >> {1}".format(fa, multifasta))
         run_metadata = pd.read_csv(params.run_metadata)
-       
+
         # collect QC files
         qc_files = []
         for sample in SAMPLES:
@@ -176,27 +176,28 @@ rule final_qc:
                 else:
                     print(f'Error: investigate duplicated lineage_report file found for {sample}')
                     sys.exit(-1)
-            
+
             # read in the lineage files
             lineages = pd.concat([pd.read_csv(f) for f in lineage_files]).drop(
-                ["conflict", "note", "scorpio_conflict"], axis=1
+                ["ambiguity_score", "scorpio_conflict", "scorpio_notes", "is_designated", "qc_notes"], axis=1
             )
-           
+
             lineages.columns = [
                 "id",
                 "lineage",
-                "pangolin_ambiguity_score",
+                "lineage_conflict",
                 "scorpio_call",
                 "scorpio_support",
                 "lineage_designation_version",
                 "pangolin_version",
-                "pangoLEARN_version",
-                "pango_version",
+                "scorpio_version",
+                "constellation_version",
                 "pangolin_status",
+                "pangolin_note",
             ]
 
             outdata = outdata.join(lineages.set_index(["id"]), on=["id"])
-            
+
             compulsory_col_order = [
                 "analysis_date",
                 "run_name",
@@ -545,6 +546,9 @@ rule pangolin:
         report=os.path.join(RESULT_DIR, "{sample}/{sample}.lineage_report.csv"),
     conda:
         "../envs/pangolin.yaml"
+    resources:
+        cpus=1,
+    threads: 4,
     shell:
         """
         pangolin --outfile {output.report} {input.fasta} &> /dev/null
