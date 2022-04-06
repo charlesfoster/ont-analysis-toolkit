@@ -125,6 +125,22 @@ def main(sysargs=sys.argv[1:]):
         metavar="<float>",
     )
     parser.add_argument(
+        "-i",
+        "--indel_freq",
+        action="store",
+        required=False,
+        default=float(0.40),
+        help="""
+            Variant allele frequency threshold for an indel variant to be incorporated into consensus genome.
+            Variants below this frequency will not be incorporated.
+            Set to 0 to incorporate the majority or most common base.
+            Default: {}
+            """.format(
+            float(0.40)
+        ),
+        metavar="<float>",
+    )
+    parser.add_argument(
         "-d",
         "--demultiplexed",
         action="store_true",

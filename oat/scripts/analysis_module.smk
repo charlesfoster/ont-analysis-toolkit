@@ -440,13 +440,14 @@ rule set_vcf_genotype:
     params:
         snv_freq=config["snv_min_freq"],
         con_freq=config["consensus_freq"],
+        indel_freq=config["indel_freq"],
     message:
         "setting conditional GT for {wildcards.sample}"
     shell:
         """
         cp {input.vcf_file} {output.vcf_file}
         bcftools +setGT {output.vcf_file} -- -t q -i 'GT="1/1" && INFO/AF < {params.con_freq}' -n 'c:0/1' 2>> {log} | \
-        bcftools +setGT -- -t q -i 'TYPE="indel" && INFO/AF < {params.con_freq}' -n . 2>> {log} | \
+        bcftools +setGT -- -t q -i 'TYPE="indel" && INFO/AF < {params.indel_freq}' -n . 2>> {log} | \
         bcftools +setGT -o {output.vcf_file} -- -t q -i 'GT="1/1" && INFO/AF >= {params.con_freq}' -n 'c:1/1' 2>> {log}
         bcftools index -f {output.vcf_file}
         """
