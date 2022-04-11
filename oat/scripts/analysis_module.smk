@@ -302,7 +302,7 @@ rule trim_amplicon_primers:
         samtools fixmate -u -@ 20 - - 2>>{log} | \
         samtools calmd -u -@ 20 - {params.reference} 2>>{log} | \
         samtools sort -u -@ 20 2>>{log} | \
-        samtools view --write-index -u -@ 20 -F 4 -o {output.bam}
+        samtools view --write-index -@ 20 -F 4 -o {output.bam}
         """
 
 
