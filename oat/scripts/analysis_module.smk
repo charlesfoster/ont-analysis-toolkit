@@ -82,7 +82,6 @@ onsuccess:
     for file in glob.glob(RESULT_DIR + "/**", recursive=True):
         if file.endswith(
             (
-                ".all.vcf.gz.csi",
                 "draft.vcf.gz.tbi",
                 ".filtered.vcf.gz.csi",
                 ".mapped.bam.csi",
@@ -362,8 +361,8 @@ rule longshot:
         bam=os.path.join(RESULT_DIR, "{sample}/{sample}.trimmed.bam"),
         vcf=os.path.join(RESULT_DIR, "{sample}/{sample}.draft.vcf.gz"),
     output:
-        vcf=os.path.join(RESULT_DIR, "{sample}/{sample}.all.vcf"),
-        #vcf=temp(os.path.join(RESULT_DIR, "{sample}/{sample}.all.vcf")),
+        #vcf=os.path.join(RESULT_DIR, "{sample}/{sample}.all.vcf"),
+        vcf=temp(os.path.join(RESULT_DIR, "{sample}/{sample}.all.vcf")),
     message:
         "neater longshot variant calls for {wildcards.sample}"
     threads: 4
@@ -385,7 +384,7 @@ rule add_rough_VAF:
     input:
         vcf=os.path.join(RESULT_DIR, "{sample}/{sample}.all.vcf"),
     output:
-        vcf=temp(os.path.join(RESULT_DIR, "{sample}/{sample}.all.vcf.gz")),
+        vcf=os.path.join(RESULT_DIR, "{sample}/{sample}.all.vcf.gz"),
     message:
         "adding rough VAF to longshot variant calls for {wildcards.sample}"
     threads: 4
@@ -485,7 +484,7 @@ rule generate_consensus:
             touch {output.mask}
             touch {output.variants_bed}
         else
-            bedtools genomecov -bga -ibam {input.bam} | awk '$4 < 20' | \
+            bedtools genomecov -bga -ibam {input.bam} | awk '$4 < {params.min_depth}' | \
             bedtools subtract -a - -b {output.variants_bed} > {output.mask}
             bcftools consensus -p {params.prefix} -f {params.reference} --mark-del '-' -m {output.mask} -H I -i 'INFO/DP >= {params.min_depth} & GT!="mis"' {input.vcf_file} 2> {log} | \
             sed "/^>/s/{params.prefix}.*/{params.prefix}/" > {output.consensus}

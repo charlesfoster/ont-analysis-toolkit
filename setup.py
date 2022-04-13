@@ -17,7 +17,7 @@ setup(name='oat',
       version=__version__,
       packages=['oat', 'oat.scripts'],
 #      packages=find_packages(),
-      scripts=['oat/scripts/analysis_module.smk'
+      scripts=['oat/scripts/analysis_module.smk','oat/scripts/alternate_analysis.smk'
                 ],
       package_data={"oat":[*glob_fix("oat", "protocols/**/*"),
                             *glob_fix("oat", "references/**/*"),
