@@ -59,15 +59,15 @@ def bytesto(bytes, to, bsize=1024):
 # %% main
 def main(sysargs=sys.argv[1:]):
     print(
-        """\n\033[95m 
+        """\n\033[95m
                                         ,d
                                         88
                ,adPPYba,   ,adPPYYba, MM88MMM
-              a8"     "8a ""     `Y8    88   
-              8b       d8 ,adPPPPP88    88   
-              "8a,   ,a8" 88,    ,88    88,  
+              a8"     "8a ""     `Y8    88
+              8b       d8 ,adPPPPP88    88
+              "8a,   ,a8" 88,    ,88    88,
                `"YbbdP"'  `"8bbdP"Y8   "Y888
-        
+
         OAT: ONT Analysis Toolkit (version {})\033[0m
     """.format(
             __version__
@@ -76,7 +76,7 @@ def main(sysargs=sys.argv[1:]):
     # initial resource wrangling
     max_mem = round(bytesto(virtual_memory().available, "m"))
     num_gpu = len(GPUtil.getGPUs())
-    
+
     parser = argparse.ArgumentParser(
         description="A pipeline for sequencing and analysis of viral genomes using an ONT MinION",
         usage="""oat [options] <samples_file> """,
@@ -94,16 +94,16 @@ def main(sysargs=sys.argv[1:]):
         default="SQK-RBK004",
         help="""
             Barcode kit that you used: necessary for demultiplexing.
-            
+
             Common options include:
             - rapid 12-barcode kit (SQK-RBK004)
             - rapid 96-barcode kit (SQK-RBK110-96)
             - native 12-barcode kit (EXP-NBD104)
             - native 12-barcode expansion kit 13-24 (EXP-NBD114)
             - native 96-barcode kit (EXP-NBD196)
-            
+
             Please ensure your version of guppy_barcoder supports the kit name. Try: 'guppy_barcoder --print_kits'
-            
+
             Default: {}
             """.format(
             'SQK-RBK004'
@@ -164,10 +164,10 @@ def main(sysargs=sys.argv[1:]):
         "-n", "--dry_run", action="store_true", default=False, help="Dry run only"
     )
     parser.add_argument(
-        "-m", 
-        "--module", 
-        action="store", 
-        default="all", 
+        "-m",
+        "--module",
+        action="store",
+        default="all",
         required=False,
         help="Pipeline module to run: 'rampart', 'analysis' or 'all' (rampart followed by analysis). Default: 'all'", metavar='rampart | analysis | all'
     )
@@ -258,13 +258,13 @@ def main(sysargs=sys.argv[1:]):
         "--alt_cov_max",
         action="store",
         help="Samples with a genome coverage alt_cov_min <= x < alt_cov_max will be chosen for an alternate analysis. ONLY USED WITH ALTERNATE ANALYSIS OPTION. Default: 80",
-        default=int(80),
+        default=float(80),
     )
     parser.add_argument(
         "--alt_cov_min",
         action="store",
         help="Samples with a genome coverage alt_cov_min <= x < alt_cov_max will be chosen for an alternate analysis. ONLY USED WITH ALTERNATE ANALYSIS OPTION. Default: 40",
-        default=int(40),
+        default=float(40),
     )
     parser.add_argument(
         "--delete_reads", action="store_true", help="Delete demultiplexed reads after analysis", default=False
@@ -296,7 +296,7 @@ def main(sysargs=sys.argv[1:]):
     )
     parser.add_argument("--quiet", action="store_true", help="Stop printing of snakemake commands to screen.")
     parser.add_argument("--report", action="store_true", help="Generate report (currently minimally functional).")
-    
+
     if len(sysargs) < 1:
         parser.print_help()
         sys.exit(-1)
@@ -308,7 +308,7 @@ def main(sysargs=sys.argv[1:]):
     ### end parsing of command args ###
     args.module = args.module.upper()
     os.environ['NUMEXPR_MAX_THREADS'] = str(args.threads)
-    
+
     minknow_dir = args.minknow_data
     if not os.path.exists(minknow_dir):
         print(
@@ -324,18 +324,18 @@ def main(sysargs=sys.argv[1:]):
                      'gpu':num_gpu}
 
     variable_dict["resources"] = resources_dict
-    
+
     initiate_colorlog(variable_dict, os.getcwd())
     check_arguments(variable_dict, args)
     find_runDirs(variable_dict, main_dir, minknow_dir)
     my_log = variable_dict["my_log"]
-    
-  
+
+
     if args.module == 'RAMPART':
         from oat.scripts.rampart_module import rampart_json, rampart_run
         if args.rampart_outdir:
             rampart_outdir = ''.join(args.rampart_outdir)
-        else:   
+        else:
             rampart_outdir = os.path.join(os.getcwd(), "rampart_files")
         variable_dict['rampart_outdir'] = rampart_outdir
         rampart_json(variable_dict)
@@ -350,23 +350,23 @@ def main(sysargs=sys.argv[1:]):
     elif args.module == 'ANALYSIS' or args.module == 'ALL' or args.module == 'ALTERNATE':
         if args.outdir:
             analysis_outdir = ''.join(args.outdir)
-        else:   
+        else:
             analysis_outdir = os.path.join(os.getcwd(), "analysis_results",variable_dict['organism_name'],variable_dict["run_name"])
         variable_dict['outdir'] = analysis_outdir
-            
+
         if args.module == 'ALL':
             #first run rampart
             from oat.scripts.rampart_module import rampart_json, rampart_run
             if args.rampart_outdir:
                 rampart_outdir = ''.join(args.rampart_outdir)
-            else:   
+            else:
                 rampart_outdir = os.path.join(os.getcwd(), "rampart_files")
             variable_dict['rampart_outdir'] = rampart_outdir
             rampart_json(variable_dict)
             rampart_run(variable_dict)
             final_log_name = os.path.join(variable_dict['outdir'],TODAY+'_'+variable_dict['run_name']+'_ALL.log')
         elif args.module =="ANALYSIS":
-            final_log_name = os.path.join(variable_dict['outdir'],TODAY+'_'+variable_dict['run_name']+'_ANALYSIS.log')          
+            final_log_name = os.path.join(variable_dict['outdir'],TODAY+'_'+variable_dict['run_name']+'_ANALYSIS.log')
         if args.redo_analysis and not args.alternate_analysis:
             my_log.info("You have chosen to redo the analyses for {0}".format(variable_dict["run_name"]))
             decision = input("Are you sure you want to redo the analysis? This option will delete all analysis data for {0}. Type 'yes' to continue, or anything else to abort.\n> ".format(variable_dict["run_name"]))
@@ -380,23 +380,23 @@ def main(sysargs=sys.argv[1:]):
                 sys.exit("You have chosen not to redo the analysis after all. Quitting.")
         elif args.redo_analysis and args.alternate_analysis:
             sys.exit("You cannot redo the analysis from scratch and run the 'alternate analysis' at the same time. Quitting.")
-        
+
         if not os.path.exists(variable_dict['outdir']):
            os.makedirs(variable_dict['outdir'])
-       
+
         # prepare parameters for analysis
         length_params= pd.read_csv(os.path.join(thisdir,"protocols","length_params.csv")).set_index("name")
         variable_dict['min_len'] = length_params.loc[variable_dict['protocol'], 'min_length']
-        variable_dict['max_len'] = length_params.loc[variable_dict['protocol'], 'max_length']     
+        variable_dict['max_len'] = length_params.loc[variable_dict['protocol'], 'max_length']
         variable_dict["run_data"].to_csv(os.path.join(variable_dict["outdir"],"metadata.csv"), index=False)
-        
+
         # run the alternate analysis
         if args.alternate_analysis:
             final_log_name = os.path.join(variable_dict['outdir'],TODAY+'_'+variable_dict['run_name']+'_ALTERNATE_ANALYSIS.log')
             # time for some snakemake action
             import snakemake
             my_log.info("Running alternate analysis pipeline using snakemake")
-            my_log.info("If you have not previously run the pipeline 'normally', this analysis will fail.")            
+            my_log.info("If you have not previously run the pipeline 'normally', this analysis will fail.")
 
             # find previous qc file and read it
             previous_qc = os.path.join(variable_dict['outdir'],variable_dict['run_name']+'_qc.csv')
@@ -405,24 +405,25 @@ def main(sysargs=sys.argv[1:]):
             else:
                 df = pd.read_csv(previous_qc)
 
-            # select samples with low coverage            
+            # select samples with low coverage
             if 'coverage' in df.columns:
-                low_cov_samples = list(df[df['coverage'].between(args.alt_cov_min, args.alt_cov_max)]['id'])
+                low_cov_samples = list(df[df['coverage'].between(float(args.alt_cov_min), float(args.alt_cov_max))]['id'])
             else:
                 # deal with legacy colname
                 cov_col = ''.join(list(df.filter(regex='ref_cov_*').columns))
-                low_cov_samples = list(df[df[cov_col].between(args.alt_cov_min, args.alt_cov_max)]['id'])
-            
+                df['coverage'] = [float(x) for x in list(df[cov_col])]
+                low_cov_samples = list(df[df['coverage'].between(float(args.alt_cov_min), float(args.alt_cov_max))]['id'])
+
             # die if no low cov samples
             if len(low_cov_samples) == 0:
                 sys.exit("No samples needing alternate analysis were identified based on your input parameters. Quitting.")
-                
-            variable_dict['alternate_isolates'] = low_cov_samples            
-                
+
+            variable_dict['alternate_isolates'] = low_cov_samples
+
             # if a SARS-CoV-2 analysis, delete previous lineage files to trigger re-run
             if os.path.basename(variable_dict["reference"]) == "MN908947.3.fasta":
                 check_prior_pangolin(variable_dict)
-            
+
             # runa alternate analysis
             print("\n**** CONFIG ****")
             for k in variable_dict:
@@ -444,7 +445,7 @@ def main(sysargs=sys.argv[1:]):
                 cores=args.threads,
                 lock=False,
             )
-            
+
             shutil.move(variable_dict['logfile'], final_log_name)
             if status:
                 my_log.info("Alternate analysis complete")
@@ -454,16 +455,16 @@ def main(sysargs=sys.argv[1:]):
             else:
                 my_log.error("Something went wrong with the alternate analysis. Investigate.")
                 sys.exit(1)
-            
-        
+
+
         if not args.demultiplexed:
             from oat.scripts.demux_and_filter import demultiplex_reads, filter_reads
             demultiplex_reads(variable_dict)
             filter_reads(variable_dict)
         else:
             from oat.scripts.demux_and_filter import relocate_and_filter_reads
-            relocate_and_filter_reads(variable_dict)        
-        
+            relocate_and_filter_reads(variable_dict)
+
         if args.print_dag:
             flat_config = []
             variable_dict["run_data"] = ''.join(args.samples_file)
@@ -474,7 +475,7 @@ def main(sysargs=sys.argv[1:]):
                 flat_config.append(key + "=" + str(variable_dict[key]))
             flat_config = " ".join(flat_config)
             cmd = 'snakemake -j1 -s {0} --quiet --config {1} --dag | grep -v "No negative control samples detected" | dot -Tpdf > {2}'.format(
-                snakefile, 
+                snakefile,
                 flat_config,
                 os.path.join(variable_dict["outdir"], "workflow_DAG.pdf")
             )
@@ -517,12 +518,12 @@ def main(sysargs=sys.argv[1:]):
         # time for some snakemake action
         import snakemake
         my_log.info("Running analysis pipeline using snakemake")
-        
+
         # if a SARS-CoV-2 analysis, delete previous lineage files to trigger re-run
         if os.path.basename(variable_dict["reference"]) == "MN908947.3.fasta":
             check_prior_pangolin(variable_dict)
-            
-        #check if user only wants to create conda environments     
+
+        #check if user only wants to create conda environments
         if args.create_envs_only:
             status = snakemake.snakemake(
                 snakefile,
@@ -546,7 +547,7 @@ def main(sysargs=sys.argv[1:]):
             else:
                 my_log.error("Something went wrong with conda environment creation. Investigate.")
                 sys.exit(1)
-        
+
         # if user does not want that option
         elif variable_dict["quiet"]:
             status = snakemake.snakemake(
@@ -594,10 +595,9 @@ def main(sysargs=sys.argv[1:]):
         else:
             my_log.error("Something went wrong with the analysis. Investigate.")
             sys.exit(1)
-        
+
 ##########
 # %% run analysis                                                     #
 
 if __name__ == '__main__':
     main()
-    

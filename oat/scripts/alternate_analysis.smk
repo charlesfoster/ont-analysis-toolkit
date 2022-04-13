@@ -155,6 +155,7 @@ rule final_qc:
         combined_qc = pd.concat([pd.read_csv(f) for f in qc_files]).set_index(["id"])
         outdata = run_metadata.join(combined_qc, on=["id"])
         outdata = outdata.set_index("id", drop=False)
+        outdata.dropna(subset=['num_reads'])
         outdata.index.name = None
 
         # add analysis date
@@ -242,6 +243,7 @@ rule final_qc:
         input_cols = outdata.columns.to_list()
         extra_input_cols = list(set(input_cols) - set(compulsory_col_order))
         final_col_order = compulsory_col_order + extra_input_cols
+        outdata = outdata[outdata.num_reads.notnull()]
         outdata = outdata[final_col_order]
         outdata.to_csv(
             os.path.join(RESULT_DIR, config["run_name"] + "_qc.alternate.csv"),
@@ -269,7 +271,7 @@ rule check_input:
         """
         if [ -f "{params.vcf_file}" ]; then
             touch {output.checkfile}
-        else 
+        else
             bgzip -f {params.uncompressed_vcf}
             bcftools index {params.vcf_file}
             touch {output.checkfile}
