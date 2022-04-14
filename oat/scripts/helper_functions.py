@@ -83,6 +83,10 @@ def check_arguments(variable_dict, args):
             "No GPU detected. A GPU is necessary for variant calling with medaka."
         )
         sys.exit()
+    gmodel_check = os.getenv('GUPPY_MODEL')
+    if gmodel_check is not None:
+        my_log.info('Replacing default guppy model ({0}) with the $GUPPY_MODEL environmental variable ({1})'.format(args.guppy_model,gmodel_check))
+        variable_dict['guppy_model'] = gmodel_check
     if shutil.which("rampart") is None:
         my_log.error(
             "Some necessary programs cannot be detected. Have you activated the conda environment?"

@@ -10,7 +10,7 @@ Last edited on Thur December 02 2021
 # %% Import Modules                                               #
 #==============================================================#
 import os
-import glob
+import re
 import shutil
 import sys
 import psutil
@@ -22,6 +22,7 @@ import pandas as pd
 from psutil import virtual_memory
 from oat import __version__
 import GPUtil
+import textwrap as _textwrap
 
 #=============================================================#
 # %%GLOBAL VARIABLES AND DEPENDENCIES                            #
@@ -34,6 +35,28 @@ thisdir = os.path.abspath(os.path.dirname(__file__))
 main_dir = os.path.split(thisdir)[0]
 snakefile = os.path.join(thisdir, "scripts", "analysis_module.smk")
 alternate_snakefile = os.path.join(thisdir, "scripts", "alternate_analysis.smk")
+
+
+# Define the wrapping of help text: https://stackoverflow.com/questions/35917547/python-argparse-rawtexthelpformatter-with-line-wrap
+os.environ['COLUMNS'] = "120"
+class PreserveWhiteSpaceWrapRawTextHelpFormatter(argparse.RawDescriptionHelpFormatter):
+    def __add_whitespace(self, idx, iWSpace, text):
+        if idx is 0:
+            return text
+        return (" " * iWSpace) + text
+
+    def _split_lines(self, text, width):
+        textRows = text.splitlines()
+        for idx,line in enumerate(textRows):
+            search = re.search('\s*[0-9\-]{0,}\.?\s*', line)
+            if line.strip() is "":
+                textRows[idx] = " "
+            elif search:
+                lWSpace = search.end()
+                lines = [self.__add_whitespace(i,lWSpace,x) for i,x in enumerate(_textwrap.wrap(line, width))]
+                textRows[idx] = lines
+
+        return [item for sublist in textRows for item in sublist]
 
 # ============================================================#
 # Define functions                                            #
@@ -80,7 +103,7 @@ def main(sysargs=sys.argv[1:]):
     parser = argparse.ArgumentParser(
         description="A pipeline for sequencing and analysis of viral genomes using an ONT MinION",
         usage="""oat [options] <samples_file> """,
-        formatter_class=RawTextHelpFormatter,
+        formatter_class=PreserveWhiteSpaceWrapRawTextHelpFormatter,
     )
 
     parser.add_argument(
@@ -239,7 +262,7 @@ def main(sysargs=sys.argv[1:]):
     parser.add_argument(
         "--guppy_model",
         action="store",
-        help="Model used within guppy for basecalling - needed for medaka analyses",
+        help="Model used within guppy for basecalling - needed for medaka analyses. 'GUPPY_MODEL' environmental model is used, if set, otherwise default: r941_min_high_g360",
         default="r941_min_high_g360",
     )
     parser.add_argument(
