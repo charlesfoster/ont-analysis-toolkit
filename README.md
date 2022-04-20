@@ -69,7 +69,6 @@ Note that there are many additional options/settings to take advantage of:
 
 ```
 
-
                                         ,d
                                         88
                ,adPPYba,   ,adPPYYba, MM88MMM
@@ -78,14 +77,15 @@ Note that there are many additional options/settings to take advantage of:
               "8a,   ,a8" 88,    ,88    88,
                `"YbbdP"'  `"8bbdP"Y8   "Y888
 
-        OAT: ONT Analysis Toolkit (version 0.3.1)
+        OAT: ONT Analysis Toolkit (version 0.8.1)
 
 usage: oat [options] <samples_file>
 
 A pipeline for sequencing and analysis of viral genomes using an ONT MinION
 
 positional arguments:
-  samples_file          Path to file with sample metadata (.csv format). See example spreadsheet for minimum necessary information.
+  samples_file          Path to file with sample metadata (.csv format). See example spreadsheet for minimum necessary
+                        information.
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -100,26 +100,41 @@ optional arguments:
                                     - native 12-barcode expansion kit 13-24 (EXP-NBD114)
                                     - native 96-barcode kit (EXP-NBD196)
 
-                                    Please ensure your version of guppy_barcoder supports the kit name. Try: 'guppy_barcoder --print_kits'
+                                    Please ensure your version of guppy_barcoder supports the kit name. Try:
+                                    'guppy_barcoder --print_kits'
 
                                     Default: SQK-RBK004
 
   -c <float>, --consensus_freq <float>
 
-                                    Variant allele frequency threshold for a variant to be incorporated into consensus genome.
+                                    Variant allele frequency threshold for a variant to be incorporated into consensus
+                                    genome.
                                     Variants below this frequency will be incorporated with an IUPAC ambiguity.
-                                    Default: 0.8
+                                    Set to 0 to incorporate the majority or most common base.
+                                    Default: 0.75
+
+  -i <float>, --indel_freq <float>
+
+                                    Variant allele frequency threshold for an indel variant to be incorporated into
+                                    consensus genome.
+                                    Variants below this frequency will not be incorporated.
+                                    Set to 0 to incorporate the majority or most common base.
+                                    Default: 0.4
 
   -d, --demultiplexed
-                                    Reads already demultiplexed using guppy_barcoder into '/var/lib/minknow/data/<run_name>'.
-                                    By default, assumes reads need to be demultiplexed and reads are demultiplexed into the output directory.
+                                    Reads already demultiplexed using guppy_barcoder into
+                                    '/var/lib/minknow/data/<run_name>'.
+                                    By default, assumes reads need to be demultiplexed and reads are demultiplexed
+                                    into the output directory.
 
   -f, --force           Force overwriting of completed files in snakemake analysis (Default: files not overwritten)
   -n, --dry_run         Dry run only
   -m rampart | analysis | all, --module rampart | analysis | all
-                        Pipeline module to run: 'rampart', 'analysis' or 'all' (rampart followed by analysis). Default: 'all'
+                        Pipeline module to run: 'rampart', 'analysis' or 'all' (rampart followed by analysis).
+                        Default: 'all'
   -o OUTDIR, --outdir OUTDIR
-                        Output directory. Default: /home/cfos/Programs/ont-analysis-toolkit/analysis_results + 'run_name' from samples spreadsheet
+                        Output directory. Default: /home/cfos/Programs/ont-analysis-toolkit/analysis_results +
+                        'organism_name' + 'run_name' from samples spreadsheet
   --rampart_outdir RAMPART_OUTDIR
                         Output directory. Default: /home/cfos/Programs/ont-analysis-toolkit/rampart_files
   -p, --print_dag       Save directed acyclic graph (DAG) of workflow to outdir
@@ -128,23 +143,39 @@ optional arguments:
                                     Reference genome to use. Supported references:
                                         - 'MN908947.3' (SARS-CoV-2)
                                         - 'NC_006273.2' (CMV Merlin) (planned support, but not yet implemented)
-                                    Other references can be used, but the corresponding assembly (fasta) and annotation (gff3 from Ensembl) must be added. See README.
+                                    Other references can be used, but the corresponding assembly (fasta) and
+                                    annotation (gff3 from Ensembl) must be added. See README.
                                     Default: MN908947.3
 
   -t <int>, --threads <int>
                         Number of threads to use
   -v VARIANT_CALLER, --variant_caller VARIANT_CALLER
                         Variant caller to use. Choices: 'medaka-longshot'. Default: 'medaka-longshot'
-  --create_envs_only    Create conda environments for snakemake analysis, but do no further analysis. Useful for initial pipeline setup. Default: False
-  --snv_min SNV_MIN     Minimum variant allele frequency for an SNV to be kept Default: 0.2
+  --create_envs_only    Create conda environments for snakemake analysis, but do no further analysis. Useful for
+                        initial pipeline setup. Default: False
+  --snv_min_freq SNV_MIN_FREQ
+                        Minimum variant allele frequency for an SNV to be kept. Default: 0.2
+  --guppy_model GUPPY_MODEL
+                        Model used within guppy for basecalling - needed for medaka analyses. 'GUPPY_MODEL'
+                        environmental model is used, if set, otherwise default: r941_min_high_g360
+  --min_depth MIN_DEPTH
+                        Minimum depth for (1) an SNV to be kept; and (2) consensus genome generation. Default: 20
+  --alternate_analysis  Run an alternate analysis to generate consensus genomes based on different input parameters.
+                        Use after initial run.
+  --alt_cov_max ALT_COV_MAX
+                        Samples with a genome coverage alt_cov_min <= x < alt_cov_max will be chosen for an alternate
+                        analysis. ONLY USED WITH ALTERNATE ANALYSIS OPTION. Default: 80
+  --alt_cov_min ALT_COV_MIN
+                        Samples with a genome coverage alt_cov_min <= x < alt_cov_max will be chosen for an alternate
+                        analysis. ONLY USED WITH ALTERNATE ANALYSIS OPTION. Default: 40
   --delete_reads        Delete demultiplexed reads after analysis
   --redo_analysis       Delete entire analysis output directory and contents for a fresh run
   --version             show program's version number and exit
   --minknow_data MINKNOW_DATA
                         Location of MinKNOW data root. Default: /var/lib/minknow/data
-  --max_memory <int>    Maximum memory (in MB) that you would like to provide to snakemake. Default: 53852MB
+  --max_memory <int>    Maximum memory (in MB) that you would like to provide to snakemake. Default: 57282MB
   --quiet               Stop printing of snakemake commands to screen.
-  --report              Generate report (currently non-functional).
+  --report              Generate report (currently minimally functional).
 ```
 
 # What does the pipeline do?
@@ -178,7 +209,10 @@ A protocol for the amplicon scheme needs (a) to be installed in the pipeline, an
 3. Make a directory within ARTICV3 called 'schemes'
 
     (a) Put the 'scheme.bed' file with primer coordinates in the 'schemes' directory
-4. Make sure you're in /path/to/ont-analysis-toolkit/, then activate the conda environment and use the following command: `pip install .`
+
+5. Edit the minimum and maximum length parameters in /path/to/ont-analysis-toolkit/oat/protocols/length_params.csv
+
+6. Make sure you're in /path/to/ont-analysis-toolkit/, then activate the conda environment and use the following command: `pip install .`
 
 Done!
 

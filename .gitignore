@@ -9,6 +9,7 @@
 !oat/references/*
 !oat/protocols/*
 !oat/protocols/**
+!oat/protocols/**/**
 !oat/scripts/*
 !setup.py
 !environment.yml
