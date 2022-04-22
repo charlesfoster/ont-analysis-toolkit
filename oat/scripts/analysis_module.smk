@@ -296,11 +296,11 @@ rule trim_amplicon_primers:
         cpus=4,
     shell:
         """
-        samtools ampliconclip --both-ends --strand --soft-clip --filter-len 30 -@ 20 -u -b {params.bed} {input.bam} 2>{log} | \
-        samtools sort -u -@ 20 -n 2>>{log} | \
-        samtools fixmate -u -@ 20 - - 2>>{log} | \
-        samtools calmd -u -@ 20 - {params.reference} 2>>{log} | \
-        samtools sort -u -@ 20 2>>{log} | \
+        samtools ampliconclip --both-ends --strand --soft-clip --filter-len 30 -@ 4 -u -b {params.bed} {input.bam} 2>{log} | \
+        samtools sort -u -@ 4 -n 2>>{log} | \
+        samtools fixmate -u -@ 4 - - 2>>{log} | \
+        samtools calmd -u -@ 4 - {params.reference} 2>>{log} | \
+        samtools sort -u -@ 4 2>>{log} | \
         samtools view --write-index -@ 20 -F 4 -o {output.bam}
         """
 
