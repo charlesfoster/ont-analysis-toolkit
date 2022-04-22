@@ -332,9 +332,10 @@ rule medaka_consensus:
 rule medaka_variant:
     input:
         hdf=os.path.join(RESULT_DIR, "{sample}/{sample}.hdf"),
+        bam=os.path.join(RESULT_DIR, "{sample}/{sample}.trimmed.bam"),
     output:
         medaka_vcf=temp(os.path.join(RESULT_DIR, "{sample}/{sample}.medaka.vcf")),
-        vcf=temp(os.path.join(RESULT_DIR, "{sample}/{sample}.draft.vcf.gz")),
+        vcf=temp(os.path.join(RESULT_DIR, "{sample}/{sample}.all.vcf")),
     message:
         "initial medaka variant calls for {wildcards.sample}"
     threads: 4
@@ -351,32 +352,7 @@ rule medaka_variant:
     shell:
         """
         export TF_FORCE_GPU_ALLOW_GROWTH=true; medaka variant {params.reference} {input.hdf} {output.medaka_vcf} 2>{log}
-        bgzip -c {output.medaka_vcf} > {output.vcf} 2>>{log}
-        tabix -p vcf {output.vcf} 2>>{log}
-        """
-
-
-rule longshot:
-    input:
-        bam=os.path.join(RESULT_DIR, "{sample}/{sample}.trimmed.bam"),
-        vcf=os.path.join(RESULT_DIR, "{sample}/{sample}.draft.vcf.gz"),
-    output:
-        #vcf=os.path.join(RESULT_DIR, "{sample}/{sample}.all.vcf"),
-        vcf=temp(os.path.join(RESULT_DIR, "{sample}/{sample}.all.vcf")),
-    message:
-        "neater longshot variant calls for {wildcards.sample}"
-    threads: 4
-    log:
-        os.path.join(RESULT_DIR, "{sample}/logs/longshot.log.txt"),
-    params:
-        reference=config["reference"],
-        model="r941_min_high_g360",
-    resources:
-        cpus=4,
-    shell:
-        """
-        # longshot -P 0 -F -A --no_haps --bam {input.bam} --ref {params.reference} --out {output.vcf} --potential_variants {input.vcf}    2>{log}
-         longshot -P 0 -F --no_haps --bam {input.bam} --ref {params.reference} --out {output.vcf} --potential_variants {input.vcf}    2>{log}
+        medaka tools annotate --pad 25 --chunk_size 29903 --dpsp {output.medaka_vcf} {params.reference} {input.bam} {output.vcf} 2>>{log}
         """
 
 
@@ -394,15 +370,22 @@ rule add_rough_VAF:
         cpus=4,
     shell:
         """
-        sed -e '4i##INFO=<ID=AF,Number=1,Type=Float,Description="Allele Frequency">' -e "s/SAMPLE/{wildcards.sample}/g" {input.vcf} | grep -v "DP\=0;" | \
+        sed -e '8i##INFO=<ID=AF,Number=1,Type=Float,Description="Allele Frequency">' \
+            -e '9i##INFO=<ID=SAC,Number=1,Type=Integer,Description="Summed alt count">' \
+            -e "s/SAMPLE/{wildcards.sample}/g" {input.vcf} | \
+        grep -v "DP\=0;" | \
         awk -v OFS="\t" -F"\t" '
         /^[^#]/{{ AC=$8; DP=$8;
-        sub("DP=[0-9]*;", "", AC);
-        sub("AC=[0-9]*,", "", AC);
-        gsub(";.*", "", AC);
-        sub(";.*", "", DP);
+				sub("AR=.*SR=", "SR=", AC);
+        sub("SR=[0-9]*,[0-9]*,", "", AC);
+				AC1=AC; AC2=AC;
+				sub(",[0-9]*","",AC1);
+				sub("[0-9]*,","",AC2);
+				AC=AC1+AC2;
+				sub("AR=.*DP=", "DP=", DP);
+				sub(";.*", "", DP);
         sub("DP=", "", DP);
-        $8 = $8"AF="AC/DP; }}1' | \
+        $8 = $8";SAC="AC";AF="AC/DP; }}1' | \
         bgzip -c > {output.vcf}
         """
 
