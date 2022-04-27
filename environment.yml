@@ -15,6 +15,7 @@ dependencies:
   - pip
   - imagemagick=7.1.0_27
   - nanoq=0.8.6
+  - singularity=3.7.1
   - pip:
     - colorlog==6.6.0
     - biopython>=1.78

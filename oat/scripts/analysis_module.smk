@@ -95,6 +95,7 @@ onsuccess:
 ################
 
 potential_pangolin = []
+potential_nextclade = []
 if SARS_ANALYSIS:
     potential_pangolin.append(
         expand(
@@ -102,10 +103,22 @@ if SARS_ANALYSIS:
             sample=SAMPLES,
         )
     )
+    potential_nextclade.append(
+        expand(
+            os.path.join(RESULT_DIR, "{sample}/{sample}.nextclade_report.tsv"),
+            sample=SAMPLES,
+        )
+    )
 else:
     potential_pangolin.append(
         expand(
             os.path.join(RESULT_DIR, "{sample}/{sample}.qc_results.csv"),
+            sample=SAMPLES,
+        )
+    )
+    potential_nextclade.append(
+        expand(
+            os.path.join(RESULT_DIR, "{sample}/{sample}.trimmed.bam"),
             sample=SAMPLES,
         )
     )
@@ -117,6 +130,7 @@ rule final_qc:
             sample=SAMPLES,
         ),
         pangolin_results=potential_pangolin,
+        nextclade_results=potential_nextclade,
         bcsq_tsv=expand(
             os.path.join(RESULT_DIR, "{sample}/{sample}.annotated.tsv"), sample=SAMPLES
         ),
@@ -165,19 +179,8 @@ rule final_qc:
         # define order of columns in final_qc file
         if params.sars_analysis:
 
-            # collect lineage files
-            lineage_files = []
-            for sample in SAMPLES:
-                sample_dir = os.path.join(RESULT_DIR, sample)
-                lineage_file = glob.glob(sample_dir + "/*lineage_report.csv")
-                if len(lineage_file) == 1:
-                    lineage_files.append(lineage_file[0])
-                else:
-                    print(f'Error: investigate duplicated lineage_report file found for {sample}')
-                    sys.exit(-1)
-
             # read in the lineage files
-            lineages = pd.concat([pd.read_csv(f) for f in lineage_files]).drop(
+            lineages = pd.concat([pd.read_csv(f) for f in input.pangolin_results]).drop(
                 ["ambiguity_score", "scorpio_conflict", "scorpio_notes", "is_designated", "qc_notes"], axis=1
             )
 
@@ -197,6 +200,14 @@ rule final_qc:
 
             outdata = outdata.join(lineages.set_index(["id"]), on=["id"])
 
+            # read in the nextclade files
+            nextclades = pd.concat([pd.read_csv(f, sep="\t") for f in input.nextclade_results])
+            nextclades.rename(columns={'seqName':'id','qc.privateMutations.total':'totalPrivateMutations','qc.overallStatus':'Nextclade_QC'}, inplace=True)
+            keep = ['id','clade','Nextclade_pango','Nextclade_QC','totalFrameShifts','totalAminoacidInsertions','totalAminoacidDeletions','totalAminoacidSubstitutions','totalNonACGTNs','totalPrivateMutations']
+            nextclades = nextclades.loc[:,keep]
+            
+            outdata = outdata.join(nextclades.set_index(["id"]), on=["id"])
+            
             compulsory_col_order = [
                 "analysis_date",
                 "run_name",
@@ -204,6 +215,8 @@ rule final_qc:
                 "barcode",
                 "lineage",
                 "scorpio_call",
+                "Nextclade_pango",
+                "clade",
                 coverage_colname,
                 "mean_depth",
                 "num_reads",
@@ -535,6 +548,48 @@ rule pangolin:
     shell:
         """
         pangolin --outfile {output.report} {input.fasta} &> /dev/null
+        """
+
+
+rule update_nextclade:
+    output:
+        update_info = os.path.join(RESULT_DIR, "nextclade_update_info.txt"),
+    params:
+        nextclade_dataset = config['nextclade_dataset']
+    container:
+        "docker://nextstrain/nextclade:latest"
+    shell:
+        """
+        echo "nextclade version:" > {output.update_info} 
+        nextclade --version >> {output.update_info} &>/dev/null
+        echo "Updating SARS-CoV-2 dataset..." >> {output.update_info} 
+        nextclade dataset get --name sars-cov-2 -o {params.nextclade_dataset} &>>{output.update_info} 
+        """
+
+rule nextclade:
+    input:
+        update_info = os.path.join(RESULT_DIR, "nextclade_update_info.txt"),
+        fasta=os.path.join(RESULT_DIR, "{sample}/{sample}.consensus.fasta"),
+    output:
+        report=os.path.join(RESULT_DIR, "{sample}/{sample}.nextclade_report.tsv"),
+    params:
+        nextclade_dataset = config['nextclade_dataset'],
+        outdir = os.path.join(RESULT_DIR, "{sample}/nextclade"),
+    container:
+        "docker://nextstrain/nextclade:latest"
+    resources:
+        cpus=1,
+    log:
+        os.path.join(RESULT_DIR, "{sample}/logs/{sample}.nextclade.log"),
+    threads: 4,
+    shell:
+        """
+        nextclade run --in-order \
+        --input-fasta={input.fasta} \
+        --input-dataset={params.nextclade_dataset} \
+        --output-dir={params.outdir} \
+        --output-tsv={output.report} \
+        --jobs 4 &> {log}
         """
 
 

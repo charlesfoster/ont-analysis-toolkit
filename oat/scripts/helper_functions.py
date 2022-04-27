@@ -78,20 +78,28 @@ def check_arguments(variable_dict, args):
     Check to make sure command line arguments are valid
     """
     global run_data, run_name, neg_controls, barcodes_used, barcode_kit_name
+    
+    # check for GPU
     if variable_dict['resources']['gpu'] == 0:
         my_log.error(
             "No GPU detected. A GPU is necessary for variant calling with medaka."
         )
         sys.exit()
+    
+    #check guppy model for medaka
     gmodel_check = os.getenv('GUPPY_MODEL')
     if gmodel_check is not None:
         my_log.info('Replacing default guppy model ({0}) with the $GUPPY_MODEL environmental variable ({1})'.format(args.guppy_model,gmodel_check))
         variable_dict['guppy_model'] = gmodel_check
+    
+    #check if conda activated - probably redundant
     if shutil.which("rampart") is None:
         my_log.error(
             "Some necessary programs cannot be detected. Have you activated the conda environment?"
         )
         sys.exit()
+    
+    #check that samples file exists, then get protocol paths etc
     if not os.path.isfile("".join(args.samples_file)):
         my_log.error(
             "Input file does not exist. Please check the filename and try again."
@@ -140,20 +148,28 @@ def check_arguments(variable_dict, args):
             x.replace("BC", "barcode") for x in run_data["barcode"].to_list()
         ]
         variable_dict["barcodes_used"] = barcodes_used
+    
+    #check module choice
     if not "".join(args.module) in ["RAMPART", "ANALYSIS", "ALL"]:
         my_log.error(
             "Module does not exist. Allowed values are 'rampart', 'analysis', or 'all'. Please check the spelling and try again."
         )
         sys.exit()
+    
+    #check barcode kit choice, warn if not in known truths
     if args.barcode_kit not in ['SQK-RBK004','SQK-RBK110-96','EXP-NBD104','EXP-NBD114','EXP-NBD196']:
         my_log.warning(
                 "Barcode kit is not in the list of commonly used kits. Assuming kit exists and supported by guppy_barcoder."
         )
+    
+    #check for demultiplexed flag
     if args.demultiplexed:
         variable_dict["demultiplexed"] = True
     else:
         variable_dict["demultiplexed"] = False
 
+    
+    #define organism based on reference choice, check for existence of reference
     if args.reference == "MN908947.3":
         organism_name = 'SARS-CoV-2'
     elif args.reference == "MN908947.3":
@@ -170,6 +186,27 @@ def check_arguments(variable_dict, args):
         sys.exit()
     variable_dict["reference"] = reference
     variable_dict["annotation"] = annotation
+    
+    #set up nextclade if analysing SARS-CoV-2
+    if variable_dict['organism_name'] == 'SARS-CoV-2':
+        nextclade_dir = os.path.join(
+            pathlib.Path(__file__).parent.parent.resolve(), "nextclade_datasets","sars-cov-2"
+        )
+
+        variable_dict['nextclade_dataset'] = nextclade_dir
+    
+    #set up analysis outdir
+    if args.outdir:
+        analysis_outdir = ''.join(args.outdir)
+    else:
+        analysis_outdir = os.path.join(os.getcwd(), "analysis_results",variable_dict['organism_name'],variable_dict["run_name"])
+    variable_dict['outdir'] = analysis_outdir
+
+    #set up singularity binding
+    conda_location = os.environ["CONDA_PREFIX"]
+    singularity_args = f"--bind {analysis_outdir}:{analysis_outdir},{conda_location}:{conda_location}"
+    variable_dict['singularity_args'] = singularity_args
+    
     my_log.info("Run metadata: " + "".join(args.samples_file))
     if args.alternate_analysis:
         del args.module

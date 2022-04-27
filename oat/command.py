@@ -371,12 +371,6 @@ def main(sysargs=sys.argv[1:]):
         shutil.move(variable_dict['logfile'], os.path.join(logdir,TODAY+'_'+variable_dict['run_name']+'_RAMPART.log'))
         printc("\n Pipeline complete\n", "HEADER")
     elif args.module == 'ANALYSIS' or args.module == 'ALL' or args.module == 'ALTERNATE':
-        if args.outdir:
-            analysis_outdir = ''.join(args.outdir)
-        else:
-            analysis_outdir = os.path.join(os.getcwd(), "analysis_results",variable_dict['organism_name'],variable_dict["run_name"])
-        variable_dict['outdir'] = analysis_outdir
-
         if args.module == 'ALL':
             #first run rampart
             from oat.scripts.rampart_module import rampart_json, rampart_run
@@ -456,6 +450,8 @@ def main(sysargs=sys.argv[1:]):
             status = snakemake.snakemake(
                 alternate_snakefile,
                 use_conda=True,
+                use_singularity=True,
+                singularity_args=variable_dict['singularity_args'],
                 conda_frontend="mamba",
                 dryrun=args.dry_run,
                 printshellcmds=True,
@@ -517,6 +513,8 @@ def main(sysargs=sys.argv[1:]):
                 snakefile,
                 report=os.path.join(variable_dict['outdir'], "pipeline_report.html"),
                 use_conda=True,
+                use_singularity=True,
+                singularity_args=variable_dict['singularity_args'],
                 conda_frontend="mamba",
                 dryrun=args.dry_run,
                 printshellcmds=True,
@@ -551,6 +549,8 @@ def main(sysargs=sys.argv[1:]):
             status = snakemake.snakemake(
                 snakefile,
                 use_conda=True,
+                use_singularity=True,
+                singularity_args=variable_dict['singularity_args'],
                 conda_frontend="mamba",
                 conda_create_envs_only=True,
                 dryrun=False,
@@ -576,6 +576,8 @@ def main(sysargs=sys.argv[1:]):
             status = snakemake.snakemake(
                 snakefile,
                 use_conda=True,
+                use_singularity=True,
+                singularity_args=variable_dict['singularity_args'],
                 conda_frontend="mamba",
                 dryrun=args.dry_run,
                 printshellcmds=False,
@@ -593,9 +595,12 @@ def main(sysargs=sys.argv[1:]):
                 if k not in ["my_log", "run_data", "password"]:
                     print(k + ": ", variable_dict[k])
             print("")
+            
             status = snakemake.snakemake(
                 snakefile,
                 use_conda=True,
+                use_singularity=True,
+                singularity_args=variable_dict['singularity_args'],
                 conda_frontend="mamba",
                 dryrun=args.dry_run,
                 printshellcmds=True,
