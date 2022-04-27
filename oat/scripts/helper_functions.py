@@ -255,29 +255,35 @@ def find_runDirs(variable_dict, script_dir, minknow_dir):
         sys.exit(1)
     return ()
 
-# %% check for prior pangolin output files
-def check_prior_pangolin(variable_dict):
+# %% check for prior lineage output files
+def check_prior_lineages(variable_dict):
     global my_log, sample_dict, outdir, bcodeDir, protocol
     
     alternate_analysis = variable_dict['alternate_analysis']
     if not alternate_analysis:
-        report_string = "/**/*.lineage_report.csv"
+        report_string_pango = "/**/*.lineage_report.csv"
+        report_string_nextclade = "/**/*.nextclade_report.tsv"
     else:
-        report_string = "/**/*.lineage_report.alternate.csv"
+        report_string_pango = "/**/*.lineage_report.alternate.csv"
+        report_string_nextclade = "/**/*.nextclade_report.alternate.tsv"
      
     SAMPLES = [
         os.path.basename(x).replace(".fastq", "")
         for x in glob.glob(variable_dict["reads_dir"] + "/*.fastq")
     ]
     
-    previous_lineage_reports = [f for f in glob.glob(variable_dict["outdir"] + report_string, recursive=True) if (s in f for s in SAMPLES)]
+    previous_pango_reports = [f for f in glob.glob(variable_dict["outdir"] + report_string_pango, recursive=True) if (s in f for s in SAMPLES)]
+    previous_nextclade_reports = [f for f in glob.glob(variable_dict["outdir"] + report_string_nextclade, recursive=True) if (s in f for s in SAMPLES)]
+    previous_lineage_reports = previous_pango_reports+previous_nextclade_reports
     
     if len(previous_lineage_reports) > 0:
         my_log.warning(
-            "Removing previous pangolin output to estimate lineages again"
+            "Removing previous pangolin and/or nextclade output to estimate lineages again"
         )   
-        [os.remove(f) for f in glob.glob(variable_dict["outdir"] + report_string, recursive=True) if (s in f for s in SAMPLES)]
+        [os.remove(f) for f in previous_lineage_reports]
         
-        # delete previous pangolin update file so it'll update again
+        # delete previous update file so it'll update again
         if os.path.exists(os.path.join(variable_dict["outdir"], "pangolin_update_info.txt")):
             os.remove(os.path.join(variable_dict["outdir"], "pangolin_update_info.txt"))
+        if os.path.exists(os.path.join(variable_dict["outdir"], "nextclade_update_info.txt")):
+            os.remove(os.path.join(variable_dict["outdir"], "nextclade_update_info.txt"))

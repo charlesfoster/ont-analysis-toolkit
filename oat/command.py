@@ -17,7 +17,7 @@ import psutil
 from datetime import date
 import argparse
 from argparse import RawTextHelpFormatter
-from oat.scripts.helper_functions import find_runDirs, check_arguments, initiate_colorlog, printc, check_prior_pangolin
+from oat.scripts.helper_functions import find_runDirs, check_arguments, initiate_colorlog, printc, check_prior_lineages
 import pandas as pd
 from psutil import virtual_memory
 from oat import __version__
@@ -439,9 +439,9 @@ def main(sysargs=sys.argv[1:]):
 
             # if a SARS-CoV-2 analysis, delete previous lineage files to trigger re-run
             if os.path.basename(variable_dict["reference"]) == "MN908947.3.fasta":
-                check_prior_pangolin(variable_dict)
+                check_prior_lineages(variable_dict)
 
-            # runa alternate analysis
+            # run alternate analysis
             print("\n**** CONFIG ****")
             for k in variable_dict:
                 if k not in ["my_log", "run_data", "password"]:
@@ -542,7 +542,7 @@ def main(sysargs=sys.argv[1:]):
 
         # if a SARS-CoV-2 analysis, delete previous lineage files to trigger re-run
         if os.path.basename(variable_dict["reference"]) == "MN908947.3.fasta":
-            check_prior_pangolin(variable_dict)
+            check_prior_lineages(variable_dict)
 
         #check if user only wants to create conda environments
         if args.create_envs_only:
