@@ -299,7 +299,7 @@ def main(sysargs=sys.argv[1:]):
         "--version",
         action="version",
         #version="covid illumina pipeline snakemake edition:  0.1.0",
-        version=f"covid illumina pipeline snakemake edition:  {__version__}",
+        version=f"OAT: ONT Analysis Toolkit:  v{__version__}",
     )
     parser.add_argument(
         "--minknow_data",
@@ -595,7 +595,7 @@ def main(sysargs=sys.argv[1:]):
                 if k not in ["my_log", "run_data", "password"]:
                     print(k + ": ", variable_dict[k])
             print("")
-            
+
             status = snakemake.snakemake(
                 snakefile,
                 use_conda=True,
