@@ -111,7 +111,8 @@ def rampart_run(variable_dict):
     )
     fname = os.path.join(rampart_outdir, TODAY + "_" + run_name + "_RAMPART_cmd.txt")
     with open(fname, "w") as f:
-        f.write("\n".join(map(str, cmd)))
+       # f.write("\n".join(map(str, cmd)))
+        f.write(cmd)
     my_log.info("Opening default web browser")
     my_log.info("Sequencing information should appear after ~10 seconds")
     my_log.info("When finished monitoring the run with RAMPART, press enter")
