@@ -142,7 +142,8 @@ optional arguments:
 
                                     Reference genome to use. Supported references:
                                         - 'MN908947.3' (SARS-CoV-2)
-                                        - 'NC_006273.2' (CMV Merlin) (planned support, but not yet implemented)
+                                        - 'NC_006273.2' (CMV Merlin) (implementation in testing phase)
+                                        - 'K03455.1' (HIV-1) (implementation in testing phase)
                                     Other references can be used, but the corresponding assembly (fasta) and
                                     annotation (gff3 from Ensembl) must be added. See README.
                                     Default: MN908947.3
@@ -176,6 +177,8 @@ optional arguments:
   --max_memory <int>    Maximum memory (in MB) that you would like to provide to snakemake. Default: 57282MB
   --quiet               Stop printing of snakemake commands to screen.
   --report              Generate report (currently minimally functional).
+
+Amplicon protocol must be specified in input spreadsheet.
 ```
 
 # What does the pipeline do?
@@ -231,4 +234,4 @@ To add a reference organism/assembly other than the provided references for SARS
 * The gff3 file I included for SARS-CoV-2 was originally sent to me by Torsten Seemann.
 * Being new to using snakemake + wrapper scripts, I used `pangolin` as a guide for directory structure and rule creation - so thanks to them.
 * The analysis module was heavily influenced by the ARTIC team, especially the `artic minion` pipeline.
-* `gff2gff.py` is based on work by Damien Farrell https://dmnfarrell.github.io/bioinformatics/bcftools-csq-gff-format
+* `gb2gff.py` is based on work by Damien Farrell https://dmnfarrell.github.io/bioinformatics/bcftools-csq-gff-format
