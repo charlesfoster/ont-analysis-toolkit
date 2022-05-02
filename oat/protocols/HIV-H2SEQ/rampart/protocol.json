@@ -1,0 +1,10 @@
+{
+  "name": "HIV-H2SEQ",
+  "description": "Amplicon-based sequencing of HIV subtype B",
+  "url": "tbc",
+  "displayOptions": {
+    "coverageThresholds": {
+        ">200x": 200, ">100x": 100, ">50x": 50, ">20x": 20, "0x": 0
+        }
+    }
+}
