@@ -47,7 +47,7 @@ def main(sysargs=sys.argv[1:]):
             else:
                 name = ''.join(f.qualifiers['gene'])
                 gene_dict = {'start':int(f.location.start)+1,
-                             'end':int(f.location.end)+1,
+                             'end':int(f.location.end),
                              'strand':int(f.location.strand)}
                 genes_dict[name] = gene_dict
     
