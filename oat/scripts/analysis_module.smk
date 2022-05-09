@@ -205,9 +205,9 @@ rule final_qc:
             nextclades.rename(columns={'seqName':'id','qc.privateMutations.total':'totalPrivateMutations','qc.overallStatus':'Nextclade_QC'}, inplace=True)
             keep = ['id','clade','Nextclade_pango','Nextclade_QC','totalFrameShifts','totalAminoacidInsertions','totalAminoacidDeletions','totalAminoacidSubstitutions','totalNonACGTNs','totalPrivateMutations']
             nextclades = nextclades.loc[:,keep]
-            
+
             outdata = outdata.join(nextclades.set_index(["id"]), on=["id"])
-            
+
             compulsory_col_order = [
                 "analysis_date",
                 "run_name",
@@ -365,7 +365,7 @@ rule medaka_variant:
     shell:
         """
         export TF_FORCE_GPU_ALLOW_GROWTH=true; medaka variant {params.reference} {input.hdf} {output.medaka_vcf} 2>{log}
-        medaka tools annotate --pad 25 --chunk_size 29903 --dpsp {output.medaka_vcf} {params.reference} {input.bam} {output.vcf} 2>>{log}
+        medaka tools annotate --pad 1 --chunk_size 29903 --dpsp {output.medaka_vcf} {params.reference} {input.bam} {output.vcf} 2>>{log}
         """
 
 
@@ -390,15 +390,15 @@ rule add_rough_VAF:
         awk -v OFS="\t" -F"\t" '
         /^[^#]/{{ AC=$8; DP=$8;
 				sub("AR=.*SR=", "SR=", AC);
-        sub("SR=[0-9]*,[0-9]*,", "", AC);
+                sub("SR=[0-9]*,[0-9]*,", "", AC);
 				AC1=AC; AC2=AC;
 				sub(",[0-9]*","",AC1);
 				sub("[0-9]*,","",AC2);
 				AC=AC1+AC2;
-				sub("AR=.*DP=", "DP=", DP);
+				sub("AR=.*DPSP=", "DP=", DP);
 				sub(";.*", "", DP);
-        sub("DP=", "", DP);
-        $8 = $8";SAC="AC";AF="AC/DP; }}1' | \
+                sub("DP=", "", DP);
+                $8 = $8";SAC="AC";AF="AC/DP; }}1' | \
         bgzip -c > {output.vcf}
         """
 
@@ -560,10 +560,10 @@ rule update_nextclade:
         "docker://nextstrain/nextclade:latest"
     shell:
         """
-        echo "nextclade version:" > {output.update_info} 
+        echo "nextclade version:" > {output.update_info}
         nextclade --version >> {output.update_info} &>/dev/null
-        echo "Updating SARS-CoV-2 dataset..." >> {output.update_info} 
-        nextclade dataset get --name sars-cov-2 -o {params.nextclade_dataset} &>>{output.update_info} 
+        echo "Updating SARS-CoV-2 dataset..." >> {output.update_info}
+        nextclade dataset get --name sars-cov-2 -o {params.nextclade_dataset} &>>{output.update_info}
         """
 
 rule nextclade:
