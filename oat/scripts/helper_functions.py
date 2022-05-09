@@ -79,8 +79,14 @@ def check_arguments(variable_dict, args):
     """
     global run_data, run_name, neg_controls, barcodes_used, barcode_kit_name
     
+    if variable_dict['variant_caller'] not in ['clair3','medaka']:
+        my_log.error(
+            "Please specify a valid option for variant_caller."
+        )
+        sys.exit()
+        
     # check for GPU
-    if variable_dict['resources']['gpu'] == 0:
+    if variable_dict['variant_caller'] == 'medaka' and variable_dict['resources']['gpu'] == 0:
         my_log.error(
             "No GPU detected. A GPU is necessary for variant calling with medaka."
         )

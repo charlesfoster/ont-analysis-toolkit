@@ -65,6 +65,21 @@ config["min_depth"] = int(config["min_depth"])
 #coverage_colname = "ref_cov_"+str(config["min_depth"])
 coverage_colname = "coverage"
 
+# determine model for clair3
+base_gmodel = config["guppy_model"]
+
+if '_g5' in base_gmodel:
+    clair3_model = 'r941_prom_sup_g5014'
+else:
+    print('Could not determine appropriate clair3 model - setting to r941_prom_hac_g360+g422 for safety")
+    clair3_model = 'r941_prom_hac_g360+g422'
+    
+if config['variant_caller'] == 'clair3':
+    filter_extension = "clair3.vcf.gz"
+elif config['variant_caller'] == 'medaka':
+    filter_extension = "medaka.vcf.gz"
+
+
 ################
 # Optional removal of trimmed reads (to save space)
 ################
@@ -317,7 +332,7 @@ rule trim_amplicon_primers:
         samtools view --write-index -@ 20 -F 4 -o {output.bam}
         """
 
-
+##### MEDAKA VARIANT CALLING START #####
 rule medaka_consensus:
     input:
         bam=os.path.join(RESULT_DIR, "{sample}/{sample}.trimmed.bam"),
@@ -348,7 +363,7 @@ rule medaka_variant:
         bam=os.path.join(RESULT_DIR, "{sample}/{sample}.trimmed.bam"),
     output:
         medaka_vcf=temp(os.path.join(RESULT_DIR, "{sample}/{sample}.medaka.vcf")),
-        vcf=temp(os.path.join(RESULT_DIR, "{sample}/{sample}.all.vcf")),
+        vcf=temp(os.path.join(RESULT_DIR, "{sample}/{sample}.medaka.vcf")),
     message:
         "initial medaka variant calls for {wildcards.sample}"
     threads: 4
@@ -369,13 +384,13 @@ rule medaka_variant:
         """
 
 
-rule add_rough_VAF:
+rule parse_medaka_vcf:
     input:
-        vcf=os.path.join(RESULT_DIR, "{sample}/{sample}.all.vcf"),
+        vcf=os.path.join(RESULT_DIR, "{sample}/{sample}.medaka.vcf"),
     output:
-        vcf=os.path.join(RESULT_DIR, "{sample}/{sample}.all.vcf.gz"),
+        vcf=os.path.join(RESULT_DIR, "{sample}/{sample}.medaka.vcf.gz"),
     message:
-        "adding rough VAF to longshot variant calls for {wildcards.sample}"
+        "adding rough VAF to medaka variant calls for {wildcards.sample}"
     threads: 4
     log:
         os.path.join(RESULT_DIR, "{sample}/logs/add_vaf.log.txt"),
@@ -385,27 +400,104 @@ rule add_rough_VAF:
         """
         sed -e '8i##INFO=<ID=AF,Number=1,Type=Float,Description="Allele Frequency">' \
             -e '9i##INFO=<ID=SAC,Number=1,Type=Integer,Description="Summed alt count">' \
+            -e '10i##INFO=<ID=NQ,Number=1,Type=Integer,Description="Normalised quality (QUAL/DP)">' \
             -e "s/SAMPLE/{wildcards.sample}/g" {input.vcf} | \
         grep -v "DP\=0;" | \
         awk -v OFS="\t" -F"\t" '
-        /^[^#]/{{ AC=$8; DP=$8;
+        /^[^#]/{{ AC=$8; DP=$8; DPSP=$8;
 				sub("AR=.*SR=", "SR=", AC);
                 sub("SR=[0-9]*,[0-9]*,", "", AC);
 				AC1=AC; AC2=AC;
 				sub(",[0-9]*","",AC1);
 				sub("[0-9]*,","",AC2);
 				AC=AC1+AC2;
-				sub("AR=.*DPSP=", "DP=", DP);
+				sub("AR=.*DPSP=", "DPSP=", DPSP);
+				sub(";.*", "", DPSP);
+                sub("DPSP=", "", DPSP);
+				sub("AR=.*DP=", "DP=", DP);
 				sub(";.*", "", DP);
                 sub("DP=", "", DP);
-                $8 = $8";SAC="AC";AF="AC/DP; }}1' | \
+                $8 = $8";SAC="AC";AF="AC/DPSP";NQ="$6/DP; }}1' | \
         bgzip -c > {output.vcf}
         """
+
+##### MEDAKA VARIANT CALLING END #####
+
+##### CLAIR3 VARIANT CALLING START #####
+rule clair3_variant:
+    input:
+        bam=os.path.join(RESULT_DIR, "{sample}/{sample}.trimmed.bam"),
+    output:
+        clair3_vcf=temp(os.path.join(RESULT_DIR, "{sample}","clair3","merge_output.vcf)),
+    message:
+        "clair3 variant calls for {wildcards.sample}"
+    threads: 4
+    log:
+        os.path.join(RESULT_DIR, "{sample}/logs/medaka_variant.log.txt"),
+    params:
+        reference=config["reference"],
+        model=clair3_model,
+        output=os.path.join(RESULT_DIR, "{sample}","clair3")
+    resources:
+        cpus=4,
+        gpu=1,
+    container:
+        "docker://hkubal/clair3:latest"
+    shell:
+    """
+    /opt/bin/run_clair3.sh \
+    --bam_fn={input.bam} \
+    --sample_name={wildcards.sample} \
+    --ref_fn={params.reference} \
+    --threads={threads} \
+    --platform="ont" \
+    --model_path="/opt/models/{params.model}" \
+    --output={params.output}    \
+    --chunk_size=29903 \
+    --include_all_ctgs \
+    --no_phasing_for_fa \
+    --remove_intermediate_dir \
+    --enable_long_indel \
+    --haploid_sensitive
+    """
+
+rule cleanup_clair3:
+    input:
+        clair3_vcf=temp(os.path.join(RESULT_DIR, "{sample}","clair3","merge_output.vcf)),
+    output:
+        clair3_vcf=os.path.join(RESULT_DIR, "{sample}/{sample}.clair3.vcf.gz"),
+    message:
+        "reorganising clair3 variant calls for {wildcards.sample}"
+    threads: 1
+    log:
+        os.path.join(RESULT_DIR, "{sample}/logs/medaka_variant.log.txt"),
+    params:
+        reference=config["reference"],
+        model=clair3_model,
+        output=os.path.join(RESULT_DIR, "{sample}","clair3")
+    resources:
+        cpus=1,
+    shell:
+    """
+    sed -e '7i##INFO=<ID=DP,Number=1,Type=Integer,Description="Depth">' \
+		-e '7i##INFO=<ID=AF,Number=1,Type=Float,Description="Allele Frequency">' \
+		{input.clair3_vcf} | \
+    grep -v "DP\=0;" | \
+    awk -v OFS="\t" -F"\t" '
+    /^[^#]/{{ DP=$10; AF=$10;
+            sub("[0-9]*:[0-9]*:", "", DP);
+            sub(":.*", "", DP);
+            sub(".*:","",AF)
+            $8 = $8";DP="DP";AF="AF; }}1' | \
+    bgzip -c > {output.clair3_vcf}
+    """
+
+##### CLAIR3 VARIANT CALLING END #####
 
 
 rule filter_vcf:
     input:
-        vcf_file=os.path.join(RESULT_DIR, "{sample}/{sample}.all.vcf.gz"),
+        vcf_file=expand(os.path.join(RESULT_DIR, "{{sample}}/{{sample}}.{ext}"), ext=filter_extension),
     output:
         vcf_file=temp(os.path.join(RESULT_DIR, "{sample}/{sample}.filtered.vcf.gz")),
     log:
@@ -420,7 +512,7 @@ rule filter_vcf:
         bcftools index -f {input.vcf_file}
         bcftools +fill-tags {input.vcf_file} -Ou -- -t "TYPE" | \
         bcftools norm -Ou -a -m -  2> /dev/null | \
-        bcftools view -f 'PASS,dn,dp,.' -i "INFO/AF >= {params.snv_freq} && INFO/DP >= {params.snv_min_depth}" -Oz -o {output.vcf_file}
+        bcftools view -f 'PASS,dn,dp,.' -i "INFO/AF >= {params.snv_freq} && INFO/DP >= {params.snv_min_depth} && QUAL >= 20" -Oz -o {output.vcf_file}
         bcftools +setGT {output.vcf_file} -o {output.vcf_file} -- -t a -n 'c:1/1' 2>> {log}
         bcftools index {output.vcf_file}
         """
