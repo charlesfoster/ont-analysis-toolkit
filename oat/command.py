@@ -245,8 +245,8 @@ def main(sysargs=sys.argv[1:]):
         "-v",
         "--variant_caller",
         action="store",
-        help="Variant caller to use. Choices: 'medaka-longshot'. Default: 'medaka-longshot'",
-        default="medaka-longshot",
+        help="Variant caller to use. Choices: 'clair3','medaka'. Default: 'medaka'",
+        default="medaka",
     )
     parser.add_argument(
         "--create_envs_only",
