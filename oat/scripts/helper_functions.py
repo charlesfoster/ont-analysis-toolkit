@@ -79,7 +79,7 @@ def check_arguments(variable_dict, args):
     """
     global run_data, run_name, neg_controls, barcodes_used, barcode_kit_name
 
-    if variable_dict['variant_caller'] not in ['clair3','medaka']:
+    if variable_dict['variant_caller'] not in ['clair3','medaka','lofreq']:
         my_log.error(
             "Please specify a valid option for variant_caller."
         )

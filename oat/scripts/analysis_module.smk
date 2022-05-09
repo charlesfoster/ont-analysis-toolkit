@@ -78,6 +78,8 @@ if config['variant_caller'] == 'clair3':
     filter_extension = "clair3.vcf.gz"
 elif config['variant_caller'] == 'medaka':
     filter_extension = "medaka.vcf.gz"
+elif config['variant_caller'] == 'lofreq':
+    filter_extension = "lofreq.vcf.gz"
 
 
 ################
@@ -478,6 +480,100 @@ rule cleanup_clair3:
         sub(".*:","",AF)
         $8 = $8";DP="DP";AF="AF; }}1' | \
         bgzip -c > {output.clair3_vcf}
+        """
+
+##### CLAIR3 VARIANT CALLING END #####
+
+
+##### LOFREQ VARIANT CALLING START #####
+rule lofreq_dindel:
+    input:
+        bam=os.path.join(RESULT_DIR, "{sample}/{sample}.trimmed.bam"),
+    output:
+        bam=temp(os.path.join(RESULT_DIR, "{sample}/{sample}.dindel.bam")),
+    message:
+        "lofreq dindel for {wildcards.sample}"
+    threads: 4
+    log:
+        os.path.join(RESULT_DIR, "{sample}/logs/lofreq.log.txt"),
+    params:
+        reference=config["reference"],
+    resources:
+        cpus=4,
+        #gpu=1,
+    conda:
+        "../envs/lofreq.yaml"
+    shell:
+        """
+        lofreq indelqual --dindel {input.bam} -f {params.reference} -o {output.bam} 2> /dev/null
+
+
+
+
+
+        """
+
+rule index_dindel:
+    input:
+        bam=os.path.join(RESULT_DIR, "{sample}/{sample}.dindel.bam"),
+    output:
+        bam=temp(os.path.join(RESULT_DIR, "{sample}/{sample}.dindel.bam.bai")),
+        ckp=temp(os.path.join(RESULT_DIR, "{sample}/{sample}.dindel_indexed.txt")),
+    threads: 1
+    resources:
+        cpus=1,
+        #gpu=1,
+    shell:
+        """
+        samtools index -@{threads} {input.bam}
+        touch {output.ckp}
+        """
+
+rule lofreq_call:
+    input:
+        ckp=os.path.join(RESULT_DIR, "{sample}/{sample}.dindel_indexed.txt"),
+        bam=os.path.join(RESULT_DIR, "{sample}/{sample}.dindel.bam"),
+    output:
+        lofreq_vcf=temp(os.path.join(RESULT_DIR, "{sample}/{sample}.lofreq.vcf")),
+    message:
+        "lofreq variant calls for {wildcards.sample}"
+    threads: 4
+    log:
+        os.path.join(RESULT_DIR, "{sample}/logs/lofreq.log.txt"),
+    params:
+        reference=config["reference"],
+    resources:
+        cpus=4,
+        #gpu=1,
+    conda:
+        "../envs/lofreq.yaml"
+    shell:
+        """
+        lofreq call-parallel --no-baq --call-indels --pp-threads {threads} \
+        -f {params.reference} -o {output.lofreq_vcf} {input.bam} 2> {log}
+        """
+
+rule cleanup_lofreq:
+    input:
+        lofreq_vcf=os.path.join(RESULT_DIR, "{sample}/{sample}.lofreq.vcf"),
+    output:
+        lofreq_vcf=os.path.join(RESULT_DIR, "{sample}/{sample}.lofreq.vcf.gz"),
+    message:
+        "reorganising lofreq variant calls for {wildcards.sample}"
+    threads: 1
+    log:
+        os.path.join(RESULT_DIR, "{sample}/logs/lofreq.log.txt"),
+    params:
+        reference=config["reference"],
+    resources:
+        cpus=1,
+    shell:
+        """
+        sed -e '6i##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">' \
+        -e "s|FILTER\tINFO|FILTER\tINFO\tFORMAT\t{wildcards.sample}|g" {input.lofreq_vcf} | \
+        awk -F'\t' -v genotype=1 -v OFS="\t" '/^[^#]/{{ $9 = "GT"; $10 = genotype }}1' | \
+        bgzip -c > {output.lofreq_vcf}
+        bcftools index -f {output.lofreq_vcf}
         """
 
 ##### CLAIR3 VARIANT CALLING END #####
