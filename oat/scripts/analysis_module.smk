@@ -71,9 +71,9 @@ base_gmodel = config["guppy_model"]
 if '_g5' in base_gmodel:
     clair3_model = 'r941_prom_sup_g5014'
 else:
-    print('Could not determine appropriate clair3 model - setting to r941_prom_hac_g360+g422 for safety")
+    print('Could not determine appropriate clair3 model - setting to r941_prom_hac_g360+g422 for safety')
     clair3_model = 'r941_prom_hac_g360+g422'
-    
+
 if config['variant_caller'] == 'clair3':
     filter_extension = "clair3.vcf.gz"
 elif config['variant_caller'] == 'medaka':
@@ -363,7 +363,7 @@ rule medaka_variant:
         bam=os.path.join(RESULT_DIR, "{sample}/{sample}.trimmed.bam"),
     output:
         medaka_vcf=temp(os.path.join(RESULT_DIR, "{sample}/{sample}.medaka.vcf")),
-        vcf=temp(os.path.join(RESULT_DIR, "{sample}/{sample}.medaka.vcf")),
+        vcf=temp(os.path.join(RESULT_DIR, "{sample}/{sample}.medaka.tmp.vcf")),
     message:
         "initial medaka variant calls for {wildcards.sample}"
     threads: 4
@@ -428,49 +428,37 @@ rule clair3_variant:
     input:
         bam=os.path.join(RESULT_DIR, "{sample}/{sample}.trimmed.bam"),
     output:
-        clair3_vcf=temp(os.path.join(RESULT_DIR, "{sample}","clair3","merge_output.vcf)),
+        clair3_vcf=os.path.join(RESULT_DIR, "{sample}","clair3","merge_output.vcf.gz"),
     message:
         "clair3 variant calls for {wildcards.sample}"
     threads: 4
     log:
-        os.path.join(RESULT_DIR, "{sample}/logs/medaka_variant.log.txt"),
+        os.path.join(RESULT_DIR, "{sample}/logs/clair3.log.txt"),
     params:
         reference=config["reference"],
         model=clair3_model,
-        output=os.path.join(RESULT_DIR, "{sample}","clair3")
+        output=os.path.join(RESULT_DIR, "{sample}","clair3"),
     resources:
         cpus=4,
-        gpu=1,
+        #gpu=1,
     container:
         "docker://hkubal/clair3:latest"
     shell:
-    """
-    /opt/bin/run_clair3.sh \
-    --bam_fn={input.bam} \
-    --sample_name={wildcards.sample} \
-    --ref_fn={params.reference} \
-    --threads={threads} \
-    --platform="ont" \
-    --model_path="/opt/models/{params.model}" \
-    --output={params.output}    \
-    --chunk_size=29903 \
-    --include_all_ctgs \
-    --no_phasing_for_fa \
-    --remove_intermediate_dir \
-    --enable_long_indel \
-    --haploid_sensitive
-    """
+        """
+        /opt/bin/run_clair3.sh --bam_fn={input.bam} --sample_name={wildcards.sample} --ref_fn={params.reference} --threads={threads} --platform="ont" --model_path="/opt/models/{params.model}" --output={params.output}    --chunk_size=29903 --include_all_ctgs --no_phasing_for_fa --remove_intermediate_dir --enable_long_indel --haploid_sensitive 2&>{log}
+        """
+
 
 rule cleanup_clair3:
     input:
-        clair3_vcf=temp(os.path.join(RESULT_DIR, "{sample}","clair3","merge_output.vcf)),
+        clair3_vcf=os.path.join(RESULT_DIR, "{sample}","clair3","merge_output.vcf.gz"),
     output:
         clair3_vcf=os.path.join(RESULT_DIR, "{sample}/{sample}.clair3.vcf.gz"),
     message:
         "reorganising clair3 variant calls for {wildcards.sample}"
     threads: 1
     log:
-        os.path.join(RESULT_DIR, "{sample}/logs/medaka_variant.log.txt"),
+        os.path.join(RESULT_DIR, "{sample}/logs/clair3.log.txt"),
     params:
         reference=config["reference"],
         model=clair3_model,
@@ -478,19 +466,19 @@ rule cleanup_clair3:
     resources:
         cpus=1,
     shell:
-    """
-    sed -e '7i##INFO=<ID=DP,Number=1,Type=Integer,Description="Depth">' \
-		-e '7i##INFO=<ID=AF,Number=1,Type=Float,Description="Allele Frequency">' \
-		{input.clair3_vcf} | \
-    grep -v "DP\=0;" | \
-    awk -v OFS="\t" -F"\t" '
-    /^[^#]/{{ DP=$10; AF=$10;
-            sub("[0-9]*:[0-9]*:", "", DP);
-            sub(":.*", "", DP);
-            sub(".*:","",AF)
-            $8 = $8";DP="DP";AF="AF; }}1' | \
-    bgzip -c > {output.clair3_vcf}
-    """
+        """
+        bcftools view {input.clair3_vcf} | \
+        sed -e '7i##INFO=<ID=DP,Number=1,Type=Integer,Description="Depth">' \
+        -e '7i##INFO=<ID=AF,Number=1,Type=Float,Description="Allele Frequency">' | \
+        grep -v "DP\=0;" | \
+        awk -v OFS="\t" -F"\t" '
+        /^[^#]/{{ DP=$10; AF=$10;
+        sub("[0-9]*:[0-9]*:", "", DP);
+        sub(":.*", "", DP);
+        sub(".*:","",AF)
+        $8 = $8";DP="DP";AF="AF; }}1' | \
+        bgzip -c > {output.clair3_vcf}
+        """
 
 ##### CLAIR3 VARIANT CALLING END #####
 
