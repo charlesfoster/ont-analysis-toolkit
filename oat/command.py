@@ -137,7 +137,11 @@ def main(sysargs=sys.argv[1:]):
         "--consensus_freq",
         action="store",
         required=False,
+<<<<<<< HEAD
         default=float(0),
+=======
+        default=float(0.6),
+>>>>>>> dev
         help="""
             Variant allele frequency threshold for a variant to be incorporated into consensus genome.
             Variants below this frequency will be incorporated with an IUPAC ambiguity.
@@ -145,7 +149,11 @@ def main(sysargs=sys.argv[1:]):
             Note: currently do not recommend anything except the default - debugging.
             Default: {}
             """.format(
+<<<<<<< HEAD
             float(0)
+=======
+            float(0.6)
+>>>>>>> dev
         ),
         metavar="<float>",
     )
@@ -245,8 +253,8 @@ def main(sysargs=sys.argv[1:]):
         "-v",
         "--variant_caller",
         action="store",
-        help="Variant caller to use. Choices: 'medaka-longshot'. Default: 'medaka-longshot'",
-        default="medaka-longshot",
+        help="Variant caller to use. Choices: 'clair3','medaka'. Default: 'clair3'",
+        default="clair3",
     )
     parser.add_argument(
         "--create_envs_only",
@@ -491,6 +499,7 @@ def main(sysargs=sys.argv[1:]):
             del variable_dict["my_log"]
             del variable_dict["barcodes_used"]
             del variable_dict["resources"]
+            del variable_dict["singularity_args"]
             for key in variable_dict:
                 flat_config.append(key + "=" + str(variable_dict[key]))
             flat_config = " ".join(flat_config)

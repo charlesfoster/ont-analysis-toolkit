@@ -74,3 +74,4 @@ def GFF_bcftools_format(in_handle, out_handle):
 
 if __name__ == "__main__":
     GFF_bcftools_format(sys.stdin, sys.stdout)
+    #GFF_bcftools_format(sys.stdin, "test.gff")

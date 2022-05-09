@@ -78,27 +78,33 @@ def check_arguments(variable_dict, args):
     Check to make sure command line arguments are valid
     """
     global run_data, run_name, neg_controls, barcodes_used, barcode_kit_name
-    
+
+    if variable_dict['variant_caller'] not in ['clair3','medaka','lofreq']:
+        my_log.error(
+            "Please specify a valid option for variant_caller."
+        )
+        sys.exit()
+
     # check for GPU
-    if variable_dict['resources']['gpu'] == 0:
+    if variable_dict['variant_caller'] == 'medaka' and variable_dict['resources']['gpu'] == 0:
         my_log.error(
             "No GPU detected. A GPU is necessary for variant calling with medaka."
         )
         sys.exit()
-    
+
     #check guppy model for medaka
     gmodel_check = os.getenv('GUPPY_MODEL')
     if gmodel_check is not None:
         my_log.info('Replacing default guppy model ({0}) with the $GUPPY_MODEL environmental variable ({1})'.format(args.guppy_model,gmodel_check))
         variable_dict['guppy_model'] = gmodel_check
-    
+
     #check if conda activated - probably redundant
     if shutil.which("rampart") is None:
         my_log.error(
             "Some necessary programs cannot be detected. Have you activated the conda environment?"
         )
         sys.exit()
-    
+
     #check that samples file exists, then get protocol paths etc
     if not os.path.isfile("".join(args.samples_file)):
         my_log.error(
@@ -148,27 +154,27 @@ def check_arguments(variable_dict, args):
             x.replace("BC", "barcode") for x in run_data["barcode"].to_list()
         ]
         variable_dict["barcodes_used"] = barcodes_used
-    
+
     #check module choice
     if not "".join(args.module) in ["RAMPART", "ANALYSIS", "ALL"]:
         my_log.error(
             "Module does not exist. Allowed values are 'rampart', 'analysis', or 'all'. Please check the spelling and try again."
         )
         sys.exit()
-    
+
     #check barcode kit choice, warn if not in known truths
     if args.barcode_kit not in ['SQK-RBK004','SQK-RBK110-96','EXP-NBD104','EXP-NBD114','EXP-NBD196']:
         my_log.warning(
                 "Barcode kit is not in the list of commonly used kits. Assuming kit exists and supported by guppy_barcoder."
         )
-    
+
     #check for demultiplexed flag
     if args.demultiplexed:
         variable_dict["demultiplexed"] = True
     else:
         variable_dict["demultiplexed"] = False
 
-    
+
     #define organism based on reference choice, check for existence of reference
     if args.reference == "MN908947.3":
         organism_name = 'SARS-CoV-2'
@@ -186,7 +192,7 @@ def check_arguments(variable_dict, args):
         sys.exit()
     variable_dict["reference"] = reference
     variable_dict["annotation"] = annotation
-    
+
     #set up nextclade if analysing SARS-CoV-2
     if variable_dict['organism_name'] == 'SARS-CoV-2':
         nextclade_dir = os.path.join(
@@ -194,7 +200,8 @@ def check_arguments(variable_dict, args):
         )
 
         variable_dict['nextclade_dataset'] = nextclade_dir
-    
+    else:
+        variable_dict['nextclade_dataset'] = None
     #set up analysis outdir
     if args.outdir:
         analysis_outdir = ''.join(args.outdir)
@@ -206,7 +213,7 @@ def check_arguments(variable_dict, args):
     conda_location = os.environ["CONDA_PREFIX"]
     singularity_args = f"--bind {analysis_outdir}:{analysis_outdir},{conda_location}:{conda_location}"
     variable_dict['singularity_args'] = singularity_args
-    
+
     my_log.info("Run metadata: " + "".join(args.samples_file))
     if args.alternate_analysis:
         del args.module
@@ -258,7 +265,7 @@ def find_runDirs(variable_dict, script_dir, minknow_dir):
 # %% check for prior lineage output files
 def check_prior_lineages(variable_dict):
     global my_log, sample_dict, outdir, bcodeDir, protocol
-    
+
     alternate_analysis = variable_dict['alternate_analysis']
     if not alternate_analysis:
         report_string_pango = "/**/*.lineage_report.csv"
@@ -266,22 +273,22 @@ def check_prior_lineages(variable_dict):
     else:
         report_string_pango = "/**/*.lineage_report.alternate.csv"
         report_string_nextclade = "/**/*.nextclade_report.alternate.tsv"
-     
+
     SAMPLES = [
         os.path.basename(x).replace(".fastq", "")
         for x in glob.glob(variable_dict["reads_dir"] + "/*.fastq")
     ]
-    
+
     previous_pango_reports = [f for f in glob.glob(variable_dict["outdir"] + report_string_pango, recursive=True) if (s in f for s in SAMPLES)]
     previous_nextclade_reports = [f for f in glob.glob(variable_dict["outdir"] + report_string_nextclade, recursive=True) if (s in f for s in SAMPLES)]
     previous_lineage_reports = previous_pango_reports+previous_nextclade_reports
-    
+
     if len(previous_lineage_reports) > 0:
         my_log.warning(
             "Removing previous pangolin and/or nextclade output to estimate lineages again"
-        )   
+        )
         [os.remove(f) for f in previous_lineage_reports]
-        
+
         # delete previous update file so it'll update again
         if os.path.exists(os.path.join(variable_dict["outdir"], "pangolin_update_info.txt")):
             os.remove(os.path.join(variable_dict["outdir"], "pangolin_update_info.txt"))
