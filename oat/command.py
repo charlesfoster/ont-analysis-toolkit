@@ -137,11 +137,7 @@ def main(sysargs=sys.argv[1:]):
         "--consensus_freq",
         action="store",
         required=False,
-<<<<<<< HEAD
         default=float(0),
-=======
-        default=float(0.6),
->>>>>>> dev
         help="""
             Variant allele frequency threshold for a variant to be incorporated into consensus genome.
             Variants below this frequency will be incorporated with an IUPAC ambiguity.
@@ -149,11 +145,7 @@ def main(sysargs=sys.argv[1:]):
             Note: currently do not recommend anything except the default - debugging.
             Default: {}
             """.format(
-<<<<<<< HEAD
             float(0)
-=======
-            float(0.6)
->>>>>>> dev
         ),
         metavar="<float>",
     )
