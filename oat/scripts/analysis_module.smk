@@ -390,67 +390,67 @@ rule medaka_variant:
         medaka tools annotate --pad 1 --chunk_size 29903 --dpsp {output.medaka_vcf} {params.reference} {input.bam} {output.vcf} 2>>{log}
         """
 
+# rule parse_medaka_vcf:
+#     input:
+#         vcf=os.path.join(RESULT_DIR, "{sample}/{sample}.medaka.tmp.vcf"),
+#     output:
+#         vcf=os.path.join(RESULT_DIR, "{sample}/{sample}.medaka.vcf.gz"),
+#     params:
+#         parse_script = parse_script,
+#         bam = os.path.join(RESULT_DIR, "{sample}/{sample}.trimmed.bam"),
+#         vcf = os.path.join(RESULT_DIR, "{sample}/{sample}.medaka.vcf"),
+#         ref_index = config["reference"]+'.fai',
+#     message:
+#         "adding rough VAF to medaka variant calls for {wildcards.sample}"
+#     threads: 1
+#     log:
+#         os.path.join(RESULT_DIR, "{sample}/logs/add_vaf.log.txt"),
+#     resources:
+#         cpus=1,
+#     conda:
+#         "../envs/medaka.yaml"
+#     shell:
+#         """
+#         python3 {params.parse_script} -v {input.vcf} -b {params.bam} -r {params.ref_index} -o {params.vcf}
+#         """
+
+
 rule parse_medaka_vcf:
-    input:
-        vcf=os.path.join(RESULT_DIR, "{sample}/{sample}.medaka.tmp.vcf"),
-    output:
-        vcf=os.path.join(RESULT_DIR, "{sample}/{sample}.medaka.vcf.gz"),
-    params:
-        parse_script = parse_script,
-        bam = os.path.join(RESULT_DIR, "{sample}/{sample}.trimmed.bam"),
-        vcf = os.path.join(RESULT_DIR, "{sample}/{sample}.medaka.vcf"),
-        ref_index = config["reference"]+'.fai',
-    message:
-        "adding rough VAF to medaka variant calls for {wildcards.sample}"
-    threads: 1
-    log:
-        os.path.join(RESULT_DIR, "{sample}/logs/add_vaf.log.txt"),
-    resources:
-        cpus=1,
-    conda:
-        "../envs/medaka.yaml"
-    shell:
-        """
-        python3 {params.parse_script} -v {input.vcf} -b {params.bam} -r {params.ref_index} -o {params.vcf}
-        """
-
-
-#rule parse_medaka_vcf:
-#    input:
-#        vcf=os.path.join(RESULT_DIR, "{sample}/{sample}.medaka.tmp.vcf"),
-#    output:
-#        vcf=os.path.join(RESULT_DIR, "{sample}/{sample}.medaka.vcf.gz"),
-#    message:
-#        "adding rough VAF to medaka variant calls for {wildcards.sample}"
-#    threads: 4
-#    log:
-#        os.path.join(RESULT_DIR, "{sample}/logs/add_vaf.log.txt"),
-#    resources:
-#        cpus=4,
-#    shell:
-#        """
-#        sed -e '8i##INFO=<ID=AF,Number=1,Type=Float,Description="Allele Frequency">' \
-#            -e '9i##INFO=<ID=SAC,Number=1,Type=Integer,Description="Summed alt count">' \
-#            -e '10i##INFO=<ID=NQ,Number=1,Type=Integer,Description="Normalised quality (QUAL/DP)">' \
-#            -e "s/SAMPLE/{wildcards.sample}/g" {input.vcf} | \
-#        grep -v "DPSP\=0;" | \
-#        awk -v OFS="\t" -F"\t" '
-#        /^[^#]/{{ AC=$8; DP=$8; DPSP=$8;
-#				sub("AR=.*SR=", "SR=", AC);
-#               sub("SR=[0-9]*,[0-9]*,", "", AC);
-#				AC1=AC; AC2=AC;
-#				sub(",[0-9]*","",AC1);
-#				sub("[0-9]*,","",AC2);
-#				AC=AC1+AC2;
-#				sub("AR=.*DPSP=", "DPSP=", DPSP);
-#				sub(";.*", "", DPSP);
-#                sub("DPSP=", "", DPSP);
-#				sub("AR=.*DP=", "DP=", DP);
-#				sub(";.*", "", DP);
-#                sub("DP=", "", DP);
-#                $8 = $8";SAC="AC";AF="AC/DPSP";NQ="$6/DP; }}1' | \
-#        bgzip -c > {output.vcf}
-#        """
+   input:
+       vcf=os.path.join(RESULT_DIR, "{sample}/{sample}.medaka.tmp.vcf"),
+   output:
+       vcf=os.path.join(RESULT_DIR, "{sample}/{sample}.medaka.vcf.gz"),
+   message:
+       "adding rough VAF to medaka variant calls for {wildcards.sample}"
+   threads: 4
+   log:
+       os.path.join(RESULT_DIR, "{sample}/logs/add_vaf.log.txt"),
+   resources:
+       cpus=4,
+   shell:
+       """
+       sed -e '8i##INFO=<ID=AF,Number=1,Type=Float,Description="Allele Frequency">' \
+           -e '9i##INFO=<ID=SAC,Number=1,Type=Integer,Description="Summed alt count">' \
+           -e '10i##INFO=<ID=NQ,Number=1,Type=Integer,Description="Normalised quality (QUAL/DP)">' \
+           -e "s/SAMPLE/{wildcards.sample}/g" {input.vcf} | \
+       grep -v "DPSP\=0;" | \
+       awk -v OFS="\t" -F"\t" '
+       /^[^#]/{{ AC=$8; DP=$8; DPSP=$8;
+				sub("AR=.*SR=", "SR=", AC);
+              sub("SR=[0-9]*,[0-9]*,", "", AC);
+				AC1=AC; AC2=AC;
+				sub(",[0-9]*","",AC1);
+				sub("[0-9]*,","",AC2);
+				AC=AC1+AC2;
+				sub("AR=.*DPSP=", "DPSP=", DPSP);
+				sub(";.*", "", DPSP);
+               sub("DPSP=", "", DPSP);
+				sub("AR=.*DP=", "DP=", DP);
+				sub(";.*", "", DP);
+               sub("DP=", "", DP);
+               $8 = $8";SAC="AC";AF="AC/DPSP";NQ="$6/DP; }}1' | \
+       bgzip -c > {output.vcf}
+       """
 
 ##### MEDAKA VARIANT CALLING END #####
 
