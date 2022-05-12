@@ -68,19 +68,25 @@ coverage_colname = "coverage"
 # determine model for clair3
 base_gmodel = config["guppy_model"]
 
-if '_g5' in base_gmodel:
-    clair3_model = 'r941_prom_sup_g5014'
-else:
-    print('Could not determine appropriate clair3 model - setting to r941_prom_hac_g360+g422 for safety')
-    clair3_model = 'r941_prom_hac_g360+g422'
+if config["variant_caller"].lower() == "clair3"
+    if '_g5' in base_gmodel:
+        clair3_model = 'r941_prom_sup_g5014'
+    else:
+        print('Could not determine appropriate clair3 model - setting to r941_prom_hac_g360+g422 for safety')
+        clair3_model = 'r941_prom_hac_g360+g422'
 
 if config['variant_caller'] == 'clair3':
     filter_extension = "clair3.vcf.gz"
 elif config['variant_caller'] == 'medaka':
-    filter_extension = "medaka.vcf.gz"
+    filter_extension = "longshot.vcf.gz"
 elif config['variant_caller'] == 'lofreq':
     filter_extension = "lofreq.vcf.gz"
 
+# medaka script
+snakedir = os.path.abspath(os.path.dirname(__file__))
+one_up = os.path.split(snakedir)[0]
+
+parse_script = os.path.abspath(os.path.join(one_up,"oat","scripts","parse_medaka_variants.py"))
 
 ################
 # Optional removal of trimmed reads (to save space)
@@ -365,7 +371,7 @@ rule medaka_variant:
         bam=os.path.join(RESULT_DIR, "{sample}/{sample}.trimmed.bam"),
     output:
         medaka_vcf=temp(os.path.join(RESULT_DIR, "{sample}/{sample}.medaka.vcf")),
-        vcf=temp(os.path.join(RESULT_DIR, "{sample}/{sample}.medaka.tmp.vcf")),
+        vcf=os.path.join(RESULT_DIR, "{sample}/{sample}.medaka.vcf.gz"),
     message:
         "initial medaka variant calls for {wildcards.sample}"
     threads: 4
@@ -382,46 +388,122 @@ rule medaka_variant:
     shell:
         """
         export TF_FORCE_GPU_ALLOW_GROWTH=true; medaka variant {params.reference} {input.hdf} {output.medaka_vcf} 2>{log}
-        medaka tools annotate --pad 1 --chunk_size 29903 --dpsp {output.medaka_vcf} {params.reference} {input.bam} {output.vcf} 2>>{log}
+        bgzip -c {output.medaka_vcf} > {output.vcf} 2>>{log}
+        tabix -p vcf {output.vcf} 2>>{log}
         """
+        #medaka tools annotate --pad 1 --chunk_size 29903 --dpsp {output.medaka_vcf} {params.reference} {input.bam} {output.vcf} 2>>{log}
 
-
-rule parse_medaka_vcf:
+rule longshot:
     input:
-        vcf=os.path.join(RESULT_DIR, "{sample}/{sample}.medaka.vcf"),
-    output:
+        bam=os.path.join(RESULT_DIR, "{sample}/{sample}.trimmed.bam"),
         vcf=os.path.join(RESULT_DIR, "{sample}/{sample}.medaka.vcf.gz"),
+    output:
+        #vcf=os.path.join(RESULT_DIR, "{sample}/{sample}.all.vcf"),
+        vcf=temp(os.path.join(RESULT_DIR, "{sample}/{sample}.all.vcf")),
     message:
-        "adding rough VAF to medaka variant calls for {wildcards.sample}"
+        "neater longshot variant calls for {wildcards.sample}"
     threads: 4
     log:
-        os.path.join(RESULT_DIR, "{sample}/logs/add_vaf.log.txt"),
+        os.path.join(RESULT_DIR, "{sample}/logs/longshot.log.txt"),
+    params:
+        reference=config["reference"],
+        model="r941_min_high_g360",
     resources:
         cpus=4,
     shell:
         """
-        sed -e '8i##INFO=<ID=AF,Number=1,Type=Float,Description="Allele Frequency">' \
-            -e '9i##INFO=<ID=SAC,Number=1,Type=Integer,Description="Summed alt count">' \
-            -e '10i##INFO=<ID=NQ,Number=1,Type=Integer,Description="Normalised quality (QUAL/DP)">' \
-            -e "s/SAMPLE/{wildcards.sample}/g" {input.vcf} | \
-        grep -v "DP\=0;" | \
+         longshot -P 0 -F --no_haps --bam {input.bam} --ref {params.reference} --out {output.vcf} --potential_variants {input.vcf}    2>{log}
+        """
+
+
+rule add_rough_VAF:
+    input:
+        vcf=os.path.join(RESULT_DIR, "{sample}/{sample}.all.vcf"),
+    output:
+        vcf=os.path.join(RESULT_DIR, "{sample}/{sample}.longshot.vcf.gz"),
+    message:
+        "adding rough VAF to longshot variant calls for {wildcards.sample}"
+    threads: 1
+    log:
+        os.path.join(RESULT_DIR, "{sample}/logs/add_vaf.log.txt"),
+    resources:
+        cpus=1,
+    shell:
+        """
+        sed -e '4i##INFO=<ID=AF,Number=1,Type=Float,Description="Allele Frequency">' -e "s/SAMPLE/{wildcards.sample}/g" {input.vcf} | grep -v "DP\=0;" | \
         awk -v OFS="\t" -F"\t" '
-        /^[^#]/{{ AC=$8; DP=$8; DPSP=$8;
-				sub("AR=.*SR=", "SR=", AC);
-                sub("SR=[0-9]*,[0-9]*,", "", AC);
-				AC1=AC; AC2=AC;
-				sub(",[0-9]*","",AC1);
-				sub("[0-9]*,","",AC2);
-				AC=AC1+AC2;
-				sub("AR=.*DPSP=", "DPSP=", DPSP);
-				sub(";.*", "", DPSP);
-                sub("DPSP=", "", DPSP);
-				sub("AR=.*DP=", "DP=", DP);
-				sub(";.*", "", DP);
-                sub("DP=", "", DP);
-                $8 = $8";SAC="AC";AF="AC/DPSP";NQ="$6/DP; }}1' | \
+        /^[^#]/{{ AC=$8; DP=$8;
+        sub("DP=[0-9]*;", "", AC);
+        sub("AC=[0-9]*,", "", AC);
+        gsub(";.*", "", AC);
+        sub(";.*", "", DP);
+        sub("DP=", "", DP);
+        $8 = $8"AF="AC/DP; }}1' | \
         bgzip -c > {output.vcf}
         """
+
+
+# rule parse_medaka_vcf:
+#     input:
+#         vcf=os.path.join(RESULT_DIR, "{sample}/{sample}.medaka.tmp.vcf"),
+#     output:
+#         vcf=os.path.join(RESULT_DIR, "{sample}/{sample}.medaka.vcf.gz"),
+#     params:
+#         parse_script = parse_script,
+#         bam = os.path.join(RESULT_DIR, "{sample}/{sample}.trimmed.bam"),
+#         vcf = os.path.join(RESULT_DIR, "{sample}/{sample}.medaka.vcf"),
+#         ref_index = config["reference"]+'.fai',
+#     message:
+#         "adding rough VAF to medaka variant calls for {wildcards.sample}"
+#     threads: 1
+#     log:
+#         os.path.join(RESULT_DIR, "{sample}/logs/add_vaf.log.txt"),
+#     resources:
+#         cpus=1,
+#     conda:
+#         "../envs/medaka.yaml"
+#     shell:
+#         """
+#         python3 {params.parse_script} -v {input.vcf} -b {params.bam} -r {params.ref_index} -o {params.vcf}
+#         """
+
+
+#rule parse_medaka_vcf:
+#   input:
+#       vcf=os.path.join(RESULT_DIR, "{sample}/{sample}.medaka.tmp.vcf"),
+#   output:
+#       vcf=os.path.join(RESULT_DIR, "{sample}/{sample}.medaka.vcf.gz"),
+#   message:
+#       "adding rough VAF to medaka variant calls for {wildcards.sample}"
+#   threads: 4
+#   log:
+#       os.path.join(RESULT_DIR, "{sample}/logs/add_vaf.log.txt"),
+#   resources:
+#       cpus=4,
+#   shell:
+#       """
+#       sed -e '8i##INFO=<ID=AF,Number=1,Type=Float,Description="Allele Frequency">' \
+#           -e '9i##INFO=<ID=SAC,Number=1,Type=Integer,Description="Summed alt count">' \
+#           -e '10i##INFO=<ID=NQ,Number=1,Type=Integer,Description="Normalised quality (QUAL/DP)">' \
+#           -e "s/SAMPLE/{wildcards.sample}/g" {input.vcf} | \
+#       grep -v "DPSP\=0;" | \
+#       awk -v OFS="\t" -F"\t" '
+#       /^[^#]/{{ AC=$8; DP=$8; DPSP=$8;
+#				sub("AR=.*SR=", "SR=", AC);
+#              sub("SR=[0-9]*,[0-9]*,", "", AC);
+#				AC1=AC; AC2=AC;
+#				sub(",[0-9]*","",AC1);
+#				sub("[0-9]*,","",AC2);
+#				AC=AC1+AC2;
+#				sub("AR=.*DPSP=", "DPSP=", DPSP);
+#				sub(";.*", "", DPSP);
+#               sub("DPSP=", "", DPSP);
+#				sub("AR=.*DP=", "DP=", DP);
+#				sub(";.*", "", DP);
+#               sub("DP=", "", DP);
+#               $8 = $8";SAC="AC";AF="AC/DPSP";NQ="$6/DP; }}1' | \
+#       bgzip -c > {output.vcf}
+#       """
 
 ##### MEDAKA VARIANT CALLING END #####
 
@@ -576,7 +658,7 @@ rule cleanup_lofreq:
         bcftools index -f {output.lofreq_vcf}
         """
 
-##### CLAIR3 VARIANT CALLING END #####
+##### lofreq VARIANT CALLING END #####
 
 
 rule filter_vcf:
