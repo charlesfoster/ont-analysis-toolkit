@@ -9,6 +9,7 @@ dependencies:
   - bcftools=1.14
   - samtools=1.14
   - python=3.9
+  - longshot=0.4.5
   - mamba=0.22.1
   - minimap2=2.24
   - artic-porechop=0.3.2pre
