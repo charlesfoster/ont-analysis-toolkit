@@ -68,7 +68,7 @@ coverage_colname = "coverage"
 # determine model for clair3
 base_gmodel = config["guppy_model"]
 
-if config["variant_caller"].lower() == "clair3"
+if config["variant_caller"].lower() == "clair3":
     if '_g5' in base_gmodel:
         clair3_model = 'r941_prom_sup_g5014'
     else:
