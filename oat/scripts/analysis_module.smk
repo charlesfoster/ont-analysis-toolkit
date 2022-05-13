@@ -74,6 +74,8 @@ if config["variant_caller"].lower() == "clair3":
     else:
         print('Could not determine appropriate clair3 model - setting to r941_prom_hac_g360+g422 for safety')
         clair3_model = 'r941_prom_hac_g360+g422'
+else:
+    clair3_model = 'None'
 
 if config['variant_caller'] == 'clair3':
     filter_extension = "clair3.vcf.gz"
