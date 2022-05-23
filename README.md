@@ -77,7 +77,7 @@ Note that there are many additional options/settings to take advantage of:
               "8a,   ,a8" 88,    ,88    88,
                `"YbbdP"'  `"8bbdP"Y8   "Y888
 
-        OAT: ONT Analysis Toolkit (version 0.8.1)
+        OAT: ONT Analysis Toolkit (version 0.10.5)
 
 usage: oat [options] <samples_file>
 
@@ -111,7 +111,8 @@ optional arguments:
                                     genome.
                                     Variants below this frequency will be incorporated with an IUPAC ambiguity.
                                     Set to 0 to incorporate the majority or most common base.
-                                    Default: 0.75
+                                    Note: currently do not recommend anything except the default - debugging.
+                                    Default: 0.0
 
   -i <float>, --indel_freq <float>
 
@@ -121,7 +122,7 @@ optional arguments:
                                     Set to 0 to incorporate the majority or most common base.
                                     Default: 0.4
 
-  -d, --demultiplexed
+  -d, --demultiplexed    
                                     Reads already demultiplexed using guppy_barcoder into
                                     '/var/lib/minknow/data/<run_name>'.
                                     By default, assumes reads need to be demultiplexed and reads are demultiplexed
@@ -133,17 +134,16 @@ optional arguments:
                         Pipeline module to run: 'rampart', 'analysis' or 'all' (rampart followed by analysis).
                         Default: 'all'
   -o OUTDIR, --outdir OUTDIR
-                        Output directory. Default: /home/cfos/Programs/ont-analysis-toolkit/analysis_results +
+                        Output directory. Default: /home/vrl/Programs/ont-analysis-toolkit/analysis_results +
                         'organism_name' + 'run_name' from samples spreadsheet
   --rampart_outdir RAMPART_OUTDIR
-                        Output directory. Default: /home/cfos/Programs/ont-analysis-toolkit/rampart_files
+                        Output directory. Default: /home/vrl/Programs/ont-analysis-toolkit/rampart_files
   -p, --print_dag       Save directed acyclic graph (DAG) of workflow to outdir
   -r REFERENCE, --reference REFERENCE
 
                                     Reference genome to use. Supported references:
                                         - 'MN908947.3' (SARS-CoV-2)
-                                        - 'NC_006273.2' (CMV Merlin) (implementation in testing phase)
-                                        - 'K03455.1' (HIV-1) (implementation in testing phase)
+                                        - 'NC_006273.2' (CMV Merlin) (planned support, but not yet implemented)
                                     Other references can be used, but the corresponding assembly (fasta) and
                                     annotation (gff3 from Ensembl) must be added. See README.
                                     Default: MN908947.3
@@ -151,7 +151,7 @@ optional arguments:
   -t <int>, --threads <int>
                         Number of threads to use
   -v VARIANT_CALLER, --variant_caller VARIANT_CALLER
-                        Variant caller to use. Choices: 'medaka-longshot'. Default: 'medaka-longshot'
+                        Variant caller to use. Choices: 'clair3','medaka'. Default: 'clair3'
   --create_envs_only    Create conda environments for snakemake analysis, but do no further analysis. Useful for
                         initial pipeline setup. Default: False
   --snv_min_freq SNV_MIN_FREQ
@@ -174,7 +174,7 @@ optional arguments:
   --version             show program's version number and exit
   --minknow_data MINKNOW_DATA
                         Location of MinKNOW data root. Default: /var/lib/minknow/data
-  --max_memory <int>    Maximum memory (in MB) that you would like to provide to snakemake. Default: 57282MB
+  --max_memory <int>    Maximum memory (in MB) that you would like to provide to snakemake. Default: 53616MB
   --quiet               Stop printing of snakemake commands to screen.
   --report              Generate report (currently minimally functional).
 
@@ -191,7 +191,7 @@ Amplicon protocol must be specified in input spreadsheet.
 All input files for RAMPART are generated based on your input spreadsheet, and a web browser is launched to view the sequencing in real time.
 
 # Analysis Module
-Reads are mapped to the relevant reference genome with `minimap2`. Amplicon primers are trimmed using `samtools ampliconclip`. Variants are called using `medaka` and `longshot`, followed by filtering and consensus genome assembly using `bcftools`. The amino acid consequences of SNPs are inferred using `bcftools csq`. If analysing SARS-CoV-2, lineages are inferred using `pangolin`. Finally, a variety of sample QC metrics are combined into a final QC file.
+Reads are mapped to the relevant reference genome with `minimap2`. Amplicon primers are trimmed using `samtools ampliconclip`. Variants are called using either `clair3` or `medaka` and `longshot`, followed by filtering and consensus genome assembly using `bcftools`. The amino acid consequences of SNPs are inferred using `bcftools csq`. If analysing SARS-CoV-2, lineages are inferred using `pangolin` and `nextclade`. Finally, a variety of sample QC metrics are combined into a final QC file.
 
 # Other Notes
 **Run metadata spreadsheet**
