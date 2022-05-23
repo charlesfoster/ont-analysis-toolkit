@@ -78,10 +78,13 @@ else:
     clair3_model = 'None'
 
 if config['variant_caller'] == 'clair3':
+    snv_min_qual = 5
     filter_extension = "clair3.vcf.gz"
 elif config['variant_caller'] == 'medaka':
+    snv_min_qual = 20
     filter_extension = "longshot.vcf.gz"
 elif config['variant_caller'] == 'lofreq':
+    snv_min_qual = 20
     filter_extension = "lofreq.vcf.gz"
 
 # medaka script
@@ -522,6 +525,8 @@ rule clair3_variant:
         os.path.join(RESULT_DIR, "{sample}/logs/clair3.log.txt"),
     params:
         reference=config["reference"],
+        refname=os.path.basename(config["reference"]).replace(".fasta",""),
+        candidate_bed_path=os.path.join(RESULT_DIR, "{sample}","clair3","tmp/full_alignment_output/candidate_bed"),
         model=clair3_model,
         output=os.path.join(RESULT_DIR, "{sample}","clair3"),
     resources:
@@ -531,6 +536,8 @@ rule clair3_variant:
         "docker://hkubal/clair3:latest"
     shell:
         """
+        mkdir -p {params.candidate_bed_path}
+        touch "{params.candidate_bed_path}/FULL_ALN_FILE_{params.refname}"
         /opt/bin/run_clair3.sh --bam_fn={input.bam} --sample_name={wildcards.sample} --ref_fn={params.reference} --threads={threads} --platform="ont" --model_path="/opt/models/{params.model}" --output={params.output}    --chunk_size=29903 --include_all_ctgs --no_phasing_for_fa --remove_intermediate_dir --enable_long_indel --haploid_sensitive 2&>{log}
         """
 
@@ -673,6 +680,7 @@ rule filter_vcf:
     params:
         snv_freq=config["snv_min_freq"],
         snv_min_depth=config["min_depth"],
+        snv_min_qual=snv_min_qual
     message:
         "setting conditional GT for {wildcards.sample}"
     shell:
@@ -680,7 +688,7 @@ rule filter_vcf:
         bcftools index -f {input.vcf_file}
         bcftools +fill-tags {input.vcf_file} -Ou -- -t "TYPE" | \
         bcftools norm -Ou -a -m -  2> /dev/null | \
-        bcftools view -f 'PASS,dn,dp,.' -i "INFO/AF >= {params.snv_freq} && INFO/DP >= {params.snv_min_depth} && QUAL >= 20" -Oz -o {output.vcf_file}
+        bcftools view -f 'PASS,dn,dp,.' -i "INFO/AF >= {params.snv_freq} && INFO/DP >= {params.snv_min_depth} && QUAL >= {params.snv_min_depth}" -Oz -o {output.vcf_file}
         bcftools +setGT {output.vcf_file} -o {output.vcf_file} -- -t a -n 'c:1/1' 2>> {log}
         bcftools index {output.vcf_file}
         """
