@@ -67,6 +67,18 @@ config["min_depth"] = int(config["min_depth"])
 #coverage_colname = "ref_cov_"+str(config["min_depth"])
 coverage_colname = "coverage"
 
+# detect input
+if config['variant_caller'] == 'clair3':
+    snv_min_qual = 5
+    filter_extension = "clair3.vcf.gz"
+    filter_extension_uncompressed = "clair3.vcf"
+elif config['variant_caller'] == 'medaka':
+    snv_min_qual = 20
+    filter_extension_uncompressed = "medaka.vcf"
+elif config['variant_caller'] == 'lofreq':
+    snv_min_qual = 20
+    filter_extension_uncompressed = "lofreq.vcf"
+
 ################
 # rules
 ################
@@ -250,9 +262,9 @@ rule check_input:
     log:
         os.path.join(RESULT_DIR, "{sample}/logs/{sample}.checkfile.log"),
     params:
-        vcf_file=os.path.join(RESULT_DIR, "{sample}/{sample}.all.vcf.gz"),
-        uncompressed_vcf=os.path.join(RESULT_DIR, "{sample}/{sample}.all.vcf"),
-        compressed_vcf=os.path.join(RESULT_DIR, "{sample}/{sample}.all.vcf.gz"),
+        vcf_file=expand(os.path.join(RESULT_DIR, "{{sample}}/{{sample}}.{ext}"), ext=filter_extension),
+        uncompressed_vcf=expand(os.path.join(RESULT_DIR, "{{sample}}/{{sample}}.{ext}"), ext=filter_extension_uncompressed),
+        compressed_vcf=expand(os.path.join(RESULT_DIR, "{{sample}}/{{sample}}.{ext}"), ext=filter_extension),
     message:
         "Checking previous variant file is bgzipped and index"
     shell:
@@ -275,7 +287,7 @@ rule filter_vcf:
     log:
         os.path.join(RESULT_DIR, "{sample}/logs/{sample}.bcftools_alternate_filtering.log"),
     params:
-        vcf_file=os.path.join(RESULT_DIR, "{sample}/{sample}.all.vcf.gz"),
+        vcf_file=expand(os.path.join(RESULT_DIR, "{{sample}}/{{sample}}.{ext}"), ext=filter_extension),
         snv_freq=config["snv_min_freq"],
         snv_min_depth=config["min_depth"],
     message:
