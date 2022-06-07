@@ -15,3 +15,4 @@
 !environment.yml
 !run_data_example.csv
 oat/scripts/bak/*
+oat/protocols/HCV-H2SEQ/*

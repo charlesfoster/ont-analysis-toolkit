@@ -369,6 +369,7 @@ def main(sysargs=sys.argv[1:]):
             logdir = args.outdir
         else:
             logdir = os.getcwd()
+        os.makedirs(logdir)
         shutil.move(variable_dict['logfile'], os.path.join(logdir,TODAY+'_'+variable_dict['run_name']+'_RAMPART.log'))
         printc("\n Pipeline complete\n", "HEADER")
     elif args.module == 'ANALYSIS' or args.module == 'ALL' or args.module == 'ALTERNATE':
