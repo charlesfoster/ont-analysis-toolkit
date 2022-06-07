@@ -146,6 +146,9 @@ def check_arguments(variable_dict, args):
         variable_dict["protocol_bed"] = glob.glob(
             os.path.join(protocols_dir, protocol) + "/**/*.scheme.bed", recursive=True
         )
+        variable_dict["coverage_bed"] = glob.glob(
+            os.path.join(protocols_dir, protocol) + "/**/coverage_targets.bed", recursive=True
+        )
         run_name = "".join(list(run_data["run_name"].apply(str).unique()))
         variable_dict["run_name"] = run_name
         neg_controls = run_data["id"][run_data["neg_control"] == True].tolist()

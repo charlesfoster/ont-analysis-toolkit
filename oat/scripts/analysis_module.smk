@@ -815,7 +815,7 @@ rule pangolin:
     threads: 4,
     shell:
         """
-        pangolin --outfile {output.report} {input.fasta} &> /dev/null
+        pangolin --skip-scorpio --outfile {output.report} {input.fasta} &> /dev/null
         """
 
 
@@ -861,30 +861,51 @@ rule nextclade:
         """
 
 
+#rule get_coverage_old:
+#    input:
+#        bam=os.path.join(RESULT_DIR, "{sample}/{sample}.trimmed.bam"),
+#    output:
+#        bedtools_coverage=temp(
+#            os.path.join(RESULT_DIR, "{sample}/{sample}.bedtools_coverage.tsv")
+#        ),
+#        samtools_coverage=temp(
+#            os.path.join(RESULT_DIR, "{sample}/{sample}.samtools_coverage.tsv")
+#        ),
+#    resources:
+#        cpus=1,
+#    threads: 1
+#    shell:
+#        """
+#        bedtools genomecov -ibam {input.bam} -d > {output.bedtools_coverage} 2>/dev/null
+#        samtools coverage {input.bam} -o {output.samtools_coverage} 2>/dev/null
+#        """
+
 rule get_coverage:
     input:
         bam=os.path.join(RESULT_DIR, "{sample}/{sample}.trimmed.bam"),
     output:
-        bedtools_coverage=temp(
-            os.path.join(RESULT_DIR, "{sample}/{sample}.bedtools_coverage.tsv")
+        samtools_depth=temp(
+            os.path.join(RESULT_DIR, "{sample}/{sample}.samtools_depth.tsv")
         ),
         samtools_coverage=temp(
             os.path.join(RESULT_DIR, "{sample}/{sample}.samtools_coverage.tsv")
         ),
+    params:
+        bed = config['coverage_bed'],
     resources:
         cpus=1,
     threads: 1
     shell:
         """
-        bedtools genomecov -ibam {input.bam} -d > {output.bedtools_coverage} 2>/dev/null
+        samtools depth -a -J -@1 -b {params.bed} {input.bam} -o {output.samtools_depth}
         samtools coverage {input.bam} -o {output.samtools_coverage} 2>/dev/null
         """
 
 
 rule sample_qc:
     input:
-        bedtools_coverage=os.path.join(
-            RESULT_DIR, "{sample}/{sample}.bedtools_coverage.tsv"
+        samtools_depth=os.path.join(
+            RESULT_DIR, "{sample}/{sample}.samtools_depth.tsv"
         ),
         samtools_coverage=os.path.join(
             RESULT_DIR, "{sample}/{sample}.samtools_coverage.tsv"
@@ -900,15 +921,19 @@ rule sample_qc:
     threads: 1
     run:
         df = pd.read_csv(
-            input.bedtools_coverage,
+            input.samtools_depth,
             sep="\t",
             header=None,
             names=["chrom", "pos", "depth"],
         )
         sam_df = pd.read_csv(input.samtools_coverage, sep="\t")
         num_mapped_reads = sam_df.loc[0, "numreads"]
-        coverage_value = (df[df["depth"] >= params.min_depth].shape[0]) / (df.shape[0]) * 100
-        mean_depth = df["depth"].mean()
+        try:
+            coverage_value = (df[df["depth"] >= params.min_depth].shape[0]) / (df.shape[0]) * 100
+            mean_depth = df["depth"].mean()
+        except:
+            coverage_value = 0
+            mean_depth = 0
         cmd = "echo $(cat {0}|wc -l)/4|bc".format(params.fastq)
         num_reads = int(os.popen(cmd).read().strip())
 
