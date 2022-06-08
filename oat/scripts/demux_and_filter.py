@@ -43,9 +43,21 @@ def demultiplex_reads(variable_dict):
     run_data = variable_dict["run_data"]
     protocol = variable_dict["protocol"]
     guppy_barcoder = shutil.which("guppy_barcoder")
+    if guppy_barcoder is None:
+        my_log.error("No guppy_barcoder detected: exiting")
+        sys.exit()
     basecalledPath = variable_dict["basecalledPath"]
     barcode_kit_name = variable_dict["barcode_kit"]
-
+    if "SQK-RBK" in barcode_kit_name:
+        barcode_type = "rapid"
+        barcode_option = ""
+    elif "EXP-NBD" in barcode_kit_name:
+        barcode_type = "ligation"
+        barcode_option = "--require_barcodes_both_ends"
+    else:
+        my_log.warning("Unsure of barcode_kit type - assuming barcodes not required at both ends")
+        barcode_type = "rapid"
+        barcode_option = ""
     my_log.info("Working with {0} protocol samples".format(protocol))
     protocol = protocol.upper()
     outdir = variable_dict["outdir"]
@@ -94,8 +106,8 @@ def demultiplex_reads(variable_dict):
                 time.sleep(10)
             my_log.info("Demultiplexing with guppy_barcoder.")
             try:
-                cmd = "{0} --input_path {1} --save_path {2} --detect_mid_strand_barcodes -x auto --barcode_kits {3} --trim_barcodes".format(
-                    guppy_barcoder, basecalledPath, bcodeDir, barcode_kit_name
+                cmd = "{0} --input_path {1} --save_path {2} --detect_mid_strand_barcodes -x auto --barcode_kits {3} --trim_barcodes {4}".format(
+                    guppy_barcoder, basecalledPath, bcodeDir, barcode_kit_name, barcode_option
                 )
                 my_log.debug(cmd)
                 subprocess.Popen(
@@ -108,8 +120,8 @@ def demultiplex_reads(variable_dict):
                 ).communicate()
             except:
                 # just in case gpu can't be detected
-                cmd = "{0} --input_path {1} --save_path {2} --detect_mid_strand_barcodes --barcode_kits {3} --trim_barcodes".format(
-                    guppy_barcoder, basecalledPath, bcodeDir, barcode_kit_name
+                cmd = "{0} --input_path {1} --save_path {2} --detect_mid_strand_barcodes --barcode_kits {3} --trim_barcodes {4}".format(
+                    guppy_barcoder, basecalledPath, bcodeDir, barcode_kit_name, barcode_option
                 )
                 my_log.debug(cmd)
                 subprocess.Popen(
