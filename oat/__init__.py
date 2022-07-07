@@ -1,4 +1,4 @@
 _program = "oat"
-__version__ = "0.10.6"
+__version__ = "0.11.0"
 
 from oat import *

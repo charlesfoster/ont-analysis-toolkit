@@ -853,11 +853,12 @@ rule nextclade:
     shell:
         """
         nextclade run --in-order \
-        --input-fasta={input.fasta} \
         --input-dataset={params.nextclade_dataset} \
-        --output-dir={params.outdir} \
+        --output-basename={wildcards.sample} \
+        --output-all={params.outdir} \
         --output-tsv={output.report} \
-        --jobs 4 &> {log}
+        --jobs 4 \
+        {input.fasta} &> {log}
         """
 
 
