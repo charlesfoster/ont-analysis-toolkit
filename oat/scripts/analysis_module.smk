@@ -825,7 +825,7 @@ rule update_nextclade:
     params:
         nextclade_dataset = config['nextclade_dataset']
     container:
-        "docker://nextstrain/nextclade:latest"
+        "docker://nextstrain/nextclade:2.3.1"
     shell:
         """
         echo "nextclade version:" > {output.update_info}
@@ -844,7 +844,7 @@ rule nextclade:
         nextclade_dataset = config['nextclade_dataset'],
         outdir = os.path.join(RESULT_DIR, "{sample}/nextclade"),
     container:
-        "docker://nextstrain/nextclade:latest"
+        "docker://nextstrain/nextclade:2.3.1"
     resources:
         cpus=1,
     log:
