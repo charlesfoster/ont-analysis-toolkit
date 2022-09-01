@@ -311,6 +311,14 @@ def main(sysargs=sys.argv[1:]):
             ),
     )
     parser.add_argument(
+        "--no_update",
+        action="store_true",
+        default=False,
+        help="Disable updating of container versions for SARS-COV-2 analysis. Default: {}".format(
+            False
+            ),
+    )
+    parser.add_argument(
         "--max_memory",
         action="store",
         help="Maximum memory (in MB) that you would like to provide to snakemake. Default: {}MB".format(

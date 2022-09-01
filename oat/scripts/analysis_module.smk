@@ -63,7 +63,7 @@ if config["variant_caller"] == "lofreq":
 # depth value will still be in the config
 config["min_depth"] = int(config["min_depth"])
 #coverage_colname = "ref_cov_"+str(config["min_depth"])
-coverage_colname = "coverage"
+#coverage_colname = "coverage"
 
 # determine model for clair3
 base_gmodel = config["guppy_model"]
@@ -245,7 +245,7 @@ rule final_qc:
                 "scorpio_call",
                 "Nextclade_pango",
                 "clade",
-                coverage_colname,
+                "coverage",
                 "mean_depth",
                 "num_reads",
                 "num_mapped_reads",
@@ -259,7 +259,7 @@ rule final_qc:
                 "run_name",
                 "id",
                 "barcode",
-                coverage_colname,
+                "coverage",
                 "mean_depth",
                 "num_reads",
                 "num_mapped_reads",
@@ -825,13 +825,15 @@ rule update_nextclade:
     params:
         nextclade_dataset = config['nextclade_dataset']
     container:
-        "docker://nextstrain/nextclade:latest"
+        "docker://nextstrain/nextclade:2.3.0"
+    log:
+        os.path.join(RESULT_DIR, "nextclade_update_log.txt"),
     shell:
         """
-        echo "nextclade version:" > {output.update_info}
-        nextclade --version >> {output.update_info} &>/dev/null
-        echo "Updating SARS-CoV-2 dataset..." >> {output.update_info}
-        nextclade dataset get --name sars-cov-2 -o {params.nextclade_dataset} &>>{output.update_info}
+        echo "nextclade version:" > {output.update_info} 2>{log}
+        nextclade --version >> {output.update_info} &>>{log}
+        echo "Updating SARS-CoV-2 dataset..." >> {output.update_info} 2>>{log}
+        nextclade dataset get --name sars-cov-2 -o {params.nextclade_dataset} &>>{log}
         """
 
 rule nextclade:
@@ -844,7 +846,7 @@ rule nextclade:
         nextclade_dataset = config['nextclade_dataset'],
         outdir = os.path.join(RESULT_DIR, "{sample}/nextclade"),
     container:
-        "docker://nextstrain/nextclade:latest"
+        "docker://nextstrain/nextclade:2.3.0"
     resources:
         cpus=1,
     log:
@@ -943,7 +945,7 @@ rule sample_qc:
                 "id",
                 "num_reads",
                 "num_mapped_reads",
-                coverage_colname,
+                "coverage",
                 "mean_depth",
                 "coverage_QC",
                 "technology",

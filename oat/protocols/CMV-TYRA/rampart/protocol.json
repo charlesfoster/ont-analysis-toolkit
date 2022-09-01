@@ -1,0 +1,10 @@
+{
+  "name": "Tyra new primers for UL54 and UL97",
+  "description": "Nested amplicon scheme to amplify UL54, and UL97 of human betaherpesvirus 5 (cytomegalovirus)",
+  "url": "tbc",
+  "displayOptions": {
+    "coverageThresholds": {
+        ">200x": 200, ">100x": 100, ">50x": 50, ">20x": 20, "0x": 0
+        }
+    }
+}
