@@ -270,16 +270,23 @@ rule final_qc:
         # do qc of number of reads
         reads_qc = pd.DataFrame(columns=["percent_total_reads", "reads_qc"])
         outdata = outdata.join(reads_qc, how="outer")
-
-        total_reads = combined_qc["num_reads"].sum()
         sample_dict = dict(tuple(outdata.groupby("id")))
+        total_reads = outdata["num_reads"].sum()
+        mean_reads = mean(outdata["num_reads"])
+        sd_reads = stdev(outdata["num_reads"])
+        read_num_threshold = mean_reads - sd_reads
         for sample in sample_dict:
-            percent = (sample_dict[sample]["num_reads"].squeeze() / total_reads) * 100
+            num_reads = sample_dict[sample]["num_reads"].squeeze()
+            if num_reads < read_num_threshold:
+                qc_result = "FAIL"
+            elif num_reads > read_num_threshold:
+                qc_result = "PASS"
+            percent = (num_reads / total_reads) * 100
             outdata.at[sample, "percent_total_reads"] = percent
             if sample_dict[sample]["neg_control"].bool() == True:
-                qc_result = "PASS" if percent < 5 else "FAIL"
+                qc_result = "PASS" if qc_result == "FAIL" else "FAIL"
             else:
-                qc_result = "PASS" if percent > 5 else "FAIL"
+                qc_result = "FAIL" 
             outdata.at[sample, "reads_qc"] = qc_result
 
         input_cols = outdata.columns.to_list()

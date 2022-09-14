@@ -20,6 +20,7 @@ import glob
 import pathlib
 import pandas as pd
 import os
+from statistics import stdev, mean
 
 #################
 # Custom functions
@@ -65,7 +66,19 @@ if config["variant_caller"] == "lofreq":
 # depth value will still be in the config
 config["min_depth"] = int(config["min_depth"])
 #coverage_colname = "ref_cov_"+str(config["min_depth"])
-coverage_colname = "coverage"
+#coverage_colname = "coverage"
+
+# determine model for clair3
+base_gmodel = config["guppy_model"]
+
+if config["variant_caller"].lower() == "clair3":
+    if '_g5' in base_gmodel:
+        clair3_model = 'r941_prom_sup_g5014'
+    else:
+        print('Could not determine appropriate clair3 model - setting to r941_prom_hac_g360+g422 for safety')
+        clair3_model = 'r941_prom_hac_g360+g422'
+else:
+    clair3_model = 'None'
 
 # detect input
 if config['variant_caller'] == 'clair3':
@@ -78,6 +91,12 @@ elif config['variant_caller'] == 'medaka':
 elif config['variant_caller'] == 'lofreq':
     snv_min_qual = 20
     filter_extension_uncompressed = "lofreq.vcf"
+
+# medaka script
+snakedir = os.path.abspath(os.path.dirname(__file__))
+one_up = os.path.split(snakedir)[0]
+
+parse_script = os.path.abspath(os.path.join(one_up,"oat","scripts","parse_medaka_variants.py"))
 
 ################
 # rules
@@ -125,7 +144,7 @@ rule final_qc:
             sample=ALTERNATE_SAMPLES,
         ),
     params:
-        run_metadata=os.path.join(RESULT_DIR, "metadata.csv"),
+        run_metadata=os.path.join(RESULT_DIR, "metadata.alternate.csv"),
         sars_analysis=SARS_ANALYSIS,
     run:
         # combine fasta files into one multifasta
@@ -186,6 +205,7 @@ rule final_qc:
             ]
 
             outdata = outdata.join(lineages.set_index(["id"]), on=["id"])
+            
             # read in the nextclade files
             nextclades = pd.concat([pd.read_csv(f, sep="\t") for f in input.nextclade_results])
             nextclades.rename(columns={'seqName':'id','qc.privateMutations.total':'totalPrivateMutations','qc.overallStatus':'Nextclade_QC'}, inplace=True)
@@ -203,7 +223,7 @@ rule final_qc:
                 "scorpio_call",
                 "Nextclade_pango",
                 "clade",
-                coverage_colname,
+                "coverage",
                 "mean_depth",
                 "num_reads",
                 "num_mapped_reads",
@@ -217,7 +237,7 @@ rule final_qc:
                 "run_name",
                 "id",
                 "barcode",
-                coverage_colname,
+                "coverage",
                 "mean_depth",
                 "num_reads",
                 "num_mapped_reads",
@@ -228,16 +248,23 @@ rule final_qc:
         # do qc of number of reads
         reads_qc = pd.DataFrame(columns=["percent_total_reads", "reads_qc"])
         outdata = outdata.join(reads_qc, how="outer")
-
-        total_reads = combined_qc["num_reads"].sum()
         sample_dict = dict(tuple(outdata.groupby("id")))
+        total_reads = outdata["num_reads"].sum()
+        mean_reads = mean(outdata["num_reads"])
+        sd_reads = stdev(outdata["num_reads"])
+        read_num_threshold = mean_reads - sd_reads
         for sample in sample_dict:
-            percent = (sample_dict[sample]["num_reads"].squeeze() / total_reads) * 100
+            num_reads = sample_dict[sample]["num_reads"].squeeze()
+            if num_reads < read_num_threshold:
+                qc_result = "FAIL"
+            elif num_reads > read_num_threshold:
+                qc_result = "PASS"
+            percent = (num_reads / total_reads) * 100
             outdata.at[sample, "percent_total_reads"] = percent
             if sample_dict[sample]["neg_control"].bool() == True:
-                qc_result = "PASS" if percent < 5 else "FAIL"
+                qc_result = "PASS" if qc_result == "FAIL" else "FAIL"
             else:
-                qc_result = "PASS" if percent > 5 else "FAIL"
+                qc_result = "FAIL" 
             outdata.at[sample, "reads_qc"] = qc_result
 
         input_cols = outdata.columns.to_list()
@@ -399,7 +426,7 @@ rule update_nextclade:
     params:
         nextclade_dataset = config['nextclade_dataset']
     container:
-        "docker://nextstrain/nextclade:latest"
+        "docker://nextstrain/nextclade:2.3.1"
     shell:
         """
         echo "nextclade version:" > {output.update_info}
@@ -418,7 +445,7 @@ rule nextclade:
         nextclade_dataset = config['nextclade_dataset'],
         outdir = os.path.join(RESULT_DIR, "{sample}/nextclade"),
     container:
-        "docker://nextstrain/nextclade:latest"
+        "docker://nextstrain/nextclade:2.3.1"
     resources:
         cpus=1,
     log:
@@ -475,12 +502,12 @@ rule sample_qc:
     threads: 1
     run:
         df = pd.read_csv(
-            input.bedtools_coverage,
+            input.samtools_depth,
             sep="\t",
             header=None,
             names=["chrom", "pos", "depth"],
         )
-        sam_df = pd.read_csv(input.samtools_depth, sep="\t")
+        sam_df = pd.read_csv(input.samtools_coverage, sep="\t")
         num_mapped_reads = sam_df.loc[0, "numreads"]
         try:
             coverage_value = (df[df["depth"] >= params.min_depth].shape[0]) / (df.shape[0]) * 100
@@ -496,7 +523,7 @@ rule sample_qc:
                 "id",
                 "num_reads",
                 "num_mapped_reads",
-                coverage_colname,
+                "coverage",
                 "mean_depth",
                 "coverage_QC",
                 "technology",

@@ -415,7 +415,10 @@ def main(sysargs=sys.argv[1:]):
         length_params= pd.read_csv(os.path.join(thisdir,"protocols","length_params.csv")).set_index("name")
         variable_dict['min_len'] = length_params.loc[variable_dict['protocol'], 'min_length']
         variable_dict['max_len'] = length_params.loc[variable_dict['protocol'], 'max_length']
-        variable_dict["run_data"].to_csv(os.path.join(variable_dict["outdir"],"metadata.csv"), index=False)
+        if args.alternate_analysis:
+            variable_dict["run_data"].to_csv(os.path.join(variable_dict["outdir"],"metadata.alternate.csv"), index=False)
+        else:
+            variable_dict["run_data"].to_csv(os.path.join(variable_dict["outdir"],"metadata.csv"), index=False)
 
         # run the alternate analysis
         if args.alternate_analysis:
