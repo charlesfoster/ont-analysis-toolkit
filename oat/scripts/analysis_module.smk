@@ -822,7 +822,7 @@ rule pangolin:
     threads: 4,
     shell:
         """
-        pangolin --skip-scorpio --outfile {output.report} {input.fasta} &> /dev/null
+        pangolin --outfile {output.report} {input.fasta} &> /dev/null
         """
 
 
