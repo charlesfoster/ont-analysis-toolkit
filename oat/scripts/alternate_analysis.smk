@@ -205,7 +205,7 @@ rule final_qc:
             ]
 
             outdata = outdata.join(lineages.set_index(["id"]), on=["id"])
-            
+
             # read in the nextclade files
             nextclades = pd.concat([pd.read_csv(f, sep="\t") for f in input.nextclade_results])
             nextclades.rename(columns={'seqName':'id','qc.privateMutations.total':'totalPrivateMutations','qc.overallStatus':'Nextclade_QC'}, inplace=True)
@@ -264,7 +264,7 @@ rule final_qc:
             if sample_dict[sample]["neg_control"].bool() == True:
                 qc_result = "PASS" if qc_result == "FAIL" else "FAIL"
             else:
-                qc_result = "FAIL" 
+                qc_result = "FAIL"
             outdata.at[sample, "reads_qc"] = qc_result
 
         input_cols = outdata.columns.to_list()
@@ -324,7 +324,7 @@ rule filter_vcf:
         bcftools index -f {params.vcf_file}
         bcftools +fill-tags {params.vcf_file} -Ou -- -t "TYPE" | \
         bcftools norm -Ou -a -m -  2> /dev/null | \
-        bcftools view -f 'PASS,dn,dp,.' -i "INFO/AF >= {params.snv_freq} && INFO/DP >= {params.snv_min_depth}" -Oz -o {output.vcf_file}
+        bcftools view -f 'PASS,dn,dp,.' -i "INFO/AF >= {params.snv_freq} && INFO/DP >= {params.snv_min_depth} && QUAL >= {params.snv_min_qual" -Oz -o {output.vcf_file}
         bcftools +setGT {output.vcf_file} -o {output.vcf_file} -- -t a -n 'c:1/1' 2>> {log}
         bcftools index {output.vcf_file}
         """
