@@ -20,7 +20,7 @@ import glob
 import pathlib
 import pandas as pd
 import os
-
+from statistics import stdev, mean
 #################
 # Custom functions
 #################
