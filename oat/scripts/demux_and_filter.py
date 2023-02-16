@@ -106,7 +106,7 @@ def demultiplex_reads(variable_dict):
                 time.sleep(10)
             my_log.info("Demultiplexing with guppy_barcoder.")
             try:
-                cmd = "{0} --input_path {1} --save_path {2} --detect_mid_strand_barcodes -x auto --barcode_kits {3} --trim_barcodes {4}".format(
+                cmd = "{0} --input_path {1} --save_path {2} --detect_mid_strand_barcodes -x auto --barcode_kits {3}  {4}".format(
                     guppy_barcoder, basecalledPath, bcodeDir, barcode_kit_name, barcode_option
                 )
                 my_log.debug(cmd)
