@@ -540,7 +540,7 @@ rule clair3_variant:
         cpus=4,
         #gpu=1,
     container:
-        "docker://hkubal/clair3:latest"
+        "docker://hkubal/clair3:v0.1-r12"
     shell:
         """
         mkdir -p {params.candidate_bed_path}

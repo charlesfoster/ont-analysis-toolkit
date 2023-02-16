@@ -38,11 +38,11 @@ def GFF_bcftools_format(in_handle, out_handle):
                 try:
                     tag = q["gene"][0]  # q['locus_tag'][0]
                 except:
-                    tag = q['locus_tag'][0]
+                    tag = q["locus_tag"][0]
                 try:
                     protein_id = q["protein_id"][0]
                 except:
-                    protein_id = "Unknown"
+                    protein_id = tag
                 q["ID"] = "CDS:%s" % protein_id
                 q["biotype"] = "protein_coding"
 
@@ -63,6 +63,15 @@ def GFF_bcftools_format(in_handle, out_handle):
                     q2["Parent"] = "gene:%s" % tag
                     q2["biotype"] = "protein_coding"
                     new.features.append(m)
+                    # create gene feature
+                    new_feat = deepcopy(feat)
+                    x = SeqFeature(feat.location, type="gene", strand=feat.strand)
+                    q3 = x.qualifiers
+                    q3["ID"] = "gene:" + tag
+                    q3["gene_id"] = tag
+                    q3["Name"] = tag
+                    q3["biotype"] = "protein_coding"
+                    new.features.append(x)
             elif feat.type == "gene":
                 tag = q["gene"][0]
                 # edit the gene feature
@@ -80,5 +89,5 @@ def GFF_bcftools_format(in_handle, out_handle):
 
 
 if __name__ == "__main__":
-    #GFF_bcftools_format(sys.stdin, sys.stdout)
-    GFF_bcftools_format(sys.argv[1], sys.argv[2])
+    GFF_bcftools_format(sys.stdin, sys.stdout)
+    GFF_bcftools_format(in_handle, "test.gff")
