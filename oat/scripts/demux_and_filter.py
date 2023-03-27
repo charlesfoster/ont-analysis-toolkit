@@ -123,7 +123,6 @@ def demultiplex_reads(variable_dict):
                 cmd = "{0} --input_path {1} --save_path {2} --detect_mid_strand_barcodes --barcode_kits {3} --trim_barcodes {4}".format(
                     guppy_barcoder, basecalledPath, bcodeDir, barcode_kit_name, barcode_option
                 )
-                my_log.debug(cmd)
                 subprocess.Popen(
                     shlex.split(cmd),
                     shell=False,
@@ -167,8 +166,8 @@ def filter_reads(variable_dict):
             )
         else:
             for fastq in fastqs:
-                cmd = "nanoq --min-len {0} --max-len {1} -i {2} >> {3}".format(
-                    variable_dict["min_len"], variable_dict["max_len"], fastq, outfile
+                cmd = "nanoq --min-len {0} --max-len {1} -i {2} {3} >> {4}".format(
+                    variable_dict["min_len"], variable_dict["max_len"], fastq, variable_dict["additional_nanoq"], outfile
                 )
                 subprocess.Popen(
                     cmd,
@@ -247,8 +246,8 @@ def relocate_and_filter_reads(variable_dict):
                 if file.endswith(".fastq")
             ]
             for fastq in fastqs:
-                cmd = "nanoq --min-len {0} --max-len {1} -i {2} >> {3}".format(
-                    variable_dict["min_len"], variable_dict["max_len"], fastq, outfile
+                cmd = "nanoq --min-len {0} --max-len {1} -i {2} {3} >> {4}".format(
+                    variable_dict["min_len"], variable_dict["max_len"], fastq, variable_dict["additional_nanoq"], outfile
                 )
                 subprocess.Popen(
                     cmd,

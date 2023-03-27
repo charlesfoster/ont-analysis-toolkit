@@ -68,14 +68,14 @@ config["min_depth"] = int(config["min_depth"])
 # determine model for clair3
 base_gmodel = config["guppy_model"]
 
-if config["variant_caller"].lower() == "clair3":
-    if '_g5' in base_gmodel:
-        clair3_model = 'r941_prom_sup_g5014'
-    else:
-        print('Could not determine appropriate clair3 model - setting to r941_prom_hac_g360+g422 for safety')
-        clair3_model = 'r941_prom_hac_g360+g422'
-else:
-    clair3_model = 'None'
+# if config["variant_caller"].lower() == "clair3":
+#     if '_g5' in base_gmodel:
+#         clair3_model = 'r941_prom_sup_g5014'
+#     else:
+#         print('Could not determine appropriate clair3 model - setting to r941_prom_hac_g360+g422 for safety')
+#         clair3_model = 'r941_prom_hac_g360+g422'
+# else:
+#     clair3_model = 'None'
 
 if config['variant_caller'] == 'clair3':
     snv_min_qual = 5
@@ -285,8 +285,8 @@ rule final_qc:
             outdata.at[sample, "percent_total_reads"] = percent
             if sample_dict[sample]["neg_control"].bool() == True:
                 qc_result = "PASS" if qc_result == "FAIL" else "FAIL"
-            else:
-                qc_result = "FAIL"
+                coverage_result = "PASS" if sample_dict[sample]["coverage"].iat[0] < 1 else "FAIL"
+                outdata.at[sample, "coverage_QC"] = coverage_result
             outdata.at[sample, "reads_qc"] = qc_result
 
         input_cols = outdata.columns.to_list()
@@ -534,7 +534,7 @@ rule clair3_variant:
         reference=config["reference"],
         refname=os.path.basename(config["reference"]).replace(".fasta",""),
         candidate_bed_path=os.path.join(RESULT_DIR, "{sample}","clair3","tmp/full_alignment_output/candidate_bed"),
-        model=clair3_model,
+        model=config["clair3_model"],
         output=os.path.join(RESULT_DIR, "{sample}","clair3"),
     resources:
         cpus=4,
@@ -545,7 +545,7 @@ rule clair3_variant:
         """
         mkdir -p {params.candidate_bed_path}
         touch "{params.candidate_bed_path}/FULL_ALN_FILE_{params.refname}"
-        /opt/bin/run_clair3.sh --bam_fn={input.bam} --sample_name={wildcards.sample} --ref_fn={params.reference} --threads={threads} --platform="ont" --model_path="/opt/models/{params.model}" --output={params.output}    --chunk_size=29903 --include_all_ctgs --no_phasing_for_fa --remove_intermediate_dir --enable_long_indel --haploid_sensitive 2&>{log}
+        /opt/bin/run_clair3.sh --bam_fn={input.bam} --sample_name={wildcards.sample} --ref_fn={params.reference} --threads={threads} --platform="ont" --model_path="{params.model}" --output={params.output}    --chunk_size=29903 --include_all_ctgs --no_phasing_for_fa --remove_intermediate_dir --enable_long_indel --haploid_sensitive 2&>{log}
         """
 
 
@@ -561,7 +561,6 @@ rule cleanup_clair3:
         os.path.join(RESULT_DIR, "{sample}/logs/clair3.log.txt"),
     params:
         reference=config["reference"],
-        model=clair3_model,
         output=os.path.join(RESULT_DIR, "{sample}","clair3")
     resources:
         cpus=1,

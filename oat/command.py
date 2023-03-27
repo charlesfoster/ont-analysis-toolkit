@@ -121,6 +121,8 @@ def main(sysargs=sys.argv[1:]):
             Common options include:
             - rapid 12-barcode kit (SQK-RBK004)
             - rapid 96-barcode kit (SQK-RBK110-96)
+            - new rapid 24-barcode kit (SQK-RBK114-24)
+            - new rapid 96-barcode kit (SQK-RBK114-96)
             - native 12-barcode kit (EXP-NBD104)
             - native 12-barcode expansion kit 13-24 (EXP-NBD114)
             - native 96-barcode kit (EXP-NBD196)
@@ -267,6 +269,12 @@ def main(sysargs=sys.argv[1:]):
         default="r941_min_high_g360",
     )
     parser.add_argument(
+        "--clair3_model",
+        action="store",
+        help="Path to where clair3 model is located. 'CLAIR3_MODEL' environmental model is used, if set, otherwise singularity default: /opt/models/r941_prom_hac_g360+g422",
+        default="/opt/models/r941_prom_hac_g360+g422",
+    )
+    parser.add_argument(
         "--min_depth",
         action="store",
         help="Minimum depth for (1) an SNV to be kept; and (2) consensus genome generation. Default: 20",
@@ -295,6 +303,9 @@ def main(sysargs=sys.argv[1:]):
     )
     parser.add_argument(
         "--redo_analysis", action="store_true", help="Delete entire analysis output directory and contents for a fresh run", default=False
+    )
+    parser.add_argument(
+        "--additional_nanoq", action="store", help="Additional results for nanoq besides default length filtering", default=""
     )
     parser.add_argument(
         "--version",
@@ -492,9 +503,11 @@ def main(sysargs=sys.argv[1:]):
         if not args.demultiplexed:
             from oat.scripts.demux_and_filter import demultiplex_reads, filter_reads
             demultiplex_reads(variable_dict)
+            my_log.info("Filtering reads")
             filter_reads(variable_dict)
         else:
             from oat.scripts.demux_and_filter import relocate_and_filter_reads
+            my_log.info("Relocating and filtering reads")
             relocate_and_filter_reads(variable_dict)
 
         if args.print_dag:
