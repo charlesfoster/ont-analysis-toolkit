@@ -1,7 +1,0 @@
-barcode,id,neg_control,protocol,run_name
-BC01,nCoV_4978,FALSE,Midnight,2021-10-27
-BC02,nCoV_4979,FALSE,Midnight,2021-10-27
-BC03,nCoV_4980,FALSE,Midnight,2021-10-27
-BC04,nCoV_4981,FALSE,Midnight,2021-10-27
-BC05,nCoV_4982,FALSE,Midnight,2021-10-27
-BC12,NEG,TRUE,Midnight,2021-10-27
