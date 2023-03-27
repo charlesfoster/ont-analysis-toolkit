@@ -1,0 +1,7 @@
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - medaka=1.6.0=py38h84d2cc8_0
+  - cyvcf2
