@@ -11,8 +11,10 @@
 !src/*
 !src/oat/
 !src/oat/*
-!src/oat/cli/*
+!src/oat/gui/*
+!src/oat/gui/*
 !src/oat/cli/
+!src/oat/cli/*
 !oat/cli/envs/*
 !oat/cli/references/*
 !oat/cli/protocols/*
