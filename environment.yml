@@ -14,15 +14,7 @@ dependencies:
   - mamba=0.22.1
   - minimap2=2.24
   - artic-porechop=0.3.2pre
-  - pip
+  - pip=23.0.1
   - imagemagick=7.1.0_27
   - nanoq=0.8.6
   - singularity=3.7.1
-  - pip:
-    - colorlog==6.6.0
-    - biopython>=1.78
-    - pandas==1.4.1
-    - psutil==5.9.0
-    - pygraphviz==1.9
-    - pygments==2.11.2
-    - GPUtil==1.4.0
