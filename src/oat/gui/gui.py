@@ -2,7 +2,7 @@ from PyQt5.QtWidgets import (QApplication, QWidget, QVBoxLayout, QGridLayout, QC
                              QLabel, QComboBox, QLineEdit, QPushButton, QFileDialog, QMessageBox, QGroupBox)
 import sys
 import psutil
-import os 
+import os
 from functools import partial
 
 ## FUNCTIONS
@@ -298,7 +298,7 @@ class AnalysisGUI(QWidget):
 
         self.entry_other = QLineEdit()
         advanced_layout.addWidget(self.entry_other, 6, 1)
-        
+
         self.combo_guppy_model.currentTextChanged.connect(self.update_other_entry)
 
         #%% clair3 model
@@ -317,7 +317,7 @@ class AnalysisGUI(QWidget):
 
         self.entry_other = QLineEdit()
         advanced_layout.addWidget(self.entry_other, 8, 1)
-        
+
         self.combo_clair3_model.currentTextChanged.connect(self.update_other_entry)
 
         #%% threads
@@ -352,7 +352,7 @@ class AnalysisGUI(QWidget):
         #%% delete reads
         self.checkbox_delete_reads = QCheckBox("Delete demultiplexed reads after analysis")
         advanced_layout.addWidget(self.checkbox_delete_reads, 14, 1)
- 
+
         #%% print DAG
         self.checkbox_print_dag = QCheckBox("Print analysis DAG then quit")
         advanced_layout.addWidget(self.checkbox_print_dag, 15, 1)
@@ -466,7 +466,7 @@ class AnalysisGUI(QWidget):
             import oat.cli.cli as cli
             import sys
             # generate cli input
-            sys.argv = [sys.argv[0]] + self.generate_cli_input()
+            sys.argv = [sys.argv[0]] + [str(x) for x in self.generate_cli_input()]
             cli.main(sys.argv[1:])
 
     def validate_float(self, title, text):

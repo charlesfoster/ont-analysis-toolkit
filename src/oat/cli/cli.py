@@ -488,7 +488,7 @@ def main(sysargs=sys.argv[1:]):
                 list_resources=False,
                 config=variable_dict,
                 quiet=False,
-                cores=args.threads,
+                cores=int(args.threads),
                 lock=False,
             )
 
@@ -589,7 +589,7 @@ def main(sysargs=sys.argv[1:]):
                 force_incomplete=True,
                 config=variable_dict,
                 quiet=False,
-                cores=args.threads,
+                cores=int(args.threads),
                 lock=False,
             )
             if status:
@@ -616,7 +616,7 @@ def main(sysargs=sys.argv[1:]):
                 resources=variable_dict['resources'],
                 config=variable_dict,
                 quiet=True,
-                cores=args.threads,
+                cores=int(args.threads),
                 lock=False,
             )
         else:
@@ -640,7 +640,7 @@ def main(sysargs=sys.argv[1:]):
                 list_resources=False,
                 config=variable_dict,
                 quiet=False,
-                cores=args.threads,
+                cores=int(args.threads),
                 lock=False,
             )
         shutil.move(variable_dict['logfile'], final_log_name)

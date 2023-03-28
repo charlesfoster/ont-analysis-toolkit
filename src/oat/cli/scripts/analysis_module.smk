@@ -20,7 +20,7 @@ import glob
 import pathlib
 import pandas as pd
 import os
-
+from statistics import stdev, mean
 #################
 # Custom functions
 #################
@@ -63,7 +63,7 @@ if config["variant_caller"] == "lofreq":
 # depth value will still be in the config
 config["min_depth"] = int(config["min_depth"])
 #coverage_colname = "ref_cov_"+str(config["min_depth"])
-coverage_colname = "coverage"
+#coverage_colname = "coverage"
 
 # determine model for clair3
 base_gmodel = config["guppy_model"]
@@ -245,7 +245,7 @@ rule final_qc:
                 "scorpio_call",
                 "Nextclade_pango",
                 "clade",
-                coverage_colname,
+                "coverage",
                 "mean_depth",
                 "num_reads",
                 "num_mapped_reads",
@@ -259,7 +259,7 @@ rule final_qc:
                 "run_name",
                 "id",
                 "barcode",
-                coverage_colname,
+                "coverage",
                 "mean_depth",
                 "num_reads",
                 "num_mapped_reads",
@@ -268,18 +268,25 @@ rule final_qc:
             ]
 
         # do qc of number of reads
-        reads_qc = pd.DataFrame(columns=["percent_total_reads", "reads_qc"])
+        reads_qc = pd.DataFrame(columns=["percent_total_reads", "reads_qc"], dtype=object)
         outdata = outdata.join(reads_qc, how="outer")
-
-        total_reads = combined_qc["num_reads"].sum()
         sample_dict = dict(tuple(outdata.groupby("id")))
+        total_reads = outdata["num_reads"].sum()
+        mean_reads = mean(outdata["num_reads"])
+        sd_reads = stdev(outdata["num_reads"])
+        read_num_threshold = mean_reads - sd_reads
         for sample in sample_dict:
-            percent = (sample_dict[sample]["num_reads"].squeeze() / total_reads) * 100
+            num_reads = sample_dict[sample]["num_reads"].squeeze()
+            if num_reads < read_num_threshold:
+                qc_result = "FAIL"
+            elif num_reads > read_num_threshold:
+                qc_result = "PASS"
+            percent = (num_reads / total_reads) * 100
             outdata.at[sample, "percent_total_reads"] = percent
             if sample_dict[sample]["neg_control"].bool() == True:
-                qc_result = "PASS" if percent < 5 else "FAIL"
+                qc_result = "PASS" if qc_result == "FAIL" else "FAIL"
             else:
-                qc_result = "PASS" if percent > 5 else "FAIL"
+                qc_result = "FAIL"
             outdata.at[sample, "reads_qc"] = qc_result
 
         input_cols = outdata.columns.to_list()
@@ -533,7 +540,7 @@ rule clair3_variant:
         cpus=4,
         #gpu=1,
     container:
-        "docker://hkubal/clair3:latest"
+        "docker://hkubal/clair3:v0.1-r12"
     shell:
         """
         mkdir -p {params.candidate_bed_path}
@@ -688,7 +695,7 @@ rule filter_vcf:
         bcftools index -f {input.vcf_file}
         bcftools +fill-tags {input.vcf_file} -Ou -- -t "TYPE" | \
         bcftools norm -Ou -a -m -  2> /dev/null | \
-        bcftools view -f 'PASS,dn,dp,.' -i "INFO/AF >= {params.snv_freq} && INFO/DP >= {params.snv_min_depth} && QUAL >= {params.snv_min_depth}" -Oz -o {output.vcf_file}
+        bcftools view -f 'PASS,dn,dp,.' -i "INFO/AF >= {params.snv_freq} && INFO/DP >= {params.snv_min_depth} && QUAL >= {params.snv_min_qual}" -Oz -o {output.vcf_file}
         bcftools +setGT {output.vcf_file} -o {output.vcf_file} -- -t a -n 'c:1/1' 2>> {log}
         bcftools index {output.vcf_file}
         """
@@ -815,7 +822,7 @@ rule pangolin:
     threads: 4,
     shell:
         """
-        pangolin --skip-scorpio --outfile {output.report} {input.fasta} &> /dev/null
+        pangolin --outfile {output.report} {input.fasta} &> /dev/null
         """
 
 
@@ -825,13 +832,15 @@ rule update_nextclade:
     params:
         nextclade_dataset = config['nextclade_dataset']
     container:
-        "docker://nextstrain/nextclade:latest"
+        "docker://nextstrain/nextclade:2.3.1"
+    log:
+        os.path.join(RESULT_DIR, "nextclade_update_log.txt"),
     shell:
         """
-        echo "nextclade version:" > {output.update_info}
-        nextclade --version >> {output.update_info} &>/dev/null
-        echo "Updating SARS-CoV-2 dataset..." >> {output.update_info}
-        nextclade dataset get --name sars-cov-2 -o {params.nextclade_dataset} &>>{output.update_info}
+        echo "nextclade version:" > {output.update_info} 2>{log}
+        nextclade --version >> {output.update_info} &>>{log}
+        echo "Updating SARS-CoV-2 dataset..." >> {output.update_info} 2>>{log}
+        nextclade dataset get --name sars-cov-2 -o {params.nextclade_dataset} &>>{log}
         """
 
 rule nextclade:
@@ -844,7 +853,7 @@ rule nextclade:
         nextclade_dataset = config['nextclade_dataset'],
         outdir = os.path.join(RESULT_DIR, "{sample}/nextclade"),
     container:
-        "docker://nextstrain/nextclade:latest"
+        "docker://nextstrain/nextclade:2.3.1"
     resources:
         cpus=1,
     log:
@@ -943,7 +952,7 @@ rule sample_qc:
                 "id",
                 "num_reads",
                 "num_mapped_reads",
-                coverage_colname,
+                "coverage",
                 "mean_depth",
                 "coverage_QC",
                 "technology",

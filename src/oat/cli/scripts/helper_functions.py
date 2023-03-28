@@ -16,6 +16,8 @@ import shutil
 from datetime import date
 import pathlib
 import glob
+import subprocess
+import shlex
 
 TODAY = date.today().strftime("%Y-%m-%d")
 thisdir = os.path.abspath(os.path.dirname(__file__))
@@ -203,6 +205,43 @@ def check_arguments(variable_dict, args):
         )
 
         variable_dict['nextclade_dataset'] = nextclade_dir
+
+        #update nextclade unless disabled
+        if not variable_dict['no_update']:
+            my_log.info(
+                "Checking whether nextclade needs to be updated..."
+            )
+            snakefile = os.path.join(thisdir, "analysis_module.smk")
+            snakefile_alternate = os.path.join(thisdir, "alternate_analysis.smk")
+            update_file = os.path.join(thisdir, "get_latest_tag.sh")
+            cmd = f'grep "docker://nextstrain" {snakefile} | uniq | tr -d " " | sed "s|docker://nextstrain/nextclade:||" | tr -d "\n"'
+            current_version = subprocess.check_output(cmd, shell=True).decode('utf-8').replace('"','')
+            cmd = f"bash {update_file} --source dockerhub --repo nextstrain --image nextclade --no-alphabet"
+            newest_version = subprocess.check_output(cmd, shell=True).decode('utf-8')
+            if current_version != newest_version:
+                cmd = f'sed -i "s|docker://nextstrain/nextclade:{current_version}|docker://nextstrain/nextclade:{newest_version}|g" {snakefile}'
+                update_proc = subprocess.Popen(
+                    shlex.split(cmd),
+                    shell=False,
+                    stdin=subprocess.PIPE,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                    )
+                cmd = f'sed -i "s|docker://nextstrain/nextclade:{current_version}|docker://nextstrain/nextclade:{newest_version}|g" {snakefile_alternate}'
+                update_proc = subprocess.Popen(
+                    shlex.split(cmd),
+                    shell=False,
+                    stdin=subprocess.PIPE,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                    )
+                my_log.info(
+                    f"Updated nextclade version dependency to {newest_version}"
+                )
+            else:
+                my_log.info(
+                    f"Nextclade version dependency is already at the newest version: {current_version}"
+                )
     else:
         variable_dict['nextclade_dataset'] = None
     #set up analysis outdir
@@ -297,3 +336,5 @@ def check_prior_lineages(variable_dict):
             os.remove(os.path.join(variable_dict["outdir"], "pangolin_update_info.txt"))
         if os.path.exists(os.path.join(variable_dict["outdir"], "nextclade_update_info.txt")):
             os.remove(os.path.join(variable_dict["outdir"], "nextclade_update_info.txt"))
+
+

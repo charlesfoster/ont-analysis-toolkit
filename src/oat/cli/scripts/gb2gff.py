@@ -14,8 +14,8 @@ def GFF_bcftools_format(in_handle, out_handle):
 
     from BCBio import GFF
 
-    # in_handle = open(in_file)
-    # out_handle = open(out_handle, "w")
+    in_handle = open(in_handle)
+    out_handle = open(out_handle, "w")
     from Bio.SeqFeature import SeqFeature
     from Bio.SeqFeature import FeatureLocation
     from copy import copy, deepcopy
@@ -35,8 +35,14 @@ def GFF_bcftools_format(in_handle, out_handle):
 
             if feat.type == "CDS":
                 # use the CDS feature to create the new lines
-                tag = q["gene"][0]  # q['locus_tag'][0]
-                protein_id = q["protein_id"][0]
+                try:
+                    tag = q["gene"][0]  # q['locus_tag'][0]
+                except:
+                    tag = q['locus_tag'][0]
+                try:
+                    protein_id = q["protein_id"][0]
+                except:
+                    protein_id = "Unknown"
                 q["ID"] = "CDS:%s" % protein_id
                 q["biotype"] = "protein_coding"
 
@@ -57,7 +63,6 @@ def GFF_bcftools_format(in_handle, out_handle):
                     q2["Parent"] = "gene:%s" % tag
                     q2["biotype"] = "protein_coding"
                     new.features.append(m)
-
             elif feat.type == "gene":
                 tag = q["gene"][0]
                 # edit the gene feature
@@ -66,6 +71,8 @@ def GFF_bcftools_format(in_handle, out_handle):
                 q["biotype"] = "protein_coding"
                 q["Name"] = q["gene"]
                 new.features.append(feat)
+            else:
+                continue
         # write the new features to a GFF
         GFF.write([new], out_handle)
         return
@@ -73,5 +80,5 @@ def GFF_bcftools_format(in_handle, out_handle):
 
 
 if __name__ == "__main__":
-    GFF_bcftools_format(sys.stdin, sys.stdout)
-    #GFF_bcftools_format(sys.stdin, "test.gff")
+    #GFF_bcftools_format(sys.stdin, sys.stdout)
+    GFF_bcftools_format(sys.argv[1], sys.argv[2])
