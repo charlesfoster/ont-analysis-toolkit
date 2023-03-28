@@ -21,6 +21,7 @@ import pathlib
 import pandas as pd
 import os
 from statistics import stdev, mean
+
 #################
 # Custom functions
 #################
@@ -31,7 +32,7 @@ from statistics import stdev, mean
 ###############
 # set up env variable & threads for tensorflow / medaka
 os.environ["TF_FORCE_GPU_ALLOW_GROWTH"] = "true"
-#medaka_con_threads = int(config["threads"] / 2)
+# medaka_con_threads = int(config["threads"] / 2)
 # medaka log consistently says more than 2 threads is a waste, so...
 medaka_con_threads = int(2)
 
@@ -62,28 +63,20 @@ if config["variant_caller"] == "lofreq":
 # update: for simplifying reporting purposes, changing to just 'coverage'
 # depth value will still be in the config
 config["min_depth"] = int(config["min_depth"])
-#coverage_colname = "ref_cov_"+str(config["min_depth"])
-#coverage_colname = "coverage"
+# coverage_colname = "ref_cov_"+str(config["min_depth"])
+# coverage_colname = "coverage"
 
 # determine model for clair3
 base_gmodel = config["guppy_model"]
+clair3_model = config["clair3_model"]
 
-if config["variant_caller"].lower() == "clair3":
-    if '_g5' in base_gmodel:
-        clair3_model = 'r941_prom_sup_g5014'
-    else:
-        print('Could not determine appropriate clair3 model - setting to r941_prom_hac_g360+g422 for safety')
-        clair3_model = 'r941_prom_hac_g360+g422'
-else:
-    clair3_model = 'None'
-
-if config['variant_caller'] == 'clair3':
+if config["variant_caller"] == "clair3":
     snv_min_qual = 5
     filter_extension = "clair3.vcf.gz"
-elif config['variant_caller'] == 'medaka':
+elif config["variant_caller"] == "medaka":
     snv_min_qual = 20
     filter_extension = "longshot.vcf.gz"
-elif config['variant_caller'] == 'lofreq':
+elif config["variant_caller"] == "lofreq":
     snv_min_qual = 20
     filter_extension = "lofreq.vcf.gz"
 
@@ -91,7 +84,9 @@ elif config['variant_caller'] == 'lofreq':
 snakedir = os.path.abspath(os.path.dirname(__file__))
 one_up = os.path.split(snakedir)[0]
 
-parse_script = os.path.abspath(os.path.join(one_up,"oat","scripts","parse_medaka_variants.py"))
+parse_script = os.path.abspath(
+    os.path.join(one_up, "oat", "scripts", "parse_medaka_variants.py")
+)
 
 ################
 # Optional removal of trimmed reads (to save space)
@@ -151,6 +146,7 @@ else:
         )
     )
 
+
 rule final_qc:
     input:
         consensus_genome=expand(
@@ -171,7 +167,11 @@ rule final_qc:
         sars_analysis=SARS_ANALYSIS,
     run:
         # combine fasta files into one multifasta
-        fa_files = [f for f in glob.glob(RESULT_DIR + "/**/*.consensus.fasta", recursive=True) if (s in f for s in SAMPLES)]
+        fa_files = [
+            f
+            for f in glob.glob(RESULT_DIR + "/**/*.consensus.fasta", recursive=True)
+            if (s in f for s in SAMPLES)
+        ]
 
         multifasta = os.path.join(
             RESULT_DIR, config["run_name"] + ".consensus_genomes.fa"
@@ -191,11 +191,13 @@ rule final_qc:
             if len(qc_file) == 1:
                 qc_files.append(qc_file[0])
             else:
-                print(f'Error: investigate duplicated sample_qc file found for {sample}')
+                print(
+                    f"Error: investigate duplicated sample_qc file found for {sample}"
+                )
                 sys.exit(-1)
 
         # combine into one final_qc
-        #qc_files = glob.glob(RESULT_DIR + "/**/*qc_results.csv", recursive=True)
+        # qc_files = glob.glob(RESULT_DIR + "/**/*qc_results.csv", recursive=True)
         combined_qc = pd.concat([pd.read_csv(f) for f in qc_files]).set_index(["id"])
         outdata = run_metadata.join(combined_qc, on=["id"])
         outdata = outdata.set_index("id", drop=False)
@@ -209,7 +211,14 @@ rule final_qc:
 
             # read in the lineage files
             lineages = pd.concat([pd.read_csv(f) for f in input.pangolin_results]).drop(
-                ["ambiguity_score", "scorpio_conflict", "scorpio_notes", "is_designated", "qc_notes"], axis=1
+                [
+                    "ambiguity_score",
+                    "scorpio_conflict",
+                    "scorpio_notes",
+                    "is_designated",
+                    "qc_notes",
+                ],
+                axis=1,
             )
 
             lineages.columns = [
@@ -229,10 +238,30 @@ rule final_qc:
             outdata = outdata.join(lineages.set_index(["id"]), on=["id"])
 
             # read in the nextclade files
-            nextclades = pd.concat([pd.read_csv(f, sep="\t") for f in input.nextclade_results])
-            nextclades.rename(columns={'seqName':'id','qc.privateMutations.total':'totalPrivateMutations','qc.overallStatus':'Nextclade_QC'}, inplace=True)
-            keep = ['id','clade','Nextclade_pango','Nextclade_QC','totalFrameShifts','totalAminoacidInsertions','totalAminoacidDeletions','totalAminoacidSubstitutions','totalNonACGTNs','totalPrivateMutations']
-            nextclades = nextclades.loc[:,keep]
+            nextclades = pd.concat(
+                [pd.read_csv(f, sep="\t") for f in input.nextclade_results]
+            )
+            nextclades.rename(
+                columns={
+                    "seqName": "id",
+                    "qc.privateMutations.total": "totalPrivateMutations",
+                    "qc.overallStatus": "Nextclade_QC",
+                },
+                inplace=True,
+            )
+            keep = [
+                "id",
+                "clade",
+                "Nextclade_pango",
+                "Nextclade_QC",
+                "totalFrameShifts",
+                "totalAminoacidInsertions",
+                "totalAminoacidDeletions",
+                "totalAminoacidSubstitutions",
+                "totalNonACGTNs",
+                "totalPrivateMutations",
+            ]
+            nextclades = nextclades.loc[:, keep]
 
             outdata = outdata.join(nextclades.set_index(["id"]), on=["id"])
 
@@ -268,8 +297,11 @@ rule final_qc:
             ]
 
         # do qc of number of reads
-        reads_qc = pd.DataFrame(columns=["percent_total_reads", "reads_qc"], dtype=object)
+        reads_qc = pd.DataFrame(
+            columns=["percent_total_reads", "reads_qc"], dtype=object
+        )
         outdata = outdata.join(reads_qc, how="outer")
+        outdata.to_csv("~/Programs/ont-analysis-toolkit/TEST.csv", index=None)
         sample_dict = dict(tuple(outdata.groupby("id")))
         total_reads = outdata["num_reads"].sum()
         mean_reads = mean(outdata["num_reads"])
@@ -277,16 +309,17 @@ rule final_qc:
         read_num_threshold = mean_reads - sd_reads
         for sample in sample_dict:
             num_reads = sample_dict[sample]["num_reads"].squeeze()
-            if num_reads < read_num_threshold:
+            if (num_reads < read_num_threshold) or ((num_reads / mean_reads) * 100) < 1:
                 qc_result = "FAIL"
             elif num_reads > read_num_threshold:
                 qc_result = "PASS"
             percent = (num_reads / total_reads) * 100
             outdata.at[sample, "percent_total_reads"] = percent
             if sample_dict[sample]["neg_control"].bool() == True:
-                qc_result = "PASS" if qc_result == "FAIL" else "FAIL"
-            else:
-                qc_result = "FAIL"
+                if qc_result == "FAIL":
+                    qc_result = "PASS"
+                else:
+                    qc_result = "FAIL"
             outdata.at[sample, "reads_qc"] = qc_result
 
         input_cols = outdata.columns.to_list()
@@ -301,7 +334,6 @@ rule final_qc:
         os.remove(params.run_metadata)
         with open(os.path.join(RESULT_DIR, "config.yaml"), "w") as outfile:
             yaml.dump(config, outfile, default_flow_style=False)
-
 
 
 rule map_reads:
@@ -351,6 +383,7 @@ rule trim_amplicon_primers:
         samtools sort -u -@ 4 2>>{log} | \
         samtools view --write-index -@ 20 -F 4 -o {output.bam}
         """
+
 
 ##### MEDAKA VARIANT CALLING START #####
 rule medaka_consensus:
@@ -405,6 +438,7 @@ rule medaka_variant:
         """
         #medaka tools annotate --pad 1 --chunk_size 29903 --dpsp {output.medaka_vcf} {params.reference} {input.bam} {output.vcf} 2>>{log}
 
+
 rule longshot:
     input:
         bam=os.path.join(RESULT_DIR, "{sample}/{sample}.trimmed.bam"),
@@ -424,7 +458,7 @@ rule longshot:
         cpus=4,
     shell:
         """
-         longshot -P 0 -F --no_haps --bam {input.bam} --ref {params.reference} --out {output.vcf} --potential_variants {input.vcf}    2>{log}
+        longshot -P 0 -F --no_haps --bam {input.bam} --ref {params.reference} --out {output.vcf} --potential_variants {input.vcf}    2>{log}
         """
 
 
@@ -480,7 +514,7 @@ rule add_rough_VAF:
 #         """
 
 
-#rule parse_medaka_vcf:
+# rule parse_medaka_vcf:
 #   input:
 #       vcf=os.path.join(RESULT_DIR, "{sample}/{sample}.medaka.tmp.vcf"),
 #   output:
@@ -501,17 +535,17 @@ rule add_rough_VAF:
 #       grep -v "DPSP\=0;" | \
 #       awk -v OFS="\t" -F"\t" '
 #       /^[^#]/{{ AC=$8; DP=$8; DPSP=$8;
-#				sub("AR=.*SR=", "SR=", AC);
+# 				sub("AR=.*SR=", "SR=", AC);
 #              sub("SR=[0-9]*,[0-9]*,", "", AC);
-#				AC1=AC; AC2=AC;
-#				sub(",[0-9]*","",AC1);
-#				sub("[0-9]*,","",AC2);
-#				AC=AC1+AC2;
-#				sub("AR=.*DPSP=", "DPSP=", DPSP);
-#				sub(";.*", "", DPSP);
+# 				AC1=AC; AC2=AC;
+# 				sub(",[0-9]*","",AC1);
+# 				sub("[0-9]*,","",AC2);
+# 				AC=AC1+AC2;
+# 				sub("AR=.*DPSP=", "DPSP=", DPSP);
+# 				sub(";.*", "", DPSP);
 #               sub("DPSP=", "", DPSP);
-#				sub("AR=.*DP=", "DP=", DP);
-#				sub(";.*", "", DP);
+# 				sub("AR=.*DP=", "DP=", DP);
+# 				sub(";.*", "", DP);
 #               sub("DP=", "", DP);
 #               $8 = $8";SAC="AC";AF="AC/DPSP";NQ="$6/DP; }}1' | \
 #       bgzip -c > {output.vcf}
@@ -519,12 +553,13 @@ rule add_rough_VAF:
 
 ##### MEDAKA VARIANT CALLING END #####
 
+
 ##### CLAIR3 VARIANT CALLING START #####
 rule clair3_variant:
     input:
         bam=os.path.join(RESULT_DIR, "{sample}/{sample}.trimmed.bam"),
     output:
-        clair3_vcf=os.path.join(RESULT_DIR, "{sample}","clair3","merge_output.vcf.gz"),
+        clair3_vcf=os.path.join(RESULT_DIR, "{sample}", "clair3", "merge_output.vcf.gz"),
     message:
         "clair3 variant calls for {wildcards.sample}"
     threads: 4
@@ -532,26 +567,28 @@ rule clair3_variant:
         os.path.join(RESULT_DIR, "{sample}/logs/clair3.log.txt"),
     params:
         reference=config["reference"],
-        refname=os.path.basename(config["reference"]).replace(".fasta",""),
-        candidate_bed_path=os.path.join(RESULT_DIR, "{sample}","clair3","tmp/full_alignment_output/candidate_bed"),
+        refname=os.path.basename(config["reference"]).replace(".fasta", ""),
+        candidate_bed_path=os.path.join(
+            RESULT_DIR, "{sample}", "clair3", "tmp/full_alignment_output/candidate_bed"
+        ),
         model=clair3_model,
-        output=os.path.join(RESULT_DIR, "{sample}","clair3"),
+        output=os.path.join(RESULT_DIR, "{sample}", "clair3"),
     resources:
         cpus=4,
         #gpu=1,
     container:
-        "docker://hkubal/clair3:v0.1-r12"
+        "docker://hkubal/clair3:v1.0.0"
     shell:
         """
         mkdir -p {params.candidate_bed_path}
         touch "{params.candidate_bed_path}/FULL_ALN_FILE_{params.refname}"
-        /opt/bin/run_clair3.sh --bam_fn={input.bam} --sample_name={wildcards.sample} --ref_fn={params.reference} --threads={threads} --platform="ont" --model_path="/opt/models/{params.model}" --output={params.output}    --chunk_size=29903 --include_all_ctgs --no_phasing_for_fa --remove_intermediate_dir --enable_long_indel --haploid_sensitive 2&>{log}
+        /opt/bin/run_clair3.sh --bam_fn={input.bam} --sample_name={wildcards.sample} --ref_fn={params.reference} --threads={threads} --platform="ont" --model_path="{params.model}" --output={params.output}    --chunk_size=29903 --include_all_ctgs --no_phasing_for_fa --remove_intermediate_dir --enable_long_indel --haploid_sensitive --keep_iupac_bases 2&>{log}
         """
 
 
 rule cleanup_clair3:
     input:
-        clair3_vcf=os.path.join(RESULT_DIR, "{sample}","clair3","merge_output.vcf.gz"),
+        clair3_vcf=os.path.join(RESULT_DIR, "{sample}", "clair3", "merge_output.vcf.gz"),
     output:
         clair3_vcf=os.path.join(RESULT_DIR, "{sample}/{sample}.clair3.vcf.gz"),
     message:
@@ -562,7 +599,7 @@ rule cleanup_clair3:
     params:
         reference=config["reference"],
         model=clair3_model,
-        output=os.path.join(RESULT_DIR, "{sample}","clair3")
+        output=os.path.join(RESULT_DIR, "{sample}", "clair3"),
     resources:
         cpus=1,
     shell:
@@ -579,6 +616,7 @@ rule cleanup_clair3:
         $8 = $8";DP="DP";AF="AF; }}1' | \
         bgzip -c > {output.clair3_vcf}
         """
+
 
 ##### CLAIR3 VARIANT CALLING END #####
 
@@ -611,6 +649,7 @@ rule lofreq_dindel:
 
         """
 
+
 rule index_dindel:
     input:
         bam=os.path.join(RESULT_DIR, "{sample}/{sample}.dindel.bam"),
@@ -626,6 +665,7 @@ rule index_dindel:
         samtools index -@{threads} {input.bam}
         touch {output.ckp}
         """
+
 
 rule lofreq_call:
     input:
@@ -651,6 +691,7 @@ rule lofreq_call:
         -f {params.reference} -o {output.lofreq_vcf} {input.bam} 2> {log}
         """
 
+
 rule cleanup_lofreq:
     input:
         lofreq_vcf=os.path.join(RESULT_DIR, "{sample}/{sample}.lofreq.vcf"),
@@ -674,12 +715,16 @@ rule cleanup_lofreq:
         bcftools index -f {output.lofreq_vcf}
         """
 
+
 ##### lofreq VARIANT CALLING END #####
 
 
 rule filter_vcf:
     input:
-        vcf_file=expand(os.path.join(RESULT_DIR, "{{sample}}/{{sample}}.{ext}"), ext=filter_extension),
+        vcf_file=expand(
+            os.path.join(RESULT_DIR, "{{sample}}/{{sample}}.{ext}"),
+            ext=filter_extension,
+        ),
     output:
         vcf_file=temp(os.path.join(RESULT_DIR, "{sample}/{sample}.filtered.vcf.gz")),
     log:
@@ -687,7 +732,7 @@ rule filter_vcf:
     params:
         snv_freq=config["snv_min_freq"],
         snv_min_depth=config["min_depth"],
-        snv_min_qual=snv_min_qual
+        snv_min_qual=snv_min_qual,
     message:
         "setting conditional GT for {wildcards.sample}"
     shell:
@@ -796,9 +841,10 @@ rule amino_acid_consequences:
         awk -v OFS="\t" '{{ print $1,$2,$9,$3,$4,$5,$8,$10,$11,$7,$6 }}' >> {output.tsv}
         """
 
+
 rule update_pangolin:
     output:
-        update_info = os.path.join(RESULT_DIR, "pangolin_update_info.txt"),
+        update_info=os.path.join(RESULT_DIR, "pangolin_update_info.txt"),
     conda:
         "../envs/pangolin.yaml"
     shell:
@@ -809,9 +855,10 @@ rule update_pangolin:
         pangolin --all-versions &>> {output.update_info}
         """
 
+
 rule pangolin:
     input:
-        update_info = os.path.join(RESULT_DIR, "pangolin_update_info.txt"),
+        update_info=os.path.join(RESULT_DIR, "pangolin_update_info.txt"),
         fasta=os.path.join(RESULT_DIR, "{sample}/{sample}.consensus.fasta"),
     output:
         report=os.path.join(RESULT_DIR, "{sample}/{sample}.lineage_report.csv"),
@@ -819,7 +866,7 @@ rule pangolin:
         "../envs/pangolin.yaml"
     resources:
         cpus=1,
-    threads: 4,
+    threads: 4
     shell:
         """
         pangolin --outfile {output.report} {input.fasta} &> /dev/null
@@ -828,11 +875,11 @@ rule pangolin:
 
 rule update_nextclade:
     output:
-        update_info = os.path.join(RESULT_DIR, "nextclade_update_info.txt"),
+        update_info=os.path.join(RESULT_DIR, "nextclade_update_info.txt"),
     params:
-        nextclade_dataset = config['nextclade_dataset']
+        nextclade_dataset=config["nextclade_dataset"],
     container:
-        "docker://nextstrain/nextclade:2.3.1"
+        "docker://nextstrain/nextclade:2.13.0"
     log:
         os.path.join(RESULT_DIR, "nextclade_update_log.txt"),
     shell:
@@ -843,22 +890,23 @@ rule update_nextclade:
         nextclade dataset get --name sars-cov-2 -o {params.nextclade_dataset} &>>{log}
         """
 
+
 rule nextclade:
     input:
-        update_info = os.path.join(RESULT_DIR, "nextclade_update_info.txt"),
+        update_info=os.path.join(RESULT_DIR, "nextclade_update_info.txt"),
         fasta=os.path.join(RESULT_DIR, "{sample}/{sample}.consensus.fasta"),
     output:
         report=os.path.join(RESULT_DIR, "{sample}/{sample}.nextclade_report.tsv"),
     params:
-        nextclade_dataset = config['nextclade_dataset'],
-        outdir = os.path.join(RESULT_DIR, "{sample}/nextclade"),
+        nextclade_dataset=config["nextclade_dataset"],
+        outdir=os.path.join(RESULT_DIR, "{sample}/nextclade"),
     container:
-        "docker://nextstrain/nextclade:2.3.1"
+        "docker://nextstrain/nextclade:2.13.0"
     resources:
         cpus=1,
     log:
         os.path.join(RESULT_DIR, "{sample}/logs/{sample}.nextclade.log"),
-    threads: 4,
+    threads: 4
     shell:
         """
         nextclade run --in-order \
@@ -871,7 +919,7 @@ rule nextclade:
         """
 
 
-#rule get_coverage_old:
+# rule get_coverage_old:
 #    input:
 #        bam=os.path.join(RESULT_DIR, "{sample}/{sample}.trimmed.bam"),
 #    output:
@@ -890,6 +938,7 @@ rule nextclade:
 #        samtools coverage {input.bam} -o {output.samtools_coverage} 2>/dev/null
 #        """
 
+
 rule get_coverage:
     input:
         bam=os.path.join(RESULT_DIR, "{sample}/{sample}.trimmed.bam"),
@@ -901,7 +950,7 @@ rule get_coverage:
             os.path.join(RESULT_DIR, "{sample}/{sample}.samtools_coverage.tsv")
         ),
     params:
-        bed = config['coverage_bed'],
+        bed=config["coverage_bed"],
     resources:
         cpus=1,
     threads: 1
@@ -914,9 +963,7 @@ rule get_coverage:
 
 rule sample_qc:
     input:
-        samtools_depth=os.path.join(
-            RESULT_DIR, "{sample}/{sample}.samtools_depth.tsv"
-        ),
+        samtools_depth=os.path.join(RESULT_DIR, "{sample}/{sample}.samtools_depth.tsv"),
         samtools_coverage=os.path.join(
             RESULT_DIR, "{sample}/{sample}.samtools_coverage.tsv"
         ),
@@ -939,7 +986,9 @@ rule sample_qc:
         sam_df = pd.read_csv(input.samtools_coverage, sep="\t")
         num_mapped_reads = sam_df.loc[0, "numreads"]
         try:
-            coverage_value = (df[df["depth"] >= params.min_depth].shape[0]) / (df.shape[0]) * 100
+            coverage_value = (
+                (df[df["depth"] >= params.min_depth].shape[0]) / (df.shape[0]) * 100
+            )
             mean_depth = df["depth"].mean()
         except:
             coverage_value = 0
