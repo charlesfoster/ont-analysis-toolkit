@@ -100,6 +100,12 @@ def check_arguments(variable_dict, args):
         my_log.info('Replacing default guppy model ({0}) with the $GUPPY_MODEL environmental variable ({1})'.format(args.guppy_model,gmodel_check))
         variable_dict['guppy_model'] = gmodel_check
 
+    #check clair3 model
+    c3model_check = os.getenv('CLAIR3_MODEL')
+    if c3model_check is not None:
+        my_log.info('Replacing default clair3 model ({0}) with the $CLAIR3_MODEL environmental variable ({1})'.format(args.clair3_model,c3model_check))
+        variable_dict['clair3_model'] = c3model_check
+
     #check if conda activated - probably redundant
     if shutil.which("rampart") is None:
         my_log.error(
@@ -253,7 +259,8 @@ def check_arguments(variable_dict, args):
 
     #set up singularity binding
     conda_location = os.environ["CONDA_PREFIX"]
-    singularity_args = f"--bind {analysis_outdir}:{analysis_outdir},{conda_location}:{conda_location}"
+    home = os.environ["HOME"]
+    singularity_args = f"--bind {home}:{home},{analysis_outdir}:{analysis_outdir},{conda_location}:{conda_location}"
     variable_dict['singularity_args'] = singularity_args
 
     my_log.info("Run metadata: " + "".join(args.samples_file))
@@ -336,5 +343,3 @@ def check_prior_lineages(variable_dict):
             os.remove(os.path.join(variable_dict["outdir"], "pangolin_update_info.txt"))
         if os.path.exists(os.path.join(variable_dict["outdir"], "nextclade_update_info.txt")):
             os.remove(os.path.join(variable_dict["outdir"], "nextclade_update_info.txt"))
-
-

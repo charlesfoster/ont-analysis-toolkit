@@ -70,6 +70,7 @@ if os.getenv('GUPPY_MODEL') is not None:
 
 CLAIR3_MODEL_DESCRIPTIONS = {
     "/opt/models/r941_prom_hac_g360+g422": "Default within clair3 Singularity container",
+    "/opt/models/r941_prom_sup_g5014": "Super accurate model for v9.4.1 chemistry",
     "Other": "Choose your own adventure: specify below",
 }
 
