@@ -66,7 +66,9 @@ GUPPY_MODEL_DESCRIPTIONS = {
 }
 
 if os.getenv('GUPPY_MODEL') is not None:
-    GUPPY_MODEL_DESCRIPTIONS[important_models[0]] = f"Default set by environmental variable: {important_models[0]}"
+    update_dict = GUPPY_MODEL_DESCRIPTIONS
+    GUPPY_MODEL_DESCRIPTIONS = {important_models[0]:f"Default set by environmental variable"}
+    GUPPY_MODEL_DESCRIPTIONS.update(update_dict)
 
 CLAIR3_MODEL_DESCRIPTIONS = {
     "/opt/models/r941_prom_hac_g360+g422": "Default within clair3 Singularity container",
@@ -75,7 +77,9 @@ CLAIR3_MODEL_DESCRIPTIONS = {
 }
 
 if os.getenv('CLAIR3_MODEL') is not None:
-    CLAIR3_MODEL_DESCRIPTIONS[important_models[1]] = f"Default set by environmental variable: {important_models[1]}"
+    update_dict = CLAIR3_MODEL_DESCRIPTIONS
+    CLAIR3_MODEL_DESCRIPTIONS = {important_models[1]:f"Default set by environmental variable"}
+    CLAIR3_MODEL_DESCRIPTIONS.update(update_dict)
 
 max_threads = psutil.cpu_count(logical=True)
 max_mem = round(bytesto(psutil.virtual_memory().available, "m"))
