@@ -59,12 +59,7 @@ if not os.path.isfile(config["reference"] + ".bwt"):
 if config["variant_caller"] == "lofreq":
     variant_conda_env = "../envs/lofreq.yaml"
 
-# set up column name for coverage - dependent on input parameter
-# update: for simplifying reporting purposes, changing to just 'coverage'
-# depth value will still be in the config
 config["min_depth"] = int(config["min_depth"])
-# coverage_colname = "ref_cov_"+str(config["min_depth"])
-# coverage_colname = "coverage"
 
 # determine model for clair3
 base_gmodel = config["guppy_model"]
@@ -197,7 +192,6 @@ rule final_qc:
                 sys.exit(-1)
 
         # combine into one final_qc
-        # qc_files = glob.glob(RESULT_DIR + "/**/*qc_results.csv", recursive=True)
         combined_qc = pd.concat([pd.read_csv(f) for f in qc_files]).set_index(["id"])
         outdata = run_metadata.join(combined_qc, on=["id"])
         outdata = outdata.set_index("id", drop=False)
@@ -946,7 +940,7 @@ rule get_coverage:
     input:
         bam=os.path.join(RESULT_DIR, "{sample}/{sample}.trimmed.bam"),
     output:
-        samtools_depth=temp(
+        samtools_depth=(
             os.path.join(RESULT_DIR, "{sample}/{sample}.samtools_depth.tsv")
         ),
         samtools_coverage=temp(

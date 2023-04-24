@@ -61,42 +61,54 @@ if not os.path.isfile(config["reference"] + ".bwt"):
 if config["variant_caller"] == "lofreq":
     variant_conda_env = "../envs/lofreq.yaml"
 
-# set up column name for coverage - dependent on input parameter
-# update: for simplifying reporting purposes, changing to just 'coverage'
-# depth value will still be in the config
 config["min_depth"] = int(config["min_depth"])
-#coverage_colname = "ref_cov_"+str(config["min_depth"])
-#coverage_colname = "coverage"
 
 # determine model for clair3
 base_gmodel = config["guppy_model"]
+clair3_model = config["clair3_model"]
 
-if config["variant_caller"].lower() == "clair3":
-    if '_g5' in base_gmodel:
-        clair3_model = 'r941_prom_sup_g5014'
-    else:
-        print('Could not determine appropriate clair3 model - setting to r941_prom_hac_g360+g422 for safety')
-        clair3_model = 'r941_prom_hac_g360+g422'
-else:
-    clair3_model = 'None'
-
-# detect input
-if config['variant_caller'] == 'clair3':
+if config["variant_caller"] == "clair3":
     snv_min_qual = 5
     filter_extension = "clair3.vcf.gz"
-    filter_extension_uncompressed = "clair3.vcf"
-elif config['variant_caller'] == 'medaka':
+elif config["variant_caller"] == "medaka":
     snv_min_qual = 20
-    filter_extension_uncompressed = "medaka.vcf"
-elif config['variant_caller'] == 'lofreq':
+    filter_extension = "longshot.vcf.gz"
+elif config["variant_caller"] == "lofreq":
     snv_min_qual = 20
-    filter_extension_uncompressed = "lofreq.vcf"
+    filter_extension = "lofreq.vcf.gz"
 
 # medaka script
 snakedir = os.path.abspath(os.path.dirname(__file__))
 one_up = os.path.split(snakedir)[0]
 
-parse_script = os.path.abspath(os.path.join(one_up,"oat","scripts","parse_medaka_variants.py"))
+parse_script = os.path.abspath(
+    os.path.join(one_up, "oat", "scripts", "parse_medaka_variants.py")
+)
+
+################
+# Optional removal of trimmed reads (to save space)
+################
+
+
+onsuccess:
+    if config["delete_reads"] == True:
+        print(
+            "\n\033[92mRemoving trimmed reads (input reads remain untouched)\033[0m\n"
+        )
+        dead_reads = glob.glob(config["reads_dir"] + "*.fastq", recursive=False)
+        [os.remove(x) for x in dead_reads]
+
+    print("\n\033[92mRemoving unwanted and/or empty files\033[0m\n")
+    for file in glob.glob(RESULT_DIR + "/**", recursive=True):
+        if file.endswith(
+            (
+                "draft.vcf.gz.tbi",
+                ".filtered.vcf.gz.csi",
+                ".mapped.bam.csi",
+            )
+        ) or (os.path.getsize(file) == 0 and not file.endswith(".fastq")):
+            os.remove(file)
+
 
 ################
 # rules
@@ -148,7 +160,11 @@ rule final_qc:
         sars_analysis=SARS_ANALYSIS,
     run:
         # combine fasta files into one multifasta
-        fa_files = [f for f in glob.glob(RESULT_DIR + "/**/*.consensus.fasta", recursive=True) if (s in f for s in ALTERNATE_SAMPLES)]
+        fa_files = [
+            f
+            for f in glob.glob(RESULT_DIR + "/**/*.consensus.alternate.fasta", recursive=True)
+            if (s in f for s in SAMPLES)
+        ]
 
         multifasta = os.path.join(
             RESULT_DIR, config["run_name"] + ".consensus_genomes.alternate.fa"
@@ -162,21 +178,22 @@ rule final_qc:
 
         # collect QC files
         qc_files = []
-        for sample in ALTERNATE_SAMPLES:
+        for sample in SAMPLES:
             sample_dir = os.path.join(RESULT_DIR, sample)
             qc_file = glob.glob(sample_dir + "/*qc_results.alternate.csv")
             if len(qc_file) == 1:
                 qc_files.append(qc_file[0])
             else:
-                print(f'Error: investigate duplicated sample_qc file found for {sample}')
+                print(
+                    f"Error: investigate duplicated sample_qc file found for {sample}"
+                )
                 sys.exit(-1)
 
         # combine into one final_qc
-        #qc_files = glob.glob(RESULT_DIR + "/**/*qc_results.csv", recursive=True)
         combined_qc = pd.concat([pd.read_csv(f) for f in qc_files]).set_index(["id"])
         outdata = run_metadata.join(combined_qc, on=["id"])
         outdata = outdata.set_index("id", drop=False)
-        outdata.dropna(subset=['num_reads'])
+        # outdata.dropna(subset=['num_reads'])
         outdata.index.name = None
 
         # add analysis date
@@ -187,7 +204,14 @@ rule final_qc:
 
             # read in the lineage files
             lineages = pd.concat([pd.read_csv(f) for f in input.pangolin_results]).drop(
-                ["ambiguity_score", "scorpio_conflict", "scorpio_notes", "is_designated", "qc_notes"], axis=1
+                [
+                    "ambiguity_score",
+                    "scorpio_conflict",
+                    "scorpio_notes",
+                    "is_designated",
+                    "qc_notes",
+                ],
+                axis=1,
             )
 
             lineages.columns = [
@@ -207,10 +231,30 @@ rule final_qc:
             outdata = outdata.join(lineages.set_index(["id"]), on=["id"])
 
             # read in the nextclade files
-            nextclades = pd.concat([pd.read_csv(f, sep="\t") for f in input.nextclade_results])
-            nextclades.rename(columns={'seqName':'id','qc.privateMutations.total':'totalPrivateMutations','qc.overallStatus':'Nextclade_QC'}, inplace=True)
-            keep = ['id','clade','Nextclade_pango','Nextclade_QC','totalFrameShifts','totalAminoacidInsertions','totalAminoacidDeletions','totalAminoacidSubstitutions','totalNonACGTNs','totalPrivateMutations']
-            nextclades = nextclades.loc[:,keep]
+            nextclades = pd.concat(
+                [pd.read_csv(f, sep="\t") for f in input.nextclade_results]
+            )
+            nextclades.rename(
+                columns={
+                    "seqName": "id",
+                    "qc.privateMutations.total": "totalPrivateMutations",
+                    "qc.overallStatus": "Nextclade_QC",
+                },
+                inplace=True,
+            )
+            keep = [
+                "id",
+                "clade",
+                "Nextclade_pango",
+                "Nextclade_QC",
+                "totalFrameShifts",
+                "totalAminoacidInsertions",
+                "totalAminoacidDeletions",
+                "totalAminoacidSubstitutions",
+                "totalNonACGTNs",
+                "totalPrivateMutations",
+            ]
+            nextclades = nextclades.loc[:, keep]
 
             outdata = outdata.join(nextclades.set_index(["id"]), on=["id"])
 
@@ -246,8 +290,11 @@ rule final_qc:
             ]
 
         # do qc of number of reads
-        reads_qc = pd.DataFrame(columns=["percent_total_reads", "reads_qc"])
+        reads_qc = pd.DataFrame(
+            columns=["percent_total_reads", "reads_qc"], dtype=object
+        )
         outdata = outdata.join(reads_qc, how="outer")
+        outdata.to_csv("~/Programs/ont-analysis-toolkit/TEST.csv", index=None)
         sample_dict = dict(tuple(outdata.groupby("id")))
         total_reads = outdata["num_reads"].sum()
         mean_reads = mean(outdata["num_reads"])
@@ -255,22 +302,22 @@ rule final_qc:
         read_num_threshold = mean_reads - sd_reads
         for sample in sample_dict:
             num_reads = sample_dict[sample]["num_reads"].squeeze()
-            if num_reads < read_num_threshold:
+            if (num_reads < read_num_threshold) or ((num_reads / mean_reads) * 100) < 1:
                 qc_result = "FAIL"
             elif num_reads > read_num_threshold:
                 qc_result = "PASS"
             percent = (num_reads / total_reads) * 100
             outdata.at[sample, "percent_total_reads"] = percent
             if sample_dict[sample]["neg_control"].bool() == True:
-                qc_result = "PASS" if qc_result == "FAIL" else "FAIL"
-            else:
-                qc_result = "FAIL"
+                if qc_result == "FAIL":
+                    qc_result = "PASS"
+                else:
+                    qc_result = "FAIL"
             outdata.at[sample, "reads_qc"] = qc_result
 
         input_cols = outdata.columns.to_list()
         extra_input_cols = list(set(input_cols) - set(compulsory_col_order))
         final_col_order = compulsory_col_order + extra_input_cols
-        outdata = outdata[outdata.num_reads.notnull()]
         outdata = outdata[final_col_order]
         outdata.to_csv(
             os.path.join(RESULT_DIR, config["run_name"] + "_qc.alternate.csv"),
@@ -317,6 +364,7 @@ rule filter_vcf:
         vcf_file=expand(os.path.join(RESULT_DIR, "{{sample}}/{{sample}}.{ext}"), ext=filter_extension),
         snv_freq=config["snv_min_freq"],
         snv_min_depth=config["min_depth"],
+        snv_min_qual=snv_min_qual,
     message:
         "setting conditional GT for {wildcards.sample}"
     shell:
@@ -357,6 +405,7 @@ rule generate_consensus:
     input:
         vcf_file=os.path.join(RESULT_DIR, "{sample}/{sample}.alternate.vcf.gz"),
         bam=os.path.join(RESULT_DIR, "{sample}/{sample}.trimmed.bam"),
+        samtools_depth=os.path.join(RESULT_DIR, "{sample}/{sample}.samtools_depth.tsv"),
     output:
         consensus=os.path.join(RESULT_DIR, "{sample}/{sample}.consensus.alternate.fasta"),
         mask=temp(os.path.join(RESULT_DIR, "{sample}/mask.bed")),
@@ -376,10 +425,12 @@ rule generate_consensus:
     shell:
         """
         bcftools query -f'%CHROM\t%POS0\t%END\n' {input.vcf_file} > {output.variants_bed}
-        varCheck=$(file {output.variants_bed} | cut -f2 -d " ")
-        if [ $varCheck == "empty" ]; then
+        # varCheck=$(file {output.variants_bed} | cut -f2 -d " ")
+        varCheck=$(cut -f4 {input.samtools_depth} | tail +2)
+        if [ $varCheck == "0" ]; then
             echo "BAM file was empty for {params.prefix}. Making empty consensus genome."
-            emptySeq=$(printf %.1s N{{1..29903}})
+            seqLen=$(grep -v "^>" {params.reference} | tr -d "\n" | wc -c)
+            emptySeq=$(printf '%*s' $seqLen ""| tr ' ' 'N')
             printf ">{params.prefix}\n$emptySeq\n" > {output.consensus}
             touch {output.mask}
             touch {output.variants_bed}
@@ -426,13 +477,15 @@ rule update_nextclade:
     params:
         nextclade_dataset = config['nextclade_dataset']
     container:
-        "docker://nextstrain/nextclade:2.3.1"
+        "docker://nextstrain/nextclade:2.13.0"
+    log:
+        os.path.join(RESULT_DIR, "nextclade_update_log_alternate.txt"),
     shell:
         """
-        echo "nextclade version:" > {output.update_info}
-        nextclade --version >> {output.update_info} &>/dev/null
-        echo "Updating SARS-CoV-2 dataset..." >> {output.update_info}
-        nextclade dataset get --name sars-cov-2 -o {params.nextclade_dataset} &>>{output.update_info}
+        echo "nextclade version:" > {output.update_info} 2>{log}
+        nextclade --version >> {output.update_info} &>>{log}
+        echo "Updating SARS-CoV-2 dataset..." >> {output.update_info} 2>>{log}
+        nextclade dataset get --name sars-cov-2 -o {params.nextclade_dataset} &>>{log}
         """
 
 rule nextclade:
@@ -445,11 +498,11 @@ rule nextclade:
         nextclade_dataset = config['nextclade_dataset'],
         outdir = os.path.join(RESULT_DIR, "{sample}/nextclade"),
     container:
-        "docker://nextstrain/nextclade:2.3.1"
+        "docker://nextstrain/nextclade:2.13.0"
     resources:
         cpus=1,
     log:
-        os.path.join(RESULT_DIR, "{sample}/logs/{sample}.nextclade.log"),
+        os.path.join(RESULT_DIR, "{sample}/logs/{sample}.nextclade_alternate.log"),
     threads: 4,
     shell:
         """
