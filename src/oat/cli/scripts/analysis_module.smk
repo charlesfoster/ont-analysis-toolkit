@@ -773,6 +773,7 @@ rule generate_consensus:
     input:
         vcf_file=os.path.join(RESULT_DIR, "{sample}/{sample}.final.vcf.gz"),
         bam=os.path.join(RESULT_DIR, "{sample}/{sample}.trimmed.bam"),
+        samtools_depth=os.path.join(RESULT_DIR, "{sample}/{sample}.samtools_depth.tsv"),
     output:
         consensus=os.path.join(RESULT_DIR, "{sample}/{sample}.consensus.fasta"),
         mask=temp(os.path.join(RESULT_DIR, "{sample}/mask.bed")),
@@ -792,10 +793,12 @@ rule generate_consensus:
     shell:
         """
         bcftools query -f'%CHROM\t%POS0\t%END\n' {input.vcf_file} > {output.variants_bed}
-        varCheck=$(file {output.variants_bed} | cut -f2 -d " ")
-        if [ $varCheck == "empty" ]; then
+        # varCheck=$(file {output.variants_bed} | cut -f2 -d " ")
+        varCheck=$(cut -f4 {input.samtools_depth} | tail +2)
+        if [ $varCheck == "0" ]; then
             echo "BAM file was empty for {params.prefix}. Making empty consensus genome."
-            emptySeq=$(printf %.1s N{{1..29903}})
+            seqLen=$(grep -v "^>" {params.reference} | tr -d "\n" | wc -c)
+            emptySeq=$(printf '%*s' $seqLen ""| tr ' ' 'N')
             printf ">{params.prefix}\n$emptySeq\n" > {output.consensus}
             touch {output.mask}
             touch {output.variants_bed}

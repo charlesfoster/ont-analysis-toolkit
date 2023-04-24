@@ -23,3 +23,4 @@
 !src/oat/cli/scripts/*
 src/oat/cli/scripts/bak/*
 src/oat/cli/protocols/HCV-H2SEQ/*
+src/oat/cli/protocols/CMV-TYRA-HONOURS/*
