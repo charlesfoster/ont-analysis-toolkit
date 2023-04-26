@@ -93,24 +93,24 @@ parse_script = os.path.abspath(
 ################
 
 
-onsuccess:
-    if config["delete_reads"] == True:
-        print(
-            "\n\033[92mRemoving trimmed reads (input reads remain untouched)\033[0m\n"
-        )
-        dead_reads = glob.glob(config["reads_dir"] + "*.fastq", recursive=False)
-        [os.remove(x) for x in dead_reads]
+# onsuccess:
+#     if config["delete_reads"] == True:
+#         print(
+#             "\n\033[92mRemoving trimmed reads (input reads remain untouched)\033[0m\n"
+#         )
+#         dead_reads = glob.glob(config["reads_dir"] + "*.fastq", recursive=False)
+#         [os.remove(x) for x in dead_reads]
 
-    print("\n\033[92mRemoving unwanted and/or empty files\033[0m\n")
-    for file in glob.glob(RESULT_DIR + "/**", recursive=True):
-        if file.endswith(
-            (
-                "draft.vcf.gz.tbi",
-                ".filtered.vcf.gz.csi",
-                ".mapped.bam.csi",
-            )
-        ) or (os.path.getsize(file) == 0 and not file.endswith(".fastq") and not '/barcodes/' in file):
-            os.remove(file)
+#     print("\n\033[92mRemoving unwanted and/or empty files\033[0m\n")
+#     for file in glob.glob(RESULT_DIR + "/**", recursive=True):
+#         if file.endswith(
+#             (
+#                 "draft.vcf.gz.tbi",
+#                 ".filtered.vcf.gz.csi",
+#                 ".mapped.bam.csi",
+#             )
+#         ) or (os.path.getsize(file) == 0 and not file.endswith(".fastq") and not '/barcodes/' in file):
+#             os.remove(file)
 
 
 ################
@@ -135,7 +135,7 @@ if SARS_ANALYSIS:
 else:
     potential_pangolin.append(
         expand(
-            os.path.join(RESULT_DIR, "{sample}/{sample}.qc_results.csv"),
+            os.path.join(RESULT_DIR, "{sample}/{sample}.qc_results.alternate.csv"),
             sample=ALTERNATE_SAMPLES,
         )
     )
@@ -155,7 +155,7 @@ rule final_qc:
         pangolin_results=potential_pangolin,
         nextclade_results=potential_nextclade,
         reports=expand(
-            os.path.join(RESULT_DIR, "{sample}/{sample}.qc_results.csv"),
+            os.path.join(RESULT_DIR, "{sample}/{sample}.qc_results.alternate.csv"),
             sample=ALTERNATE_SAMPLES,
         ),
     params:
@@ -184,7 +184,7 @@ rule final_qc:
         qc_files = []
         for sample in ALTERNATE_SAMPLES:
             sample_dir = os.path.join(RESULT_DIR, sample)
-            qc_file = glob.glob(sample_dir + "/*qc_results.csv")
+            qc_file = glob.glob(sample_dir + "/*qc_results.alternate.csv")
             if len(qc_file) == 1:
                 qc_files.append(qc_file[0])
             else:
@@ -549,7 +549,7 @@ rule sample_qc:
             RESULT_DIR, "{sample}/{sample}.samtools_coverage.tsv"
         ),
     output:
-        report=os.path.join(RESULT_DIR, "{sample}/{sample}.qc_results.csv"),
+        report=os.path.join(RESULT_DIR, "{sample}/{sample}.qc_results.alternate.csv"),
     params:
         fastq=os.path.join(config["reads_dir"], "{sample}.fastq"),
         sample="{sample}",
