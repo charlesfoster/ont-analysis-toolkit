@@ -301,13 +301,16 @@ rule final_qc:
         sample_dict = dict(tuple(outdata.groupby("id")))
         total_reads = outdata["num_reads"].sum()
         mean_reads = mean(outdata["num_reads"])
-        sd_reads = stdev(outdata["num_reads"])
+        try:
+            sd_reads = stdev(outdata["num_reads"])
+        except:
+            sd_reads = 0 # assuming stdev failed because of having only 1 sample
         read_num_threshold = mean_reads - sd_reads
         for sample in sample_dict:
             num_reads = sample_dict[sample]["num_reads"].squeeze()
             if (num_reads < read_num_threshold) or ((num_reads / mean_reads) * 100) < 1:
                 qc_result = "FAIL"
-            elif num_reads > read_num_threshold:
+            elif num_reads >= read_num_threshold:
                 qc_result = "PASS"
             percent = (num_reads / total_reads) * 100
             outdata.at[sample, "percent_total_reads"] = percent
