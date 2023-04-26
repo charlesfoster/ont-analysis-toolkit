@@ -70,12 +70,15 @@ clair3_model = config["clair3_model"]
 if config["variant_caller"] == "clair3":
     snv_min_qual = 5
     filter_extension = "clair3.vcf.gz"
+    filter_extension_uncompressed = "clair3.vcf"
 elif config["variant_caller"] == "medaka":
     snv_min_qual = 20
     filter_extension = "longshot.vcf.gz"
+    filter_extension_uncompressed = "longshot.vcf"
 elif config["variant_caller"] == "lofreq":
     snv_min_qual = 20
     filter_extension = "lofreq.vcf.gz"
+    filter_extension_uncompressed = "lofreq.vcf"
 
 # medaka script
 snakedir = os.path.abspath(os.path.dirname(__file__))
@@ -106,7 +109,7 @@ onsuccess:
                 ".filtered.vcf.gz.csi",
                 ".mapped.bam.csi",
             )
-        ) or (os.path.getsize(file) == 0 and not file.endswith(".fastq")):
+        ) or (os.path.getsize(file) == 0 and not file.endswith(".fastq") and not '/barcodes/' in file):
             os.remove(file)
 
 
@@ -132,7 +135,7 @@ if SARS_ANALYSIS:
 else:
     potential_pangolin.append(
         expand(
-            os.path.join(RESULT_DIR, "{sample}/{sample}.qc_results.alternate.csv"),
+            os.path.join(RESULT_DIR, "{sample}/{sample}.qc_results.csv"),
             sample=ALTERNATE_SAMPLES,
         )
     )
@@ -152,7 +155,7 @@ rule final_qc:
         pangolin_results=potential_pangolin,
         nextclade_results=potential_nextclade,
         reports=expand(
-            os.path.join(RESULT_DIR, "{sample}/{sample}.qc_results.alternate.csv"),
+            os.path.join(RESULT_DIR, "{sample}/{sample}.qc_results.csv"),
             sample=ALTERNATE_SAMPLES,
         ),
     params:
@@ -163,7 +166,7 @@ rule final_qc:
         fa_files = [
             f
             for f in glob.glob(RESULT_DIR + "/**/*.consensus.alternate.fasta", recursive=True)
-            if (s in f for s in SAMPLES)
+            if (s in f for s in ALTERNATE_SAMPLES)
         ]
 
         multifasta = os.path.join(
@@ -175,12 +178,13 @@ rule final_qc:
         for fa in fa_files:
             os.system("cat {0} >> {1}".format(fa, multifasta))
         run_metadata = pd.read_csv(params.run_metadata)
+        run_metadata = run_metadata.loc[run_metadata['id'].isin(ALTERNATE_SAMPLES)]
 
         # collect QC files
         qc_files = []
-        for sample in SAMPLES:
+        for sample in ALTERNATE_SAMPLES:
             sample_dir = os.path.join(RESULT_DIR, sample)
-            qc_file = glob.glob(sample_dir + "/*qc_results.alternate.csv")
+            qc_file = glob.glob(sample_dir + "/*qc_results.csv")
             if len(qc_file) == 1:
                 qc_files.append(qc_file[0])
             else:
@@ -294,7 +298,6 @@ rule final_qc:
             columns=["percent_total_reads", "reads_qc"], dtype=object
         )
         outdata = outdata.join(reads_qc, how="outer")
-        outdata.to_csv("~/Programs/ont-analysis-toolkit/TEST.csv", index=None)
         sample_dict = dict(tuple(outdata.groupby("id")))
         total_reads = outdata["num_reads"].sum()
         mean_reads = mean(outdata["num_reads"])
@@ -372,7 +375,7 @@ rule filter_vcf:
         bcftools index -f {params.vcf_file}
         bcftools +fill-tags {params.vcf_file} -Ou -- -t "TYPE" | \
         bcftools norm -Ou -a -m -  2> /dev/null | \
-        bcftools view -f 'PASS,dn,dp,.' -i "INFO/AF >= {params.snv_freq} && INFO/DP >= {params.snv_min_depth} && QUAL >= {params.snv_min_qual" -Oz -o {output.vcf_file}
+        bcftools view -f 'PASS,dn,dp,.' -i "INFO/AF >= {params.snv_freq} && INFO/DP >= {params.snv_min_depth} && QUAL >= {params.snv_min_qual}" -Oz -o {output.vcf_file}
         bcftools +setGT {output.vcf_file} -o {output.vcf_file} -- -t a -n 'c:1/1' 2>> {log}
         bcftools index {output.vcf_file}
         """
@@ -477,7 +480,7 @@ rule update_nextclade:
     params:
         nextclade_dataset = config['nextclade_dataset']
     container:
-        "docker://nextstrain/nextclade:2.13.0"
+        "docker://nextstrain/nextclade:2.13.1"
     log:
         os.path.join(RESULT_DIR, "nextclade_update_log_alternate.txt"),
     shell:
@@ -498,7 +501,7 @@ rule nextclade:
         nextclade_dataset = config['nextclade_dataset'],
         outdir = os.path.join(RESULT_DIR, "{sample}/nextclade"),
     container:
-        "docker://nextstrain/nextclade:2.13.0"
+        "docker://nextstrain/nextclade:2.13.1"
     resources:
         cpus=1,
     log:
@@ -546,7 +549,7 @@ rule sample_qc:
             RESULT_DIR, "{sample}/{sample}.samtools_coverage.tsv"
         ),
     output:
-        report=os.path.join(RESULT_DIR, "{sample}/{sample}.qc_results.alternate.csv"),
+        report=os.path.join(RESULT_DIR, "{sample}/{sample}.qc_results.csv"),
     params:
         fastq=os.path.join(config["reads_dir"], "{sample}.fastq"),
         sample="{sample}",
