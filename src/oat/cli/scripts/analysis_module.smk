@@ -295,7 +295,7 @@ rule final_qc:
             columns=["percent_total_reads", "reads_qc"], dtype=object
         )
         outdata = outdata.join(reads_qc, how="outer")
-        outdata.to_csv("~/Programs/ont-analysis-toolkit/TEST.csv", index=None)
+
         sample_dict = dict(tuple(outdata.groupby("id")))
         total_reads = outdata["num_reads"].sum()
         mean_reads = mean(outdata["num_reads"])
