@@ -103,6 +103,7 @@ class AnalysisParameters:
         # entry parameters
         self.samples_file = ""
         self.outdir = ""
+        self.minknow_data = ""
         # advanced params
         self.snv_min_freq = ""
         self.min_depth = ""
@@ -401,6 +402,19 @@ class AnalysisGUI(QWidget):
         )
         advanced_layout.addWidget(self.button_outdir, 21, 2)
 
+        #%% minknow_dir
+        self.label_minknow_data = QLabel("MinKNOW data output directory:")
+        advanced_layout.addWidget(self.label_minknow_data, 22, 0)
+
+        self.entry_minknow_data = QLineEdit()
+        advanced_layout.addWidget(self.entry_minknow_data, 22, 1)
+
+        self.button_minknow_data = QPushButton("Browse", self)
+        self.button_minknow_data.clicked.connect(
+            lambda option: self.browse_directory(self.entry_minknow_data)
+        )
+        advanced_layout.addWidget(self.button_minknow_data, 22, 2)
+
         ## RUN ANALYSIS ##
         #%% Run analysis button
         self.button_run_analysis = QPushButton("Run Analysis", self)
@@ -507,6 +521,7 @@ class AnalysisGUI(QWidget):
         self.parameters.threads = int(self.entry_threads.text())
         self.parameters.max_memory = int(self.entry_max_memory.text())
         self.parameters.outdir = self.entry_outdir.text()
+        self.parameters.minknow_data = self.entry_minknow_data.text()
 
         # checkbox parameters = flag-only options ('store_true')
         self.parameters.demultiplexed = self.checkbox_demultiplexed.isChecked()
