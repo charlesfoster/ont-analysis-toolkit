@@ -365,56 +365,41 @@ class AnalysisGUI(QWidget):
         advanced_layout.addWidget(self.checkbox_delete_reads, 14, 1)
 
         #%% skip clipping
-        self.label_skip_clipping = QLabel("Skip primer clipping:")
-        advanced_layout.addWidget(self.label_skip_clipping, 15, 0)
-
-        self.combo_skip_clipping = QComboBox()
-        self.combo_skip_clipping.addItems(list(SKIP_CLIPPING_DESCRIPTIONS.keys()))
-        self.combo_skip_clipping.setCurrentText(False)
-        advanced_layout.addWidget(self.combo_skip_clipping, 15, 1)
-        self.label_skip_clipping_desc = QLabel("Choose whether amplicon primer skipping should be skipped")
-        self.combo_skip_clipping.currentTextChanged.connect(
-            lambda option, label=self.label_skip_clipping_desc, input_dict=SKIP_CLIPPING_DESCRIPTIONS: self.update_desc(label, input_dict, option)
-        )
-        advanced_layout.addWidget(self.label_skip_clipping_desc, 15, 2)
-
-        self.entry_other = QLineEdit()
-        advanced_layout.addWidget(self.entry_other, 15, 1)
-
-        self.combo_skip_clipping.currentTextChanged.connect(self.update_other_entry)
+        self.checkbox_skip_clipping = QCheckBox("Skip amplicon primer clipping (when no amplicon scheme used)")
+        advanced_layout.addWidget(self.checkbox_skip_clipping, 15, 1)
 
         #%% print DAG
         self.checkbox_print_dag = QCheckBox("Print analysis DAG then quit")
-        advanced_layout.addWidget(self.checkbox_print_dag, 15, 1)
+        advanced_layout.addWidget(self.checkbox_print_dag, 16, 1)
 
         #%% dry run
         self.checkbox_dry_run = QCheckBox("Dry run only")
-        advanced_layout.addWidget(self.checkbox_dry_run, 16, 1)
+        advanced_layout.addWidget(self.checkbox_dry_run, 17, 1)
 
         #%% create envs only
         self.checkbox_create_envs_only = QCheckBox("Create conda envs only")
-        advanced_layout.addWidget(self.checkbox_create_envs_only, 17, 1)
+        advanced_layout.addWidget(self.checkbox_create_envs_only, 18, 1)
 
         #%% no update
         self.checkbox_no_update = QCheckBox("Disable updating of container versions for SARS-CoV-2 analysis.")
-        advanced_layout.addWidget(self.checkbox_no_update, 18, 1)
+        advanced_layout.addWidget(self.checkbox_no_update, 19, 1)
 
         #%% quiet
         self.checkbox_quiet = QCheckBox("Stop printing of Snakemake commands to screen")
-        advanced_layout.addWidget(self.checkbox_quiet, 19, 1)
+        advanced_layout.addWidget(self.checkbox_quiet, 20, 1)
 
         #%% Outdir
         self.label_outdir = QLabel("Output directory:")
-        advanced_layout.addWidget(self.label_outdir, 20, 0)
+        advanced_layout.addWidget(self.label_outdir, 21, 0)
 
         self.entry_outdir = QLineEdit()
-        advanced_layout.addWidget(self.entry_outdir, 20, 1)
+        advanced_layout.addWidget(self.entry_outdir, 21, 1)
 
         self.button_outdir = QPushButton("Browse", self)
         self.button_outdir.clicked.connect(
             lambda option: self.browse_directory(self.entry_outdir)
         )
-        advanced_layout.addWidget(self.button_outdir, 20, 2)
+        advanced_layout.addWidget(self.button_outdir, 21, 2)
 
         ## RUN ANALYSIS ##
         #%% Run analysis button
@@ -528,6 +513,7 @@ class AnalysisGUI(QWidget):
         self.parameters.force = self.checkbox_force.isChecked()
         self.parameters.redo_analysis = self.checkbox_redo_analysis.isChecked()
         self.parameters.delete_reads = self.checkbox_delete_reads.isChecked()
+        self.parameters.skip_clipping = self.checkbox_skip_clipping.isChecked()
         self.parameters.print_dag = self.checkbox_print_dag.isChecked()
         self.parameters.dry_run = self.checkbox_dry_run.isChecked()
         self.parameters.create_envs_only = self.checkbox_create_envs_only.isChecked()
