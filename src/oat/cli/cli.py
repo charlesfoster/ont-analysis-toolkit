@@ -310,6 +310,9 @@ def main(sysargs=sys.argv[1:]):
         "--additional_nanoq", action="store", help="Additional results for nanoq besides default length filtering", default=""
     )
     parser.add_argument(
+        "--skip_clipping", action="store_true", help="Skip clipping of amplicon primers", default=False
+    )
+    parser.add_argument(
         "--version",
         action="version",
         #version="covid illumina pipeline snakemake edition:  0.1.0",

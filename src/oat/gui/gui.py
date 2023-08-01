@@ -48,6 +48,11 @@ DEMULTIPLEXED_DESCRIPTIONS = {
     "False": "Sample demultiplexing not handled via MinKNOW",
 }
 
+SKIP_CLIPPING_DESCRIPTIONS = {
+    "True": "Do not attempt to clip amplicon primers (useful for capture data)",
+    "False": "Do not skip clipping of amplicon primers (recommended for amplicon data)",
+}
+
 MODULE_DESCRIPTIONS = {
     "All": "Monitor run with RAMPART then run analysis",
     "Rampart": "Monitor run with RAMPART only",
@@ -105,6 +110,7 @@ class AnalysisParameters:
         self.clair3_model = ""
         self.threads = ""
         self.max_memory = ""
+        self.skip_clipping = ""
         # checkbox params
         self.demultiplexed = ""
         self.force = ""
@@ -357,6 +363,25 @@ class AnalysisGUI(QWidget):
         #%% delete reads
         self.checkbox_delete_reads = QCheckBox("Delete demultiplexed reads after analysis")
         advanced_layout.addWidget(self.checkbox_delete_reads, 14, 1)
+
+        #%% skip clipping
+        self.label_skip_clipping = QLabel("Skip primer clipping:")
+        advanced_layout.addWidget(self.label_skip_clipping, 15, 0)
+
+        self.combo_skip_clipping = QComboBox()
+        self.combo_skip_clipping.addItems(list(SKIP_CLIPPING_DESCRIPTIONS.keys()))
+        self.combo_skip_clipping.setCurrentText(False)
+        advanced_layout.addWidget(self.combo_skip_clipping, 15, 1)
+        self.label_skip_clipping_desc = QLabel("Choose whether amplicon primer skipping should be skipped")
+        self.combo_skip_clipping.currentTextChanged.connect(
+            lambda option, label=self.label_skip_clipping_desc, input_dict=SKIP_CLIPPING_DESCRIPTIONS: self.update_desc(label, input_dict, option)
+        )
+        advanced_layout.addWidget(self.label_skip_clipping_desc, 15, 2)
+
+        self.entry_other = QLineEdit()
+        advanced_layout.addWidget(self.entry_other, 15, 1)
+
+        self.combo_skip_clipping.currentTextChanged.connect(self.update_other_entry)
 
         #%% print DAG
         self.checkbox_print_dag = QCheckBox("Print analysis DAG then quit")

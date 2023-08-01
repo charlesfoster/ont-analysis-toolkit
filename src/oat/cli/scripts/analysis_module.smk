@@ -366,16 +366,25 @@ rule trim_amplicon_primers:
     params:
         reference=config["reference"],
         bed=config["protocol_bed"],
+        skip_clipping=config['skip_clipping']
     resources:
         cpus=4,
     shell:
         """
-        samtools ampliconclip --both-ends --strand --soft-clip --filter-len 30 -@ 4 -u -b {params.bed} {input.bam} 2>{log} | \
-        samtools sort -u -@ 4 -n 2>>{log} | \
-        samtools fixmate -u -@ 4 - - 2>>{log} | \
-        samtools calmd -u -@ 4 - {params.reference} 2>>{log} | \
-        samtools sort -u -@ 4 2>>{log} | \
-        samtools view --write-index -@ 20 -F 4 -o {output.bam}
+        if [ {params.skip_clipping} == "True" ]; then
+            samtools sort -u -@ 4 -n {input.bam} 2>{log} 2>>{log} | \
+            samtools fixmate -u -@ 4 - - 2>>{log} | \
+            samtools calmd -u -@ 4 - {params.reference} 2>>{log} | \
+            samtools sort -u -@ 4 2>>{log} | \
+            samtools view --write-index -@ 20 -F 4 -o {output.bam}
+        else
+            samtools ampliconclip --both-ends --strand --soft-clip --filter-len 30 -@ 4 -u -b {params.bed} {input.bam} 2>{log} | \
+            samtools sort -u -@ 4 -n 2>>{log} | \
+            samtools fixmate -u -@ 4 - - 2>>{log} | \
+            samtools calmd -u -@ 4 - {params.reference} 2>>{log} | \
+            samtools sort -u -@ 4 2>>{log} | \
+            samtools view --write-index -@ 20 -F 4 -o {output.bam}
+        fi
         """
 
 
