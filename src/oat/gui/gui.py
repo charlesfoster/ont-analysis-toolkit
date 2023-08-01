@@ -496,6 +496,7 @@ class AnalysisGUI(QWidget):
             import sys
             # generate cli input
             sys.argv = [sys.argv[0]] + [str(x) for x in self.generate_cli_input()]
+            print(sys.argv)
             cli.main(sys.argv[1:])
 
     def validate_float(self, title, text):
