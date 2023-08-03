@@ -128,6 +128,7 @@ class AnalysisParameters:
                              'snv_min_freq',
                              ]
         self.checkbox_params = ['demultiplexed',
+                                'skip_clipping',
                                 'force',
                                 'redo_analysis',
                                 'delete_reads',

@@ -131,7 +131,6 @@ def rampart_run(variable_dict):
 
 import time
 import os
-import sys
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 from getpass import getpass
@@ -142,7 +141,6 @@ class movehandler(FileSystemEventHandler):
         self.password_check = password_check
         self.pathtowatch = pathtowatch
         self.destination = destination
-    
     #overriding the on_modified method
     def on_modified(self, event):
         dir1 = [x for x in os.listdir(self.pathtowatch) if x.endswith(".fastq")]
@@ -151,23 +149,17 @@ class movehandler(FileSystemEventHandler):
             fname2=fname
             source = os.path.join(self.pathtowatch,fname1)
             newdestination = os.path.join(self.destination,fname2)
-            file_done = False
-            file_size = -1
-            while file_size != os.path.getsize(self.pathtowatch):
-                file_size = os.path.getsize(self.destination)
-                time.sleep(1)
-            while not file_done:
-                try:
-                    print(f"Read found: {fname} ")
-                    print(f"Moving to barcode folder: {self.destination} ")
-                    if self.password_check[0]:
-                        cmd = f"echo {self.password_check[1]} | sudo --stdin mv {source} {newdestination}"
-                    else:
-                        cmd = f"mv {source} {newdestination}"
-                    os.system(cmd)
-                    file_done = True
-                except:
-                    return True        
+            try:
+                print(f"Read found: {fname} ")
+                print(f"Moving to barcode folder: {self.destination} ")
+                # if not self.password_check[0]:
+                #     cmd = f"mv {source} {newdestination}"
+                # else:
+                #     cmd = f"echo {password_check[1]} | sudo --stdin mv {source} {newdestination}"
+                cmd = f"mv {source} {newdestination}"
+                os.system(cmd)
+            except:
+                return True        
 
 def check_directory_permissions(directory_path):
     if not os.access(directory_path, os.W_OK):
@@ -187,7 +179,7 @@ def initiate_watchdog(pathtowatch,destination,password_check):
     observer.start()
     try:
         while True:
-            print("Watching for reads: press CTRL+C to end the watch and end RAMPART")
+            print(f"Watching for reads: press CTRL+C to end the watch and end RAMPART")
             time.sleep(10)
     except KeyboardInterrupt:
         observer.stop()
@@ -210,7 +202,7 @@ def rampart_watchdog(variable_dict):
     webbrowser.open(port_address, new=1)
     my_log.info(port_message)
     protocol_path = os.path.join(script_dir, "protocols", protocol_name, "rampart")
-    rampart_cmd = '{0} --verbose --protocol {1} --ports {2} --basecalledPath {3} --annotationOptions barcode_set="rapid" require_two_barcodes="False"'.format(
+    rampart_cmd = '{0} --verbose --protocol {1} --ports {2} --basecalledPath {3} --clearAnnotated --annotationOptions barcode_set="rapid" require_two_barcodes="False"'.format(
         rampart_exe, protocol_path, ports, variable_dict["basecalledPath"]
     )
     fname = os.path.join(rampart_outdir, TODAY + "_" + run_name + "_RAMPART_cmd.txt")
@@ -235,12 +227,12 @@ def rampart_watchdog(variable_dict):
         pathtowatch = variable_dict["basecalledPath"]
         destination = os.path.join(pathtowatch, variable_dict["pseudo_barcode"]) # need to create this elsewhere
         password_check = check_directory_permissions(pathtowatch)
+        if password_check[0]:
+            print(f"Temporarily granting {os.environ['USER']} permission to write in {pathtowatch}...")
+            cmd = f"echo {password_check[1]} | sudo --stdin chown {os.environ['USER']}:{os.environ['USER']} {pathtowatch}"
+            os.system(cmd)
         if not os.path.exists(destination):
-            if password_check[0]:
-                cmd = f"echo {password_check[1]} | sudo mkdir -p {destination}"
-                os.system(cmd)
-            else:
-                os.makedirs(destination)
+            os.makedirs(destination)
         # start rampart proc
         rampart_proc = subprocess.Popen(
             shlex.split(rampart_cmd),
@@ -253,6 +245,10 @@ def rampart_watchdog(variable_dict):
         # start the watchdog process
         initiate_watchdog(pathtowatch,destination,password_check)
         rampart_proc.terminate()
+        if password_check[0]:
+            print(f"\nChanging directory permissions back to ROOT...")
+            cmd = f"echo {password_check[1]} | sudo --stdin chown root:root {pathtowatch}"
+            os.system(cmd)
     my_log.info("RAMPART commands written to: " + fname)
     my_log.info("RAMPART module complete")
     return ()
