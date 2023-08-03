@@ -138,26 +138,28 @@ from getpass import getpass
 
 class movehandler(FileSystemEventHandler):
     # take password tuple as argument
-    def __init__(self, password_check):
+    def __init__(self, password_check, pathtowatch, destination):
         self.password_check = password_check
+        self.pathtowatch = pathtowatch
+        self.destination = destination
     
     #overriding the on_modified method
     def on_modified(self, event):
-        dir1 = [x for x in os.listdir(pathtowatch) if x.endswith(".fastq")]
+        dir1 = [x for x in os.listdir(self.pathtowatch) if x.endswith(".fastq")]
         for fname in dir1:
             fname1=fname
             fname2=fname
-            source = os.path.join(pathtowatch,fname1)
-            newdestination = os.path.join(destination,fname2)
+            source = os.path.join(self.pathtowatch,fname1)
+            newdestination = os.path.join(self.destination,fname2)
             file_done = False
             file_size = -1
-            while file_size != os.path.getsize(pathtowatch):
-                file_size = os.path.getsize(destination)
+            while file_size != os.path.getsize(self.pathtowatch):
+                file_size = os.path.getsize(self.destination)
                 time.sleep(1)
             while not file_done:
                 try:
                     print(f"Read found: {fname} ")
-                    print(f"Moving to barcode folder: {destination} ")
+                    print(f"Moving to barcode folder: {self.destination} ")
                     if self.password_check[0]:
                         cmd = f"echo {self.password_check[1]} | sudo --stdin mv {source} {newdestination}"
                     else:
@@ -178,7 +180,7 @@ def check_directory_permissions(directory_path):
 
 def initiate_watchdog(pathtowatch,destination,password_check):
     #creating event handler object
-    event_handler = movehandler(password_check)
+    event_handler = movehandler(password_check,pathtowatch,destination)
     #creating observer object
     observer = Observer()
     observer.schedule(event_handler, pathtowatch, recursive=True)
