@@ -381,14 +381,17 @@ def main(sysargs=sys.argv[1:]):
 
 
     if args.module == 'RAMPART':
-        from oat.cli.scripts.rampart_module import rampart_json, rampart_run
+        from oat.cli.scripts.rampart_module import rampart_json, rampart_run, rampart_watchdog
         if args.rampart_outdir:
             rampart_outdir = ''.join(args.rampart_outdir)
         else:
             rampart_outdir = os.path.join(os.getcwd(), "rampart_files")
         variable_dict['rampart_outdir'] = rampart_outdir
         rampart_json(variable_dict)
-        rampart_run(variable_dict)
+        if variable_dict['no_barcodes']:
+            rampart_watchdog(variable_dict)
+        else:
+            rampart_run(variable_dict)
         #set up correct log destination
         if args.outdir:
             logdir = args.outdir

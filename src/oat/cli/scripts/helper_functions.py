@@ -37,6 +37,15 @@ def printc(thing, level):
     print(f"{col}{thing}\033[0m")
     return ()
 
+# %% make fake barcoding dir
+def fake_barcoding(variable_dict):
+    """
+    CURRENTLY UNUSED
+    """
+    cols = {"HEADER": "\033[95m", "STD": "\033[96m"}
+    col = cols[level]
+    print(f"{col}{thing}\033[0m")
+    return ()
 
 # %% initiate_colorlog()
 def initiate_colorlog(variable_dict, directory):
@@ -165,6 +174,13 @@ def check_arguments(variable_dict, args):
             x.replace("BC", "barcode") for x in run_data["barcode"].to_list()
         ]
         variable_dict["barcodes_used"] = barcodes_used
+
+    # check if adaptive sampling mode
+    if variable_dict['skip_clipping']:
+        variable_dict['no_barcodes'] = True
+        variable_dict['pseudo_barcode'] = variable_dict["barcodes_used"][0]
+    else:
+        variable_dict['no_barcodes'] = False
 
     #check module choice
     if not "".join(args.module) in ["RAMPART", "ANALYSIS", "ALL"]:
@@ -343,3 +359,4 @@ def check_prior_lineages(variable_dict):
             os.remove(os.path.join(variable_dict["outdir"], "pangolin_update_info.txt"))
         if os.path.exists(os.path.join(variable_dict["outdir"], "nextclade_update_info.txt")):
             os.remove(os.path.join(variable_dict["outdir"], "nextclade_update_info.txt"))
+
