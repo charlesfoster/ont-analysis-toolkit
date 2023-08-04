@@ -3,7 +3,6 @@
 # based on work by Damien Farrell https://dmnfarrell.github.io/bioinformatics/bcftools-csq-gff-format
 import sys
 
-
 def GFF_bcftools_format(in_handle, out_handle):
     """Convert a bacterial genbank file from NCBI to a GFF3 format that can be used in bcftools csq.
     see https://github.com/samtools/bcftools/blob/develop/doc/bcftools.txt#L1066-L1098.
@@ -21,6 +20,9 @@ def GFF_bcftools_format(in_handle, out_handle):
     from copy import copy, deepcopy
     from Bio import SeqIO
 
+    # handle cases with no 'gene' or 'locus_tag qualifiers
+    hypothetical_count = 0
+
     for record in SeqIO.parse(in_handle, "genbank"):
         # make a copy of the record as we will be changing it during the loop
         new = copy(record)
@@ -34,11 +36,16 @@ def GFF_bcftools_format(in_handle, out_handle):
                     del q[label]
 
             if feat.type == "CDS":
+                print(feat)
                 # use the CDS feature to create the new lines
                 try:
                     tag = q["gene"][0]  # q['locus_tag'][0]
                 except:
-                    tag = q['locus_tag'][0]
+                    try:
+                        tag = q['locus_tag'][0]
+                    except:
+                        hypothetical_count += 1
+                        tag = f"hypothetical_{hypothetical_count}"
                 try:
                     protein_id = q["protein_id"][0]
                 except:

@@ -313,6 +313,9 @@ def main(sysargs=sys.argv[1:]):
         "--skip_clipping", action="store_true", help="Skip clipping of amplicon primers", default=False
     )
     parser.add_argument(
+        "--no_barcodes", action="store_true", help="No barcodes were used during library prep (or pretend this is so)", default=False
+    )
+    parser.add_argument(
         "--version",
         action="version",
         #version="covid illumina pipeline snakemake edition:  0.1.0",

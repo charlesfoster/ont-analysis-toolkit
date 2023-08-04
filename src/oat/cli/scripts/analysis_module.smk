@@ -298,14 +298,18 @@ rule final_qc:
 
         sample_dict = dict(tuple(outdata.groupby("id")))
         total_reads = outdata["num_reads"].sum()
-        mean_reads = mean(outdata["num_reads"])
-        sd_reads = stdev(outdata["num_reads"])
+        if len(outdata) > 1:
+            mean_reads = mean(outdata["num_reads"])
+            sd_reads = stdev(outdata["num_reads"])
+        else:
+            mean_reads = outdata["num_reads"].iat[0]
+            sd_reads = 0
         read_num_threshold = mean_reads - sd_reads
         for sample in sample_dict:
             num_reads = sample_dict[sample]["num_reads"].squeeze()
             if (num_reads < read_num_threshold) or ((num_reads / mean_reads) * 100) < 1:
                 qc_result = "FAIL"
-            elif num_reads > read_num_threshold:
+            elif num_reads >= read_num_threshold:
                 qc_result = "PASS"
             percent = (num_reads / total_reads) * 100
             outdata.at[sample, "percent_total_reads"] = percent
@@ -729,6 +733,7 @@ rule filter_vcf:
             ext=filter_extension,
         ),
     output:
+        temp_vcf=temp(os.path.join(RESULT_DIR, "{sample}/{sample}.norm.vcf.gz")),
         vcf_file=temp(os.path.join(RESULT_DIR, "{sample}/{sample}.filtered.vcf.gz")),
     log:
         os.path.join(RESULT_DIR, "{sample}/logs/{sample}.bcftools_filtering.log"),
@@ -743,9 +748,10 @@ rule filter_vcf:
         bcftools index -f {input.vcf_file}
         bcftools +fill-tags {input.vcf_file} -Ou -- -t "TYPE" | \
         bcftools norm -Ou -a -m -  2> /dev/null | \
-        bcftools view -f 'PASS,dn,dp,.' -i "INFO/AF >= {params.snv_freq} && INFO/DP >= {params.snv_min_depth} && QUAL >= {params.snv_min_qual}" -Oz -o {output.vcf_file}
-        bcftools +setGT {output.vcf_file} -o {output.vcf_file} -- -t a -n 'c:1/1' 2>> {log}
-        bcftools index {output.vcf_file}
+        bcftools view -f 'PASS,dn,dp,.' -i "INFO/AF >= {params.snv_freq} && INFO/DP >= {params.snv_min_depth} && QUAL >= {params.snv_min_qual}" -Oz -o {output.temp_vcf}
+        bcftools index -f {output.temp_vcf}
+        bcftools +setGT {output.temp_vcf} -o {output.vcf_file} -- -t a -n 'c:1/1' 2>> {log}
+        bcftools index -f {output.vcf_file}
         """
 
 
@@ -753,6 +759,7 @@ rule set_vcf_genotype:
     input:
         vcf_file=os.path.join(RESULT_DIR, "{sample}/{sample}.filtered.vcf.gz"),
     output:
+        temp_vcf=temp(os.path.join(RESULT_DIR, "{sample}/{sample}.prefinal.vcf.gz")),
         vcf_file=os.path.join(RESULT_DIR, "{sample}/{sample}.final.vcf.gz"),
     log:
         os.path.join(RESULT_DIR, "{sample}/logs/{sample}.bcftools_setGT.log"),
@@ -764,8 +771,9 @@ rule set_vcf_genotype:
         "setting conditional GT for {wildcards.sample}"
     shell:
         """
-        cp {input.vcf_file} {output.vcf_file}
-        bcftools +setGT {output.vcf_file} -- -t q -i 'GT="1/1" && INFO/AF < {params.con_freq}' -n 'c:0/1' 2>> {log} | \
+        cp {input.vcf_file} {output.temp_vcf}
+        bcftools index -f {output.temp_vcf}
+        bcftools +setGT {output.temp_vcf} -- -t q -i 'GT="1/1" && INFO/AF < {params.con_freq}' -n 'c:0/1' 2>> {log} | \
         bcftools +setGT -- -t q -i 'TYPE="indel" && INFO/AF < {params.indel_freq}' -n . 2>> {log} | \
         bcftools +setGT -o {output.vcf_file} -- -t q -i 'GT="1/1" && INFO/AF >= {params.con_freq}' -n 'c:1/1' 2>> {log}
         bcftools index -f {output.vcf_file}

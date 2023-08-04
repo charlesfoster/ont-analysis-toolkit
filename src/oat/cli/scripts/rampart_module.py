@@ -137,10 +137,11 @@ from getpass import getpass
 
 class movehandler(FileSystemEventHandler):
     # take password tuple as argument
-    def __init__(self, password_check, pathtowatch, destination):
+    def __init__(self, password_check, pathtowatch, destination,barcode):
         self.password_check = password_check
         self.pathtowatch = pathtowatch
         self.destination = destination
+        self.barcode = barcode
     #overriding the on_modified method
     def on_modified(self, event):
         dir1 = [x for x in os.listdir(self.pathtowatch) if x.endswith(".fastq")]
@@ -156,7 +157,8 @@ class movehandler(FileSystemEventHandler):
                 #     cmd = f"mv {source} {newdestination}"
                 # else:
                 #     cmd = f"echo {password_check[1]} | sudo --stdin mv {source} {newdestination}"
-                cmd = f"mv {source} {newdestination}"
+                cmd = f'awk \'NR>0&&NR%4==1{{$0=$0" barcode={self.barcode}"}}1\'   {source} > {newdestination}; rm {source}'
+                # cmd = f"mv {source} {newdestination}"
                 os.system(cmd)
             except:
                 return True        
@@ -164,15 +166,28 @@ class movehandler(FileSystemEventHandler):
 def check_directory_permissions(directory_path):
     if not os.access(directory_path, os.W_OK):
         print(f"The directory is write protected: {directory_path}")
-        password = getpass("Please enter your password: ")
+        password = check_password()
         output = (True,password)
     else:
         output = (False,None)
     return output
 
-def initiate_watchdog(pathtowatch,destination,password_check):
+def check_password():
+    correct = False
+    while not correct:
+        password = getpass("Please enter your password: ")
+        cmd = f" echo {password} | sudo -S echo ''"
+        out, error = subprocess.Popen(cmd, shell=True, stdin=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True).communicate()
+        expected_error = f"[sudo] password for {os.environ['USER']}: "
+        if error == expected_error:
+            correct = True
+        else:
+            print("Incorrect password entered. Try again.")
+    return password
+
+def initiate_watchdog(pathtowatch,destination,password_check,barcode):
     #creating event handler object
-    event_handler = movehandler(password_check,pathtowatch,destination)
+    event_handler = movehandler(password_check,pathtowatch,destination,barcode)
     #creating observer object
     observer = Observer()
     observer.schedule(event_handler, pathtowatch, recursive=True)
@@ -199,56 +214,60 @@ def rampart_watchdog(variable_dict):
     port_message = "RAMPART: view {0} protocol sequencing at {1}".format(
         protocol_name, port_address
     )
-    webbrowser.open(port_address, new=1)
-    my_log.info(port_message)
+    ### Check permissions and get password if need be
+    pathtowatch = variable_dict["basecalledPath"]
+    password_check = check_directory_permissions(pathtowatch)
+    if password_check[0]:
+        print(f"Temporarily granting {os.environ['USER']} permission to write in {pathtowatch}...")
+        cmd = f"echo {password_check[1]} | sudo --stdin chown {os.environ['USER']}:{os.environ['USER']} {pathtowatch}"
+        os.system(cmd)
+    ### Check to see if watchdog has been run previously
+    expected_rampart = os.path.join(variable_dict['basecalledPath'],"rampart")
+    expected_barcode = os.path.join(variable_dict['basecalledPath'], variable_dict["pseudo_barcode"])
+    relocated_barcode = os.path.join(variable_dict['basecalledPath'],"rampart", variable_dict["pseudo_barcode"])
+    if os.path.isdir(expected_rampart):
+        my_log.info("The RAMPART watchdog has been run previously for this sequencing run")
+        if os.path.isdir(expected_barcode):
+            my_log.info(f"Previously pseudo-barcoded reads directory found: {expected_barcode}")
+            my_log.info(f"Relocating pseudo-barcode directory to expected location")
+            shutil.move(expected_barcode, relocated_barcode)
+    destination = relocated_barcode 
+    if not os.path.exists(destination):
+        os.makedirs(destination)
+    ### set up and run rampart proc
     protocol_path = os.path.join(script_dir, "protocols", protocol_name, "rampart")
+    # NOTE: Since we are artificially adding barcodes, make a new basecalledPath for rampart without breakign the rest of the pipeline
+    variable_dict["rampart_basecalledPath"] = os.path.join(variable_dict["basecalledPath"],"rampart")
     rampart_cmd = '{0} --verbose --protocol {1} --ports {2} --basecalledPath {3} --clearAnnotated --annotationOptions barcode_set="rapid" require_two_barcodes="False"'.format(
-        rampart_exe, protocol_path, ports, variable_dict["basecalledPath"]
+        rampart_exe, protocol_path, ports, variable_dict["rampart_basecalledPath"]
     )
     fname = os.path.join(rampart_outdir, TODAY + "_" + run_name + "_RAMPART_cmd.txt")
     with open(fname, "w") as f:
         f.write(rampart_cmd)
+    my_log.info("Running RAMPART process")
+    rampart_proc = subprocess.Popen(
+        shlex.split(rampart_cmd),
+        cwd=json_location,
+        shell=False,
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+    webbrowser.open(port_address, new=1)
+    my_log.info(port_message)
     my_log.info("Opening default web browser")
     my_log.info("Sequencing information should appear after ~10 seconds")
-    if not variable_dict['no_barcodes']:
-        # start rampart proc
-        rampart_proc = subprocess.Popen(
-            shlex.split(cmd),
-            cwd=json_location,
-            shell=False,
-            stdin=subprocess.PIPE,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-        )
-        my_log.info("When finished monitoring the run with RAMPART, press enter")
-        run_time = input("Press enter when ready to finish RAMPART ")
-        rampart_proc.terminate()
-    else:
-        pathtowatch = variable_dict["basecalledPath"]
-        destination = os.path.join(pathtowatch, variable_dict["pseudo_barcode"]) # need to create this elsewhere
-        password_check = check_directory_permissions(pathtowatch)
-        if password_check[0]:
-            print(f"Temporarily granting {os.environ['USER']} permission to write in {pathtowatch}...")
-            cmd = f"echo {password_check[1]} | sudo --stdin chown {os.environ['USER']}:{os.environ['USER']} {pathtowatch}"
-            os.system(cmd)
-        if not os.path.exists(destination):
-            os.makedirs(destination)
-        # start rampart proc
-        rampart_proc = subprocess.Popen(
-            shlex.split(rampart_cmd),
-            cwd=json_location,
-            shell=False,
-            stdin=subprocess.PIPE,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-        )
-        # start the watchdog process
-        initiate_watchdog(pathtowatch,destination,password_check)
-        rampart_proc.terminate()
-        if password_check[0]:
-            print(f"\nChanging directory permissions back to ROOT...")
-            cmd = f"echo {password_check[1]} | sudo --stdin chown root:root {pathtowatch}"
-            os.system(cmd)
+    ### Run the watchdog
+    # It will detect reads as they appear from MinKNOW, then move them to the directory expected by rampart
+    # When moving the reads, it will add the expected barcode to the header of each read (based on the input spreadsheet)
+    initiate_watchdog(pathtowatch,destination,password_check,barcode=variable_dict['pseudo_barcode'])
+    rampart_proc.terminate()
+    # Now we need to reverse the directory structure changes expected by RAMPART for this stage
+    shutil.move(destination, expected_barcode)
+    if password_check[0]:
+        print(f"\nChanging directory permissions back to ROOT...")
+        cmd = f"echo {password_check[1]} | sudo --stdin chown root:root {pathtowatch}"
+        os.system(cmd)
     my_log.info("RAMPART commands written to: " + fname)
     my_log.info("RAMPART module complete")
     return ()

@@ -1,0 +1,10 @@
+{
+  "name": "Adaptive sampling targeting the full genome",
+  "description": "No primer schemes used: adaptive sampling sequencing of human betaherpesvirus 5 (cytomegalovirus)",
+  "url": "tbc",
+  "displayOptions": {
+    "coverageThresholds": {
+        ">200x": 200, ">100x": 100, ">50x": 50, ">20x": 20, "0x": 0
+        }
+    }
+}

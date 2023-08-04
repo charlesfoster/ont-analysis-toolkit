@@ -4,6 +4,7 @@ import sys
 import psutil
 import os
 from functools import partial
+import re
 
 ## FUNCTIONS
 def bytesto(bytes, to, bsize=1024):
@@ -54,16 +55,35 @@ SKIP_CLIPPING_DESCRIPTIONS = {
     "False": "Do not skip clipping of amplicon primers (recommended for amplicon data)",
 }
 
+NO_BARCODES_DESCRIPTIONS = {
+    "True": "No barcodes were used during library prep (or pretend none were used)",
+    "False": "Barcodes WERE used (or at least pretend so)",
+}
+
 MODULE_DESCRIPTIONS = {
     "All": "Monitor run with RAMPART then run analysis",
     "Rampart": "Monitor run with RAMPART only",
     "Analysis": "Run analysis only",
 }
 
-REFERENCE_DESCRIPTIONS = {
-    "MN908947.3": "SARS-CoV-2 (Wuhan Hu-1)",
-    "NC_006273.2": "Human cytomegalovirus (Merlin)",
-}
+def generate_reference_info():
+    thisdir = os.path.abspath(os.path.dirname(__file__))
+    refdir = os.path.join(thisdir,'..','cli','references')
+    d = {}
+    for ref in [x for x in os.listdir(refdir) if x.endswith(".fasta")]:
+        name = ref.replace(".fasta","")
+        with open(os.path.join(refdir,ref),'r') as f:
+            header = f.readline().strip()
+            description = re.sub(",.*","",' '.join(header.split(" ")[1:]))
+        d[name] = description
+    return d
+
+REFERENCE_DESCRIPTIONS = generate_reference_info()
+
+# REFERENCE_DESCRIPTIONS = {
+#     "MN908947.3": "SARS-CoV-2 (Wuhan Hu-1)",
+#     "NC_006273.2": "Human cytomegalovirus (Merlin)",
+# }
 
 GUPPY_MODEL_DESCRIPTIONS = {
     "r941_min_high_g360": "Chemistry version 9, HAC basecalling",
@@ -113,6 +133,7 @@ class AnalysisParameters:
         self.threads = ""
         self.max_memory = ""
         self.skip_clipping = ""
+        self.no_barcodes = ""
         # checkbox params
         self.demultiplexed = ""
         self.force = ""
@@ -129,6 +150,7 @@ class AnalysisParameters:
                              ]
         self.checkbox_params = ['demultiplexed',
                                 'skip_clipping',
+                                'no_barcodes',
                                 'force',
                                 'redo_analysis',
                                 'delete_reads',
@@ -371,51 +393,55 @@ class AnalysisGUI(QWidget):
         self.checkbox_skip_clipping = QCheckBox("Skip amplicon primer clipping (when no amplicon scheme used)")
         advanced_layout.addWidget(self.checkbox_skip_clipping, 15, 1)
 
+        #%% no barcodes
+        self.checkbox_no_barcodes = QCheckBox("No barcodes were used during library prep (or pretend none were used)")
+        advanced_layout.addWidget(self.checkbox_no_barcodes, 16, 1)
+
         #%% print DAG
         self.checkbox_print_dag = QCheckBox("Print analysis DAG then quit")
-        advanced_layout.addWidget(self.checkbox_print_dag, 16, 1)
+        advanced_layout.addWidget(self.checkbox_print_dag, 17, 1)
 
         #%% dry run
         self.checkbox_dry_run = QCheckBox("Dry run only")
-        advanced_layout.addWidget(self.checkbox_dry_run, 17, 1)
+        advanced_layout.addWidget(self.checkbox_dry_run, 18, 1)
 
         #%% create envs only
         self.checkbox_create_envs_only = QCheckBox("Create conda envs only")
-        advanced_layout.addWidget(self.checkbox_create_envs_only, 18, 1)
+        advanced_layout.addWidget(self.checkbox_create_envs_only, 19, 1)
 
         #%% no update
         self.checkbox_no_update = QCheckBox("Disable updating of container versions for SARS-CoV-2 analysis.")
-        advanced_layout.addWidget(self.checkbox_no_update, 19, 1)
+        advanced_layout.addWidget(self.checkbox_no_update, 20, 1)
 
         #%% quiet
         self.checkbox_quiet = QCheckBox("Stop printing of Snakemake commands to screen")
-        advanced_layout.addWidget(self.checkbox_quiet, 20, 1)
+        advanced_layout.addWidget(self.checkbox_quiet, 21, 1)
 
         #%% Outdir
         self.label_outdir = QLabel("Output directory:")
-        advanced_layout.addWidget(self.label_outdir, 21, 0)
+        advanced_layout.addWidget(self.label_outdir, 22, 0)
 
         self.entry_outdir = QLineEdit()
-        advanced_layout.addWidget(self.entry_outdir, 21, 1)
+        advanced_layout.addWidget(self.entry_outdir, 22, 1)
 
         self.button_outdir = QPushButton("Browse", self)
         self.button_outdir.clicked.connect(
             lambda option: self.browse_directory(self.entry_outdir)
         )
-        advanced_layout.addWidget(self.button_outdir, 21, 2)
+        advanced_layout.addWidget(self.button_outdir, 22, 2)
 
         #%% minknow_dir
         self.label_minknow_data = QLabel("MinKNOW data output directory:")
-        advanced_layout.addWidget(self.label_minknow_data, 22, 0)
+        advanced_layout.addWidget(self.label_minknow_data, 23, 0)
 
         self.entry_minknow_data = QLineEdit()
-        advanced_layout.addWidget(self.entry_minknow_data, 22, 1)
+        advanced_layout.addWidget(self.entry_minknow_data, 23, 1)
 
         self.button_minknow_data = QPushButton("Browse", self)
         self.button_minknow_data.clicked.connect(
             lambda option: self.browse_directory(self.entry_minknow_data)
         )
-        advanced_layout.addWidget(self.button_minknow_data, 22, 2)
+        advanced_layout.addWidget(self.button_minknow_data, 23, 2)
 
         ## RUN ANALYSIS ##
         #%% Run analysis button
@@ -532,6 +558,7 @@ class AnalysisGUI(QWidget):
         self.parameters.redo_analysis = self.checkbox_redo_analysis.isChecked()
         self.parameters.delete_reads = self.checkbox_delete_reads.isChecked()
         self.parameters.skip_clipping = self.checkbox_skip_clipping.isChecked()
+        self.parameters.no_barcodes = self.checkbox_no_barcodes.isChecked()
         self.parameters.print_dag = self.checkbox_print_dag.isChecked()
         self.parameters.dry_run = self.checkbox_dry_run.isChecked()
         self.parameters.create_envs_only = self.checkbox_create_envs_only.isChecked()

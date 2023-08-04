@@ -1,0 +1,624 @@
+##gff-version 3
+##sequence-region X17403.1 1 229354
+X17403.1	annotation	remark	1	229354	.	.	.	accessions=X17403;comment=For many of the reading frames no Kozak consensus start could be%0Apredicted. Co-ordinates are given for the whole frame. See also:%0A1%29   Tamashiro et al. J. Virol. 52:541-584%281984%29 %3CK02988%3E. 2%29%0AGreenaway P.J. %26 Wilkinson G.W.G.%2C Virus Res. 7:17-31%281987%29%0A     %3CM17956%3E.%0A3%29   Beck S. %26 Barrell B.G.%2C Nature 331:269-272%281988%29 %3CY00293%3E. 4%29%0AJahn et al. J. Virol. 61:1358-1367%281987%29 %3CM16022%3E. 5%29   Chee et al.%0ANature%2C in press.%0A6%29   Kouzarides et al. Virology 157:397-413%281987%29 %3CM17209%3E. 7%29%0AKouzarides et al. Virology 165:151-164%281988%29. 8%29   Kouzarides et%0Aal. J. Virol. 61:125-133%281987%29 %3CM14709%3E. 9%29   Cranage et al. EMBO%0AJ. 5:3057-3063%281986%29 %3CX04606%3E. 10%29  Cranage et al. J. Virol.%0A62:1416-1422%281988%29 %3CM19882%3E. 11%29  Ruger et al. J. Virol.%0A61:446-453%281987%29 %3CM15120%3E. 12%29  Chee et al. J. Virol.%0A63:1345-1353%281989%29 %3CM25411%3E. 13%29  Chee et al. J. Gen. Virol.%0A70:1151-1160%281989%29. 14%29  Meyer et al. J. Virol. 62:2243-2250%281988%29%0A%3CM21013%3E. 15%29  Kouzarides et al. Mol. Biol. Med. 1:47-58%281983%29%0A%3CD00328%3E. 16%29  Akrigg et al. Virus Res. 2:107-121%281985%29 %3CM21295%3E.%0A17%29  Weston K.M. %26 Barrell B.G.%2C J. Mol. Biol. 192:177-208%281986%29%0A     %3CX04650%3E.%0A18%29  Chang et al. J. Virol. 63:3330-3337%281989%29 %3CM28127%3E. 19%29%0AMarschalek et al. Nucleic Acids Res. 17%2C 631-643 %281989%29. 20%29  Leach%0AF.S. %26 Mocarski E.S.%2C J. Virol. 63:1783-1791%281989%29. 21%29  Davis M.G.%0A%26 Huang E.-S.%2C J. Virol. 56:7-11%281985%29 %3CM11911%3E. 22%29  McGeoch et%0Aal. J. Gen. Virol. 69:1531-1574%281988%29. 23%29  Preston V.G. %26 Fisher%0AF.B.%2C Virology 138:58-68%281984%29. 24%29  Robson L. %26 Gibson W.J.%2C%0AVirol. 63:669-676%281989%29 %3CM24205%3E. 25%29  Razzaque et al. PNAS%0A85:5709-5713%281988%29.%0A26%29  Wright D.A. %26 Spector D.H.%2C J. Virol. 63:3117-3127%281989%29. 27%29%0AStenberg et al. J. Virol. 56:665-675%281985%29 %3CM11298%3E. 28%29  Stenberg%0Aet al. J. Virol. 49:190-199%281984%29 %3CK01090%3E. 29%29  Weston K.M.%2C%0AVirology 162:406-416%281988%29 %3CM18921%3E. 30%29  Gretch et al. J. Virol.%0A62:1956-1962%281988%29.%0A31%29  Mocarski et al. J. Gen. Virol. 69:2613-2621%281988%29.;data_file_division=VRL;date=26-JUL-2016;keywords=complete genome;molecule_type=DNA;organism=Human betaherpesvirus 5;references=authors: Chee%2CM.S.%2C Bankier%2CA.T.%2C Beck%2CS.%2C Bohni%2CR.%2C Brown%2CC.M.%2C Cerny%2CR.%2C Horsnell%2CT.%2C Hutchison%2CC.A. III%2C Kouzarides%2CT.%2C Martignetti%2CJ.A.%2C Preddie%2CE.%2C Satchwell%2CS.C.%2C Tomlinson%2CP.%2C Weston%2CK.M. and Barrell%2CB.G.%0Atitle: Analysis of the protein-coding content of the sequence of human cytomegalovirus strain AD169%0Ajournal: Curr. Top. Microbiol. Immunol. 154%2C 125-169 %281990%29%0Amedline id: %0Apubmed id: 2161319%0Acomment:,authors: Bankier%2CA.T.%2C Beck%2CS.%2C Bohni%2CR.%2C Brown%2CC.M.%2C Cerny%2CR.%2C Chee%2CM.S.%2C Hutchinson%2CC.A. III%2C Kouzarides%2CT.%2C Martignetti%2CJ.A.%2C Preddie%2CE.%2C Satchwell%2CS.C.%2C Tomlinson%2CP.%2C Weston%2CK.M. and Barrell%2CB.G.%0Atitle: The DNA sequence of the human cytomegalovirus genome%0Ajournal: DNA Seq. 2 %281%29%2C 1-12 %281991%29%0Amedline id: %0Apubmed id: 1666311%0Acomment:,location: %5B0:1320%5D%0Aauthors: Beck%2CS. and Barrell%2CB.%0Atitle: An HCMV reading frame which has similarity with both the V and C regions of the TCR gamma chain%0Ajournal: DNA Seq. 2 %281%29%2C 33-38 %281991%29%0Amedline id: %0Apubmed id: 1666312%0Acomment:,location: %5B0:229354%5D%0Aauthors: Chee%2CM.%0Atitle: Direct Submission%0Ajournal: Submitted %2806-DEC-1989%29 Chee M.S.%2C MRC Laboratory of Molecular Biology%2C Hills Road%2C Cambridge CB2 2QH%2C UK%0Amedline id: %0Apubmed id: %0Acomment:;sequence_version=1;source=Human betaherpesvirus 5 %28HHV-5%29;taxonomy=Viruses,Duplodnaviria,Heunggongvirae,Peploviricota,Herviviricetes,Herpesvirales,Herpesviridae,Betaherpesvirinae,Cytomegalovirus,Cytomegalovirus humanbeta5;topology=linear
+X17403.1	feature	gene	970	1905	.	+	.	ID=gene:TRL1 %3D IRL1;Name=TRL1 %3D IRL1;biotype=protein_coding;gene=TRL1 %3D IRL1
+X17403.1	feature	CDS	970	1905	.	+	0	ID=CDS:CAA35449.1;Parent=transcript:CAA35449.1_0;biotype=protein_coding;codon_start=1;db_xref=InterPro:IPR016394,UniProtKB/Swiss-Prot:P09710;gene=TRL1 %3D IRL1;protein_id=CAA35449.1
+X17403.1	feature	mRNA	970	1905	.	+	.	ID=transcript:CAA35449.1_0;Parent=gene:TRL1 %3D IRL1;biotype=protein_coding
+X17403.1	feature	gene	1893	2240	.	+	.	ID=gene:TRL2 %3D IRL2;Name=TRL2 %3D IRL2;biotype=protein_coding;gene=TRL2 %3D IRL2
+X17403.1	feature	CDS	1893	2240	.	+	0	ID=CDS:CAA35450.1;Parent=transcript:CAA35450.1_0;biotype=protein_coding;codon_start=1;db_xref=UniProtKB/Swiss-Prot:P16802;gene=TRL2 %3D IRL2;protein_id=CAA35450.1
+X17403.1	feature	mRNA	1893	2240	.	+	.	ID=transcript:CAA35450.1_0;Parent=gene:TRL2 %3D IRL2;biotype=protein_coding
+X17403.1	feature	gene	3192	3536	.	+	.	ID=gene:TRL3 %3D IRL3;Name=TRL3 %3D IRL3;biotype=protein_coding;gene=TRL3 %3D IRL3
+X17403.1	feature	CDS	3192	3536	.	+	0	ID=CDS:CAA35451.1;Parent=transcript:CAA35451.1_0;biotype=protein_coding;codon_start=1;db_xref=UniProtKB/Swiss-Prot:P17142;gene=TRL3 %3D IRL3;protein_id=CAA35451.1
+X17403.1	feature	mRNA	3192	3536	.	+	.	ID=transcript:CAA35451.1_0;Parent=gene:TRL3 %3D IRL3;biotype=protein_coding
+X17403.1	feature	gene	3782	4294	.	-	.	ID=gene:TRL4 %3D IRL4;Name=TRL4 %3D IRL4;biotype=protein_coding;gene=TRL4 %3D IRL4
+X17403.1	feature	CDS	3782	4294	.	-	0	ID=CDS:CAA35453.1;Parent=transcript:CAA35453.1_0;biotype=protein_coding;codon_start=1;db_xref=UniProtKB/Swiss-Prot:P09694;gene=TRL4 %3D IRL4;protein_id=CAA35453.1
+X17403.1	feature	mRNA	3782	4294	.	-	.	ID=transcript:CAA35453.1_0;Parent=gene:TRL4 %3D IRL4;biotype=protein_coding
+X17403.1	feature	gene	4266	4610	.	+	.	ID=gene:TRL5 %3D IRL5;Name=TRL5 %3D IRL5;biotype=protein_coding;gene=TRL5 %3D IRL5
+X17403.1	feature	CDS	4266	4610	.	+	0	ID=CDS:CAA35452.1;Parent=transcript:CAA35452.1_0;biotype=protein_coding;codon_start=1;db_xref=UniProtKB/Swiss-Prot:P16803;gene=TRL5 %3D IRL5;protein_id=CAA35452.1
+X17403.1	feature	mRNA	4266	4610	.	+	.	ID=transcript:CAA35452.1_0;Parent=gene:TRL5 %3D IRL5;biotype=protein_coding
+X17403.1	feature	gene	5612	5947	.	-	.	ID=gene:TRL6 %3D IRL6;Name=TRL6 %3D IRL6;biotype=protein_coding;gene=TRL6 %3D IRL6
+X17403.1	feature	CDS	5612	5947	.	-	0	ID=CDS:CAA35454.1;Parent=transcript:CAA35454.1_0;biotype=protein_coding;codon_start=1;db_xref=UniProtKB/Swiss-Prot:P16804;gene=TRL6 %3D IRL6;protein_id=CAA35454.1
+X17403.1	feature	mRNA	5612	5947	.	-	.	ID=transcript:CAA35454.1_0;Parent=gene:TRL6 %3D IRL6;biotype=protein_coding
+X17403.1	feature	gene	6595	6843	.	-	.	ID=gene:TRL7 %3D IRL7;Name=TRL7 %3D IRL7;biotype=protein_coding;gene=TRL7 %3D IRL7
+X17403.1	feature	CDS	6595	6843	.	-	0	ID=CDS:CAA35455.1;Parent=transcript:CAA35455.1_0;biotype=protein_coding;codon_start=1;db_xref=UniProtKB/Swiss-Prot:P16805;gene=TRL7 %3D IRL7;protein_id=CAA35455.1
+X17403.1	feature	mRNA	6595	6843	.	-	.	ID=transcript:CAA35455.1_0;Parent=gene:TRL7 %3D IRL7;biotype=protein_coding
+X17403.1	feature	gene	7284	7673	.	+	.	ID=gene:TRL8 %3D IRL8;Name=TRL8 %3D IRL8;biotype=protein_coding;gene=TRL8 %3D IRL8
+X17403.1	feature	CDS	7284	7673	.	+	0	ID=CDS:CAA35456.1;Parent=transcript:CAA35456.1_0;biotype=protein_coding;codon_start=1;db_xref=UniProtKB/Swiss-Prot:P16806;gene=TRL8 %3D IRL8;protein_id=CAA35456.1
+X17403.1	feature	mRNA	7284	7673	.	+	.	ID=transcript:CAA35456.1_0;Parent=gene:TRL8 %3D IRL8;biotype=protein_coding
+X17403.1	feature	gene	7501	7932	.	+	.	ID=gene:TRL9 %3D IRL9;Name=TRL9 %3D IRL9;biotype=protein_coding;gene=TRL9 %3D IRL9
+X17403.1	feature	CDS	7501	7932	.	+	0	ID=CDS:CAA35457.1;Parent=transcript:CAA35457.1_0;biotype=protein_coding;codon_start=1;db_xref=UniProtKB/Swiss-Prot:P16807;gene=TRL9 %3D IRL9;protein_id=CAA35457.1
+X17403.1	feature	mRNA	7501	7932	.	+	.	ID=transcript:CAA35457.1_0;Parent=gene:TRL9 %3D IRL9;biotype=protein_coding
+X17403.1	feature	gene	8182	8697	.	+	.	ID=gene:TRL10 %3D IRL10;Name=TRL10 %3D IRL10;biotype=protein_coding;gene=TRL10 %3D IRL10
+X17403.1	feature	CDS	8182	8697	.	+	0	ID=CDS:CAA35458.1;Parent=transcript:CAA35458.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P16808,InterPro:IPR009284,UniProtKB/Swiss-Prot:P16808;gene=TRL10 %3D IRL10;protein_id=CAA35458.1
+X17403.1	feature	mRNA	8182	8697	.	+	.	ID=transcript:CAA35458.1_0;Parent=gene:TRL10 %3D IRL10;biotype=protein_coding
+X17403.1	feature	gene	8726	9430	.	+	.	ID=gene:TRL11 %3D IRL11;Name=TRL11 %3D IRL11;biotype=protein_coding;gene=TRL11 %3D IRL11
+X17403.1	feature	CDS	8726	9430	.	+	0	ID=CDS:CAA35459.1;Parent=transcript:CAA35459.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P16809,UniProtKB/Swiss-Prot:P16809;gene=TRL11 %3D IRL11;protein_id=CAA35459.1
+X17403.1	feature	mRNA	8726	9430	.	+	.	ID=transcript:CAA35459.1_0;Parent=gene:TRL11 %3D IRL11;biotype=protein_coding
+X17403.1	feature	gene	9434	10684	.	+	.	ID=gene:TRL12 %3D IRL12;Name=TRL12 %3D IRL12;biotype=protein_coding;gene=TRL12 %3D IRL12
+X17403.1	feature	CDS	9434	10684	.	+	0	ID=CDS:CAA35460.1;Parent=transcript:CAA35460.1_0;biotype=protein_coding;codon_start=1;db_xref=UniProtKB/Swiss-Prot:P16810;gene=TRL12 %3D IRL12;protein_id=CAA35460.1
+X17403.1	feature	mRNA	9434	10684	.	+	.	ID=transcript:CAA35460.1_0;Parent=gene:TRL12 %3D IRL12;biotype=protein_coding
+X17403.1	feature	gene	10796	11239	.	+	.	ID=gene:TRL13 %3D IRL13;Name=TRL13 %3D IRL13;biotype=protein_coding;gene=TRL13 %3D IRL13
+X17403.1	feature	CDS	10796	11239	.	+	0	ID=CDS:CAA35461.1;Parent=transcript:CAA35461.1_0;biotype=protein_coding;codon_start=1;db_xref=UniProtKB/Swiss-Prot:P16811;gene=TRL13 %3D IRL13;protein_id=CAA35461.1
+X17403.1	feature	mRNA	10796	11239	.	+	.	ID=transcript:CAA35461.1_0;Parent=gene:TRL13 %3D IRL13;biotype=protein_coding
+X17403.1	feature	gene	11143	11703	.	+	.	ID=gene:TRL14;Name=TRL14;biotype=protein_coding;gene=TRL14
+X17403.1	feature	CDS	11143	11703	.	+	0	ID=CDS:CAA35433.1;Parent=transcript:CAA35433.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P21602,UniProtKB/Swiss-Prot:P21602;gene=TRL14;protein_id=CAA35433.1
+X17403.1	feature	mRNA	11143	11703	.	+	.	ID=transcript:CAA35433.1_0;Parent=gene:TRL14;biotype=protein_coding
+X17403.1	feature	gene	11810	12484	.	+	.	ID=gene:UL1;Name=UL1;biotype=protein_coding;gene=UL1
+X17403.1	feature	CDS	11810	12484	.	+	0	ID=CDS:CAA35434.1;Parent=transcript:CAA35434.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P16719,InterPro:IPR013783,UniProtKB/Swiss-Prot:P16719;gene=UL1;protein_id=CAA35434.1
+X17403.1	feature	mRNA	11810	12484	.	+	.	ID=transcript:CAA35434.1_0;Parent=gene:UL1;biotype=protein_coding
+X17403.1	feature	gene	12865	13047	.	-	.	ID=gene:UL2;Name=UL2;biotype=protein_coding;gene=UL2
+X17403.1	feature	CDS	12865	13047	.	-	0	ID=CDS:CAA35435.1;Parent=transcript:CAA35435.1_0;biotype=protein_coding;codon_start=1;db_xref=InterPro:IPR013269,UniProtKB/Swiss-Prot:P16754;gene=UL2;protein_id=CAA35435.1
+X17403.1	feature	mRNA	12865	13047	.	-	.	ID=transcript:CAA35435.1_0;Parent=gene:UL2;biotype=protein_coding
+X17403.1	feature	gene	13007	13324	.	-	.	ID=gene:UL3;Name=UL3;biotype=protein_coding;gene=UL3
+X17403.1	feature	CDS	13007	13324	.	-	0	ID=CDS:CAA35436.1;Parent=transcript:CAA35436.1_0;biotype=protein_coding;codon_start=1;db_xref=UniProtKB/Swiss-Prot:P16775;gene=UL3;protein_id=CAA35436.1
+X17403.1	feature	mRNA	13007	13324	.	-	.	ID=transcript:CAA35436.1_0;Parent=gene:UL3;biotype=protein_coding
+X17403.1	feature	gene	13464	13922	.	+	.	ID=gene:UL4;Name=UL4;biotype=protein_coding;gene=UL4
+X17403.1	feature	CDS	13464	13922	.	+	0	ID=CDS:CAA35437.1;Parent=transcript:CAA35437.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P17146,InterPro:IPR003599,UniProtKB/Swiss-Prot:P17146;gene=UL4;protein_id=CAA35437.1
+X17403.1	feature	mRNA	13464	13922	.	+	.	ID=transcript:CAA35437.1_0;Parent=gene:UL4;biotype=protein_coding
+X17403.1	feature	gene	14013	14513	.	+	.	ID=gene:UL5;Name=UL5;biotype=protein_coding;gene=UL5
+X17403.1	feature	CDS	14013	14513	.	+	0	ID=CDS:CAA35438.1;Parent=transcript:CAA35438.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P16776,InterPro:IPR016497,UniProtKB/Swiss-Prot:P16776;gene=UL5;protein_id=CAA35438.1
+X17403.1	feature	mRNA	14013	14513	.	+	.	ID=transcript:CAA35438.1_0;Parent=gene:UL5;biotype=protein_coding
+X17403.1	feature	gene	14612	15466	.	+	.	ID=gene:UL6;Name=UL6;biotype=protein_coding;gene=UL6
+X17403.1	feature	CDS	14612	15466	.	+	0	ID=CDS:CAA35439.1;Parent=transcript:CAA35439.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P16720,UniProtKB/Swiss-Prot:P16720;gene=UL6;protein_id=CAA35439.1
+X17403.1	feature	mRNA	14612	15466	.	+	.	ID=transcript:CAA35439.1_0;Parent=gene:UL6;biotype=protein_coding
+X17403.1	feature	gene	15526	16194	.	+	.	ID=gene:UL7;Name=UL7;biotype=protein_coding;gene=UL7
+X17403.1	feature	CDS	15526	16194	.	+	0	ID=CDS:CAA35440.1;Parent=transcript:CAA35440.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P16743,InterPro:IPR013783,UniProtKB/Swiss-Prot:P16743;gene=UL7;protein_id=CAA35440.1
+X17403.1	feature	mRNA	15526	16194	.	+	.	ID=transcript:CAA35440.1_0;Parent=gene:UL7;biotype=protein_coding
+X17403.1	feature	gene	16234	16602	.	+	.	ID=gene:UL8;Name=UL8;biotype=protein_coding;gene=UL8
+X17403.1	feature	CDS	16234	16602	.	+	0	ID=CDS:CAA35441.1;Parent=transcript:CAA35441.1_0;biotype=protein_coding;codon_start=1;db_xref=InterPro:IPR020188,UniProtKB/Swiss-Prot:P16744;gene=UL8;protein_id=CAA35441.1
+X17403.1	feature	mRNA	16234	16602	.	+	.	ID=transcript:CAA35441.1_0;Parent=gene:UL8;biotype=protein_coding
+X17403.1	feature	gene	16612	17298	.	+	.	ID=gene:UL9;Name=UL9;biotype=protein_coding;gene=UL9
+X17403.1	feature	CDS	16612	17298	.	+	0	ID=CDS:CAA35442.1;Parent=transcript:CAA35442.1_0;biotype=protein_coding;codon_start=1;db_xref=UniProtKB/Swiss-Prot:P16745;gene=UL9;protein_id=CAA35442.1
+X17403.1	feature	mRNA	16612	17298	.	+	.	ID=transcript:CAA35442.1_0;Parent=gene:UL9;biotype=protein_coding
+X17403.1	feature	gene	17222	18202	.	+	.	ID=gene:UL10;Name=UL10;biotype=protein_coding;gene=UL10
+X17403.1	feature	CDS	17222	18202	.	+	0	ID=CDS:CAA35443.1;Parent=transcript:CAA35443.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P16843,UniProtKB/Swiss-Prot:P16843;gene=UL10;protein_id=CAA35443.1
+X17403.1	feature	mRNA	17222	18202	.	+	.	ID=transcript:CAA35443.1_0;Parent=gene:UL10;biotype=protein_coding
+X17403.1	feature	gene	18295	19122	.	+	.	ID=gene:UL11;Name=UL11;biotype=protein_coding;gene=UL11
+X17403.1	feature	CDS	18295	19122	.	+	0	ID=CDS:CAA35444.1;Parent=transcript:CAA35444.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P16721,UniProtKB/Swiss-Prot:P16721;gene=UL11;protein_id=CAA35444.1
+X17403.1	feature	mRNA	18295	19122	.	+	.	ID=transcript:CAA35444.1_0;Parent=gene:UL11;biotype=protein_coding
+X17403.1	feature	gene	19100	19321	.	-	.	ID=gene:UL12;Name=UL12;biotype=protein_coding;gene=UL12
+X17403.1	feature	CDS	19100	19321	.	-	0	ID=CDS:CAA35446.1;Parent=transcript:CAA35446.1_0;biotype=protein_coding;codon_start=1;db_xref=UniProtKB/Swiss-Prot:P16777;gene=UL12;protein_id=CAA35446.1
+X17403.1	feature	mRNA	19100	19321	.	-	.	ID=transcript:CAA35446.1_0;Parent=gene:UL12;biotype=protein_coding
+X17403.1	feature	gene	19320	20741	.	+	.	ID=gene:UL13;Name=UL13;biotype=protein_coding;gene=UL13
+X17403.1	feature	CDS	19320	20741	.	+	0	ID=CDS:CAA35445.1;Parent=transcript:CAA35445.1_0;biotype=protein_coding;codon_start=1;db_xref=UniProtKB/Swiss-Prot:P16755;gene=UL13;protein_id=CAA35445.1
+X17403.1	feature	mRNA	19320	20741	.	+	.	ID=transcript:CAA35445.1_0;Parent=gene:UL13;biotype=protein_coding
+X17403.1	feature	gene	20843	21874	.	+	.	ID=gene:UL14;Name=UL14;biotype=protein_coding;gene=UL14
+X17403.1	feature	CDS	20843	21874	.	+	0	ID=CDS:CAA35447.1;Parent=transcript:CAA35447.1_0;biotype=protein_coding;codon_start=1;db_xref=UniProtKB/Swiss-Prot:P16756;gene=UL14;protein_id=CAA35447.1
+X17403.1	feature	mRNA	20843	21874	.	+	.	ID=transcript:CAA35447.1_0;Parent=gene:UL14;biotype=protein_coding
+X17403.1	feature	gene	21636	22604	.	-	.	ID=gene:UL15;Name=UL15;biotype=protein_coding;gene=UL15
+X17403.1	feature	CDS	21636	22604	.	-	0	ID=CDS:CAA35415.1;Parent=transcript:CAA35415.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P16844,UniProtKB/Swiss-Prot:P16844;gene=UL15;protein_id=CAA35415.1
+X17403.1	feature	mRNA	21636	22604	.	-	.	ID=transcript:CAA35415.1_0;Parent=gene:UL15;biotype=protein_coding
+X17403.1	feature	gene	22414	23106	.	+	.	ID=gene:UL16;Name=UL16;biotype=protein_coding;gene=UL16
+X17403.1	feature	CDS	22414	23106	.	+	0	ID=CDS:CAA35448.1;Parent=transcript:CAA35448.1_0;biotype=protein_coding;codon_start=1;db_xref=PDB:2WY3,UniProtKB/Swiss-Prot:P16757;gene=UL16;protein_id=CAA35448.1
+X17403.1	feature	mRNA	22414	23106	.	+	.	ID=transcript:CAA35448.1_0;Parent=gene:UL16;biotype=protein_coding
+X17403.1	feature	gene	23214	23528	.	+	.	ID=gene:UL17;Name=UL17;biotype=protein_coding;gene=UL17
+X17403.1	feature	CDS	23214	23528	.	+	0	ID=CDS:CAA35416.1;Parent=transcript:CAA35416.1_0;biotype=protein_coding;codon_start=1;db_xref=InterPro:IPR020527,UniProtKB/Swiss-Prot:P16722;gene=UL17;protein_id=CAA35416.1
+X17403.1	feature	mRNA	23214	23528	.	+	.	ID=transcript:CAA35416.1_0;Parent=gene:UL17;biotype=protein_coding
+X17403.1	feature	gene	23637	24743	.	+	.	ID=gene:UL18;Name=UL18;biotype=protein_coding;gene=UL18
+X17403.1	feature	CDS	23637	24743	.	+	0	ID=CDS:CAA35417.1;Parent=transcript:CAA35417.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P08560,InterPro:IPR001039,InterPro:IPR003597,InterPro:IPR011161,InterPro:IPR011162,InterPro:IPR013783,PDB:3D2U,UniProtKB/Swiss-Prot:P08560;gene=UL18;protein_id=CAA35417.1
+X17403.1	feature	mRNA	23637	24743	.	+	.	ID=transcript:CAA35417.1_0;Parent=gene:UL18;biotype=protein_coding
+X17403.1	feature	gene	24740	25036	.	+	.	ID=gene:UL19;Name=UL19;biotype=protein_coding;gene=UL19
+X17403.1	feature	CDS	24740	25036	.	+	0	ID=CDS:CAA35418.1;Parent=transcript:CAA35418.1_0;biotype=protein_coding;codon_start=1;db_xref=InterPro:IPR020504,UniProtKB/Swiss-Prot:P16723;gene=UL19;protein_id=CAA35418.1
+X17403.1	feature	mRNA	24740	25036	.	+	.	ID=transcript:CAA35418.1_0;Parent=gene:UL19;biotype=protein_coding
+X17403.1	feature	gene	25299	26321	.	+	.	ID=gene:UL20;Name=UL20;biotype=protein_coding;gene=UL20
+X17403.1	feature	CDS	25299	26321	.	+	0	ID=CDS:CAA35419.1;Parent=transcript:CAA35419.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P16758,UniProtKB/Swiss-Prot:P16758;gene=UL20;protein_id=CAA35419.1
+X17403.1	feature	mRNA	25299	26321	.	+	.	ID=transcript:CAA35419.1_0;Parent=gene:UL20;biotype=protein_coding
+X17403.1	feature	gene	26497	27024	.	-	.	ID=gene:UL21;Name=UL21;biotype=protein_coding;gene=UL21
+X17403.1	feature	CDS	26497	27024	.	-	0	ID=CDS:CAA35420.1;Parent=transcript:CAA35420.1_0;biotype=protein_coding;codon_start=1;db_xref=UniProtKB/Swiss-Prot:P16759;gene=UL21;protein_id=CAA35420.1
+X17403.1	feature	mRNA	26497	27024	.	-	.	ID=transcript:CAA35420.1_0;Parent=gene:UL21;biotype=protein_coding
+X17403.1	feature	gene	27260	27646	.	-	.	ID=gene:UL22;Name=UL22;biotype=protein_coding;gene=UL22
+X17403.1	feature	CDS	27260	27646	.	-	0	ID=CDS:CAA35421.1;Parent=transcript:CAA35421.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P16845,InterPro:IPR009245,UniProtKB/Swiss-Prot:P16845;gene=UL22;protein_id=CAA35421.1
+X17403.1	feature	mRNA	27260	27646	.	-	.	ID=transcript:CAA35421.1_0;Parent=gene:UL22;biotype=protein_coding
+X17403.1	feature	gene	27863	28891	.	-	.	ID=gene:UL23;Name=UL23;biotype=protein_coding;gene=UL23
+X17403.1	feature	CDS	27863	28891	.	-	0	ID=CDS:CAA35422.1;Parent=transcript:CAA35422.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P16846,InterPro:IPR003360,UniProtKB/Swiss-Prot:P16846;gene=UL23;protein_id=CAA35422.1
+X17403.1	feature	mRNA	27863	28891	.	-	.	ID=transcript:CAA35422.1_0;Parent=gene:UL23;biotype=protein_coding
+X17403.1	feature	gene	28933	30009	.	-	.	ID=gene:UL24;Name=UL24;biotype=protein_coding;gene=UL24
+X17403.1	feature	CDS	28933	30009	.	-	0	ID=CDS:CAA35423.1;Parent=transcript:CAA35423.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P16760,InterPro:IPR003360,UniProtKB/Swiss-Prot:P16760;gene=UL24;protein_id=CAA35423.1
+X17403.1	feature	mRNA	28933	30009	.	-	.	ID=transcript:CAA35423.1_0;Parent=gene:UL24;biotype=protein_coding
+X17403.1	feature	gene	30057	32027	.	+	.	ID=gene:UL25;Name=UL25;biotype=protein_coding;gene=UL25
+X17403.1	feature	CDS	30057	32027	.	+	0	ID=CDS:CAA35424.1;Parent=transcript:CAA35424.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P16761,InterPro:IPR006731,UniProtKB/Swiss-Prot:P16761;gene=UL25;protein_id=CAA35424.1
+X17403.1	feature	mRNA	30057	32027	.	+	.	ID=transcript:CAA35424.1_0;Parent=gene:UL25;biotype=protein_coding
+X17403.1	feature	gene	32209	32775	.	-	.	ID=gene:UL26;Name=UL26;biotype=protein_coding;gene=UL26
+X17403.1	feature	CDS	32209	32775	.	-	0	ID=CDS:CAA35425.1;Parent=transcript:CAA35425.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P16762,InterPro:IPR003360,UniProtKB/Swiss-Prot:P16762;gene=UL26;protein_id=CAA35425.1
+X17403.1	feature	mRNA	32209	32775	.	-	.	ID=transcript:CAA35425.1_0;Parent=gene:UL26;biotype=protein_coding
+X17403.1	feature	gene	32831	34657	.	-	.	ID=gene:UL27;Name=UL27;biotype=protein_coding;gene=UL27
+X17403.1	feature	CDS	32831	34657	.	-	0	ID=CDS:CAA35426.1;Parent=transcript:CAA35426.1_0;biotype=protein_coding;codon_start=1;db_xref=InterPro:IPR010302,UniProtKB/Swiss-Prot:P16763;gene=UL27;protein_id=CAA35426.1
+X17403.1	feature	mRNA	32831	34657	.	-	.	ID=transcript:CAA35426.1_0;Parent=gene:UL27;biotype=protein_coding
+X17403.1	feature	gene	34754	35893	.	-	.	ID=gene:UL28;Name=UL28;biotype=protein_coding;gene=UL28
+X17403.1	feature	CDS	34754	35893	.	-	0	ID=CDS:CAA35427.1;Parent=transcript:CAA35427.1_0;biotype=protein_coding;codon_start=1;db_xref=InterPro:IPR003360,UniProtKB/Swiss-Prot:P16847;gene=UL28;protein_id=CAA35427.1
+X17403.1	feature	mRNA	34754	35893	.	-	.	ID=transcript:CAA35427.1_0;Parent=gene:UL28;biotype=protein_coding
+X17403.1	feature	gene	35923	37005	.	-	.	ID=gene:UL29;Name=UL29;biotype=protein_coding;gene=UL29
+X17403.1	feature	CDS	35923	37005	.	-	0	ID=CDS:CAA35428.1;Parent=transcript:CAA35428.1_0;biotype=protein_coding;codon_start=1;db_xref=InterPro:IPR003360,UniProtKB/Swiss-Prot:P16764;gene=UL29;protein_id=CAA35428.1
+X17403.1	feature	mRNA	35923	37005	.	-	.	ID=transcript:CAA35428.1_0;Parent=gene:UL29;biotype=protein_coding
+X17403.1	feature	gene	37135	37500	.	-	.	ID=gene:UL30;Name=UL30;biotype=protein_coding;gene=UL30
+X17403.1	feature	CDS	37135	37500	.	-	0	ID=CDS:CAA35429.1;Parent=transcript:CAA35429.1_0;biotype=protein_coding;codon_start=1;db_xref=UniProtKB/Swiss-Prot:P16765;gene=UL30;protein_id=CAA35429.1
+X17403.1	feature	mRNA	37135	37500	.	-	.	ID=transcript:CAA35429.1_0;Parent=gene:UL30;biotype=protein_coding
+X17403.1	feature	gene	37682	39766	.	+	.	ID=gene:UL31;Name=UL31;biotype=protein_coding;gene=UL31
+X17403.1	feature	CDS	37682	39766	.	+	0	ID=CDS:CAA35430.1;Parent=transcript:CAA35430.1_0;biotype=protein_coding;codon_start=1;db_xref=InterPro:IPR007578,UniProtKB/Swiss-Prot:P16848;gene=UL31;protein_id=CAA35430.1
+X17403.1	feature	mRNA	37682	39766	.	+	.	ID=transcript:CAA35430.1_0;Parent=gene:UL31;biotype=protein_coding
+X17403.1	feature	gene	39847	42993	.	-	.	ID=gene:UL32;Name=UL32;biotype=protein_coding;gene=UL32
+X17403.1	feature	CDS	39847	42993	.	-	0	ID=CDS:CAA35431.1;Parent=transcript:CAA35431.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P08318,InterPro:IPR010340,UniProtKB/Swiss-Prot:P08318;gene=UL32;protein_id=CAA35431.1
+X17403.1	feature	mRNA	39847	42993	.	-	.	ID=transcript:CAA35431.1_0;Parent=gene:UL32;biotype=protein_coding
+X17403.1	feature	gene	43251	44423	.	+	.	ID=gene:UL33;Name=UL33;biotype=protein_coding;gene=UL33
+X17403.1	feature	CDS	43251	44423	.	+	0	ID=CDS:CAA35432.1;Parent=transcript:CAA35432.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P16849,InterPro:IPR000276,InterPro:IPR017452,UniProtKB/Swiss-Prot:P16849;gene=UL33;protein_id=CAA35432.1
+X17403.1	feature	mRNA	43251	44423	.	+	.	ID=transcript:CAA35432.1_0;Parent=gene:UL33;biotype=protein_coding
+X17403.1	feature	gene	44500	46014	.	+	.	ID=gene:UL34;Name=UL34;biotype=protein_coding;gene=UL34
+X17403.1	feature	CDS	44500	46014	.	+	0	ID=CDS:CAA35393.1;Parent=transcript:CAA35393.1_0;biotype=protein_coding;codon_start=1;db_xref=UniProtKB/Swiss-Prot:P16812;gene=UL34;protein_id=CAA35393.1
+X17403.1	feature	mRNA	44500	46014	.	+	.	ID=transcript:CAA35393.1_0;Parent=gene:UL34;biotype=protein_coding
+X17403.1	feature	gene	46093	48015	.	+	.	ID=gene:UL35;Name=UL35;biotype=protein_coding;gene=UL35
+X17403.1	feature	CDS	46093	48015	.	+	0	ID=CDS:CAA35394.1;Parent=transcript:CAA35394.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P16766,InterPro:IPR006731,UniProtKB/Swiss-Prot:P16766;gene=UL35;protein_id=CAA35394.1
+X17403.1	feature	mRNA	46093	48015	.	+	.	ID=transcript:CAA35394.1_0;Parent=gene:UL35;biotype=protein_coding
+X17403.1	feature	gene	48246	49776	.	-	.	ID=gene:UL36;Name=UL36;biotype=protein_coding;gene=UL36
+X17403.1	feature	CDS	49575	49776	.	-	0	ID=CDS:CAA35395.1;Parent=transcript:CAA35395.1_0;biotype=protein_coding;codon_start=1;db_xref=InterPro:IPR003360,UniProtKB/Swiss-Prot:P16767;gene=UL36;protein_id=CAA35395.1
+X17403.1	feature	mRNA	48246	49776	.	-	.	ID=transcript:CAA35395.1_0;Parent=gene:UL36;biotype=protein_coding
+X17403.1	feature	CDS	48246	49471	.	-	0	ID=CDS:CAA35395.1;Parent=transcript:CAA35395.1_1;biotype=protein_coding;codon_start=1;db_xref=InterPro:IPR003360,UniProtKB/Swiss-Prot:P16767;gene=UL36;protein_id=CAA35395.1
+X17403.1	feature	mRNA	48246	49776	.	-	.	ID=transcript:CAA35395.1_1;Parent=gene:UL36;biotype=protein_coding
+X17403.1	feature	gene	49910	52706	.	-	.	ID=gene:UL37;Name=UL37;biotype=protein_coding;gene=UL37
+X17403.1	feature	CDS	52219	52706	.	-	0	ID=CDS:CAA35396.1;Parent=transcript:CAA35396.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P16778,InterPro:IPR010880,UniProtKB/Swiss-Prot:P16778;gene=UL37;protein_id=CAA35396.1
+X17403.1	feature	mRNA	49910	52706	.	-	.	ID=transcript:CAA35396.1_0;Parent=gene:UL37;biotype=protein_coding
+X17403.1	feature	CDS	50947	50989	.	-	0	ID=CDS:CAA35396.1;Parent=transcript:CAA35396.1_1;biotype=protein_coding;codon_start=1;db_xref=GOA:P16778,InterPro:IPR010880,UniProtKB/Swiss-Prot:P16778;gene=UL37;protein_id=CAA35396.1
+X17403.1	feature	mRNA	49910	52706	.	-	.	ID=transcript:CAA35396.1_1;Parent=gene:UL37;biotype=protein_coding
+X17403.1	feature	CDS	49910	50842	.	-	0	ID=CDS:CAA35396.1;Parent=transcript:CAA35396.1_2;biotype=protein_coding;codon_start=1;db_xref=GOA:P16778,InterPro:IPR010880,UniProtKB/Swiss-Prot:P16778;gene=UL37;protein_id=CAA35396.1
+X17403.1	feature	mRNA	49910	52706	.	-	.	ID=transcript:CAA35396.1_2;Parent=gene:UL37;biotype=protein_coding
+X17403.1	feature	gene	51128	52123	.	-	.	ID=gene:UL38;Name=UL38;biotype=protein_coding;gene=UL38
+X17403.1	feature	CDS	51128	52123	.	-	0	ID=CDS:CAA35397.1;Parent=transcript:CAA35397.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P16779,UniProtKB/Swiss-Prot:P16779;gene=UL38;protein_id=CAA35397.1
+X17403.1	feature	mRNA	51128	52123	.	-	.	ID=transcript:CAA35397.1_0;Parent=gene:UL38;biotype=protein_coding
+X17403.1	feature	gene	53024	53398	.	+	.	ID=gene:UL39;Name=UL39;biotype=protein_coding;gene=UL39
+X17403.1	feature	CDS	53024	53398	.	+	0	ID=CDS:CAA35398.1;Parent=transcript:CAA35398.1_0;biotype=protein_coding;codon_start=1;db_xref=UniProtKB/Swiss-Prot:P16813;gene=UL39;protein_id=CAA35398.1
+X17403.1	feature	mRNA	53024	53398	.	+	.	ID=transcript:CAA35398.1_0;Parent=gene:UL39;biotype=protein_coding
+X17403.1	feature	gene	53213	53878	.	-	.	ID=gene:UL40;Name=UL40;biotype=protein_coding;gene=UL40
+X17403.1	feature	CDS	53213	53878	.	-	0	ID=CDS:CAA35399.1;Parent=transcript:CAA35399.1_0;biotype=protein_coding;codon_start=1;db_xref=InterPro:IPR019624,PDB:2ESV,UniProtKB/Swiss-Prot:P16780;gene=UL40;protein_id=CAA35399.1
+X17403.1	feature	mRNA	53213	53878	.	-	.	ID=transcript:CAA35399.1_0;Parent=gene:UL40;biotype=protein_coding
+X17403.1	feature	gene	53933	54358	.	-	.	ID=gene:UL41;Name=UL41;biotype=protein_coding;gene=UL41
+X17403.1	feature	CDS	53933	54358	.	-	0	ID=CDS:CAA35400.1;Parent=transcript:CAA35400.1_0;biotype=protein_coding;codon_start=1;db_xref=UniProtKB/Swiss-Prot:P16814;gene=UL41;protein_id=CAA35400.1
+X17403.1	feature	mRNA	53933	54358	.	-	.	ID=transcript:CAA35400.1_0;Parent=gene:UL41;biotype=protein_coding
+X17403.1	feature	gene	54381	54854	.	-	.	ID=gene:UL42;Name=UL42;biotype=protein_coding;gene=UL42
+X17403.1	feature	CDS	54381	54854	.	-	0	ID=CDS:CAA35401.1;Parent=transcript:CAA35401.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P16815,UniProtKB/Swiss-Prot:P16815;gene=UL42;protein_id=CAA35401.1
+X17403.1	feature	mRNA	54381	54854	.	-	.	ID=transcript:CAA35401.1_0;Parent=gene:UL42;biotype=protein_coding
+X17403.1	feature	gene	54601	55164	.	-	.	ID=gene:UL43;Name=UL43;biotype=protein_coding;gene=UL43
+X17403.1	feature	CDS	54601	55164	.	-	0	ID=CDS:CAA35402.1;Parent=transcript:CAA35402.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P16781,InterPro:IPR003360,UniProtKB/Swiss-Prot:P16781;gene=UL43;protein_id=CAA35402.1
+X17403.1	feature	mRNA	54601	55164	.	-	.	ID=transcript:CAA35402.1_0;Parent=gene:UL43;biotype=protein_coding
+X17403.1	feature	gene	55211	56512	.	-	.	ID=gene:UL44;Name=UL44;biotype=protein_coding;gene=UL44
+X17403.1	feature	CDS	55211	56512	.	-	0	ID=CDS:CAA35403.1;Parent=transcript:CAA35403.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P16790,InterPro:IPR004997,PDB:1T6L,PDB:1YYP,UniProtKB/Swiss-Prot:P16790;gene=UL44;protein_id=CAA35403.1
+X17403.1	feature	mRNA	55211	56512	.	-	.	ID=transcript:CAA35403.1_0;Parent=gene:UL44;biotype=protein_coding
+X17403.1	feature	gene	56653	59373	.	-	.	ID=gene:UL45;Name=UL45;biotype=protein_coding;gene=UL45
+X17403.1	feature	CDS	56653	59373	.	-	0	ID=CDS:CAA35404.1;Parent=transcript:CAA35404.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P16782,InterPro:IPR000788,UniProtKB/Swiss-Prot:P16782;gene=UL45;protein_id=CAA35404.1
+X17403.1	feature	mRNA	56653	59373	.	-	.	ID=transcript:CAA35404.1_0;Parent=gene:UL45;biotype=protein_coding
+X17403.1	feature	gene	59516	60388	.	-	.	ID=gene:UL46;Name=UL46;biotype=protein_coding;gene=UL46
+X17403.1	feature	CDS	59516	60388	.	-	0	ID=CDS:CAA35405.1;Parent=transcript:CAA35405.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P16783,InterPro:IPR004999,UniProtKB/Swiss-Prot:P16783;gene=UL46;protein_id=CAA35405.1
+X17403.1	feature	mRNA	59516	60388	.	-	.	ID=transcript:CAA35405.1_0;Parent=gene:UL46;biotype=protein_coding
+X17403.1	feature	gene	60390	63338	.	+	.	ID=gene:UL47;Name=UL47;biotype=protein_coding;gene=UL47
+X17403.1	feature	CDS	60390	63338	.	+	0	ID=CDS:CAA35406.1;Parent=transcript:CAA35406.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P16784,InterPro:IPR007611,UniProtKB/Swiss-Prot:P16784;gene=UL47;protein_id=CAA35406.1
+X17403.1	feature	mRNA	60390	63338	.	+	.	ID=transcript:CAA35406.1_0;Parent=gene:UL47;biotype=protein_coding
+X17403.1	feature	gene	63335	70060	.	+	.	ID=gene:UL48;Name=UL48;biotype=protein_coding;gene=UL48
+X17403.1	feature	CDS	63335	70060	.	+	0	ID=CDS:CAA35407.1;Parent=transcript:CAA35407.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P16785,InterPro:IPR006928,UniProtKB/Swiss-Prot:P16785;gene=UL48;protein_id=CAA35407.1
+X17403.1	feature	mRNA	63335	70060	.	+	.	ID=transcript:CAA35407.1_0;Parent=gene:UL48;biotype=protein_coding
+X17403.1	feature	gene	70400	72112	.	-	.	ID=gene:UL49;Name=UL49;biotype=protein_coding;gene=UL49
+X17403.1	feature	CDS	70400	72112	.	-	0	ID=CDS:CAA35408.1;Parent=transcript:CAA35408.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P16786,InterPro:IPR004339,UniProtKB/Swiss-Prot:P16786;gene=UL49;protein_id=CAA35408.1
+X17403.1	feature	mRNA	70400	72112	.	-	.	ID=transcript:CAA35408.1_0;Parent=gene:UL49;biotype=protein_coding
+X17403.1	feature	gene	72069	73262	.	-	.	ID=gene:UL50;Name=UL50;biotype=protein_coding;gene=UL50
+X17403.1	feature	CDS	72069	73262	.	-	0	ID=CDS:CAA35409.1;Parent=transcript:CAA35409.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P16791,InterPro:IPR007626,UniProtKB/Swiss-Prot:P16791;gene=UL50;protein_id=CAA35409.1
+X17403.1	feature	mRNA	72069	73262	.	-	.	ID=transcript:CAA35409.1_0;Parent=gene:UL50;biotype=protein_coding
+X17403.1	feature	gene	73284	73757	.	-	.	ID=gene:UL51;Name=UL51;biotype=protein_coding;gene=UL51
+X17403.1	feature	CDS	73284	73757	.	-	0	ID=CDS:CAA35410.1;Parent=transcript:CAA35410.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P16792,InterPro:IPR005208,UniProtKB/Swiss-Prot:P16792;gene=UL51;protein_id=CAA35410.1
+X17403.1	feature	mRNA	73284	73757	.	-	.	ID=transcript:CAA35410.1_0;Parent=gene:UL51;biotype=protein_coding
+X17403.1	feature	gene	73796	75802	.	+	.	ID=gene:UL52;Name=UL52;biotype=protein_coding;gene=UL52
+X17403.1	feature	CDS	73796	75802	.	+	0	ID=CDS:CAA35411.1;Parent=transcript:CAA35411.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P16793,InterPro:IPR002597,UniProtKB/Swiss-Prot:P16793;gene=UL52;protein_id=CAA35411.1
+X17403.1	feature	mRNA	73796	75802	.	+	.	ID=transcript:CAA35411.1_0;Parent=gene:UL52;biotype=protein_coding
+X17403.1	feature	gene	75795	76925	.	+	.	ID=gene:UL53;Name=UL53;biotype=protein_coding;gene=UL53
+X17403.1	feature	CDS	75795	76925	.	+	0	ID=CDS:CAA35412.1;Parent=transcript:CAA35412.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P16794,InterPro:IPR021152,UniProtKB/Swiss-Prot:P16794;gene=UL53;protein_id=CAA35412.1
+X17403.1	feature	mRNA	75795	76925	.	+	.	ID=transcript:CAA35412.1_0;Parent=gene:UL53;biotype=protein_coding
+X17403.1	feature	gene	76903	80631	.	-	.	ID=gene:UL54;Name=UL54;biotype=protein_coding;gene=UL54
+X17403.1	feature	CDS	76903	80631	.	-	0	ID=CDS:CAA35413.1;Parent=transcript:CAA35413.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P08546,InterPro:IPR006133,InterPro:IPR006134,InterPro:IPR006172,InterPro:IPR012337,InterPro:IPR017964,PDB:1YYP,UniProtKB/Swiss-Prot:P08546;gene=UL54;protein_id=CAA35413.1
+X17403.1	feature	mRNA	76903	80631	.	-	.	ID=transcript:CAA35413.1_0;Parent=gene:UL54;biotype=protein_coding
+X17403.1	feature	gene	80772	83492	.	-	.	ID=gene:UL55;Name=UL55;biotype=protein_coding;gene=UL55
+X17403.1	feature	CDS	80772	83492	.	-	0	ID=CDS:CAA35414.1;Parent=transcript:CAA35414.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P06473,InterPro:IPR000234,InterPro:IPR021044,UniProtKB/Swiss-Prot:P06473;gene=UL55;protein_id=CAA35414.1
+X17403.1	feature	mRNA	80772	83492	.	-	.	ID=transcript:CAA35414.1_0;Parent=gene:UL55;biotype=protein_coding
+X17403.1	feature	gene	83455	86007	.	-	.	ID=gene:UL56;Name=UL56;biotype=protein_coding;gene=UL56
+X17403.1	feature	CDS	83455	86007	.	-	0	ID=CDS:CAA35371.1;Parent=transcript:CAA35371.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P16724,InterPro:IPR000501,UniProtKB/Swiss-Prot:P16724;gene=UL56;protein_id=CAA35371.1
+X17403.1	feature	mRNA	83455	86007	.	-	.	ID=transcript:CAA35371.1_0;Parent=gene:UL56;biotype=protein_coding
+X17403.1	feature	gene	86574	90281	.	-	.	ID=gene:UL57;Name=UL57;biotype=protein_coding;gene=UL57
+X17403.1	feature	CDS	86574	90281	.	-	0	ID=CDS:CAA35372.1;Parent=transcript:CAA35372.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P17147,InterPro:IPR000635,UniProtKB/Swiss-Prot:P17147;gene=UL57;protein_id=CAA35372.1
+X17403.1	feature	mRNA	86574	90281	.	-	.	ID=transcript:CAA35372.1_0;Parent=gene:UL57;biotype=protein_coding
+X17403.1	feature	gene	90864	91238	.	+	.	ID=gene:UL58;Name=UL58;biotype=protein_coding;gene=UL58
+X17403.1	feature	CDS	90864	91238	.	+	0	ID=CDS:CAA35373.1;Parent=transcript:CAA35373.1_0;biotype=protein_coding;codon_start=1;db_xref=UniProtKB/Swiss-Prot:P16816;gene=UL58;protein_id=CAA35373.1
+X17403.1	feature	mRNA	90864	91238	.	+	.	ID=transcript:CAA35373.1_0;Parent=gene:UL58;biotype=protein_coding
+X17403.1	feature	gene	91202	91573	.	-	.	ID=gene:UL59;Name=UL59;biotype=protein_coding;gene=UL59
+X17403.1	feature	CDS	91202	91573	.	-	0	ID=CDS:CAA35374.1;Parent=transcript:CAA35374.1_0;biotype=protein_coding;codon_start=1;db_xref=UniProtKB/Swiss-Prot:P16746;gene=UL59;protein_id=CAA35374.1
+X17403.1	feature	mRNA	91202	91573	.	-	.	ID=transcript:CAA35374.1_0;Parent=gene:UL59;biotype=protein_coding
+X17403.1	feature	gene	92333	92815	.	-	.	ID=gene:UL60;Name=UL60;biotype=protein_coding;gene=UL60
+X17403.1	feature	CDS	92333	92815	.	-	0	ID=CDS:CAA35375.1;Parent=transcript:CAA35375.1_0;biotype=protein_coding;codon_start=1;db_xref=UniProtKB/Swiss-Prot:P16817;gene=UL60;protein_id=CAA35375.1
+X17403.1	feature	mRNA	92333	92815	.	-	.	ID=transcript:CAA35375.1_0;Parent=gene:UL60;biotype=protein_coding
+X17403.1	feature	gene	92844	94139	.	-	.	ID=gene:UL61;Name=UL61;biotype=protein_coding;gene=UL61
+X17403.1	feature	CDS	92844	94139	.	-	0	ID=CDS:CAA35376.1;Parent=transcript:CAA35376.1_0;biotype=protein_coding;codon_start=1;db_xref=UniProtKB/Swiss-Prot:P16818;gene=UL61;protein_id=CAA35376.1
+X17403.1	feature	mRNA	92844	94139	.	-	.	ID=transcript:CAA35376.1_0;Parent=gene:UL61;biotype=protein_coding
+X17403.1	feature	gene	94111	94764	.	-	.	ID=gene:UL62;Name=UL62;biotype=protein_coding;gene=UL62
+X17403.1	feature	CDS	94111	94764	.	-	0	ID=CDS:CAA35377.1;Parent=transcript:CAA35377.1_0;biotype=protein_coding;codon_start=1;db_xref=UniProtKB/Swiss-Prot:P16819;gene=UL62;protein_id=CAA35377.1
+X17403.1	feature	mRNA	94111	94764	.	-	.	ID=transcript:CAA35377.1_0;Parent=gene:UL62;biotype=protein_coding
+X17403.1	feature	gene	95331	95720	.	+	.	ID=gene:UL63;Name=UL63;biotype=protein_coding;gene=UL63
+X17403.1	feature	CDS	95331	95720	.	+	0	ID=CDS:CAA35378.1;Parent=transcript:CAA35378.1_0;biotype=protein_coding;codon_start=1;db_xref=UniProtKB/Swiss-Prot:P16820;gene=UL63;protein_id=CAA35378.1
+X17403.1	feature	mRNA	95331	95720	.	+	.	ID=transcript:CAA35378.1_0;Parent=gene:UL63;biotype=protein_coding
+X17403.1	feature	gene	95901	96203	.	-	.	ID=gene:UL64;Name=UL64;biotype=protein_coding;gene=UL64
+X17403.1	feature	CDS	95901	96203	.	-	0	ID=CDS:CAA35379.1;Parent=transcript:CAA35379.1_0;biotype=protein_coding;codon_start=1;db_xref=UniProtKB/Swiss-Prot:P16821;gene=UL64;protein_id=CAA35379.1
+X17403.1	feature	mRNA	95901	96203	.	-	.	ID=transcript:CAA35379.1_0;Parent=gene:UL64;biotype=protein_coding
+X17403.1	feature	gene	96315	96623	.	+	.	ID=gene:UL65;Name=UL65;biotype=protein_coding;gene=UL65
+X17403.1	feature	CDS	96315	96623	.	+	0	ID=CDS:CAA35380.1;Parent=transcript:CAA35380.1_0;biotype=protein_coding;codon_start=1;db_xref=UniProtKB/Swiss-Prot:P17148;gene=UL65;protein_id=CAA35380.1
+X17403.1	feature	mRNA	96315	96623	.	+	.	ID=transcript:CAA35380.1_0;Parent=gene:UL65;biotype=protein_coding
+X17403.1	feature	gene	96472	96816	.	-	.	ID=gene:UL66;Name=UL66;biotype=protein_coding;gene=UL66
+X17403.1	feature	CDS	96472	96816	.	-	0	ID=CDS:CAA35381.1;Parent=transcript:CAA35381.1_0;biotype=protein_coding;codon_start=1;db_xref=UniProtKB/Swiss-Prot:P16822;gene=UL66;protein_id=CAA35381.1
+X17403.1	feature	mRNA	96472	96816	.	-	.	ID=transcript:CAA35381.1_0;Parent=gene:UL66;biotype=protein_coding
+X17403.1	feature	gene	97095	97436	.	-	.	ID=gene:UL67;Name=UL67;biotype=protein_coding;gene=UL67
+X17403.1	feature	CDS	97095	97436	.	-	0	ID=CDS:CAA35382.1;Parent=transcript:CAA35382.1_0;biotype=protein_coding;codon_start=1;db_xref=UniProtKB/Swiss-Prot:P16747;gene=UL67;protein_id=CAA35382.1
+X17403.1	feature	mRNA	97095	97436	.	-	.	ID=transcript:CAA35382.1_0;Parent=gene:UL67;biotype=protein_coding
+X17403.1	feature	gene	97747	98079	.	-	.	ID=gene:UL68;Name=UL68;biotype=protein_coding;gene=UL68
+X17403.1	feature	CDS	97747	98079	.	-	0	ID=CDS:CAA35383.1;Parent=transcript:CAA35383.1_0;biotype=protein_coding;codon_start=1;db_xref=UniProtKB/Swiss-Prot:P16748;gene=UL68;protein_id=CAA35383.1
+X17403.1	feature	mRNA	97747	98079	.	-	.	ID=transcript:CAA35383.1_0;Parent=gene:UL68;biotype=protein_coding
+X17403.1	feature	gene	98199	100433	.	-	.	ID=gene:UL69;Name=UL69;biotype=protein_coding;gene=UL69
+X17403.1	feature	CDS	98199	100433	.	-	0	ID=CDS:CAA35384.1;Parent=transcript:CAA35384.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P16749,InterPro:IPR008648,UniProtKB/Swiss-Prot:P16749;gene=UL69;protein_id=CAA35384.1
+X17403.1	feature	mRNA	98199	100433	.	-	.	ID=transcript:CAA35384.1_0;Parent=gene:UL69;biotype=protein_coding
+X17403.1	feature	gene	100533	103721	.	-	.	ID=gene:UL70;Name=UL70;biotype=protein_coding;gene=UL70
+X17403.1	feature	CDS	100533	103721	.	-	0	ID=CDS:CAA35386.1;Parent=transcript:CAA35386.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P17149,InterPro:IPR004340,UniProtKB/Swiss-Prot:P17149;gene=UL70;protein_id=CAA35386.1
+X17403.1	feature	mRNA	100533	103721	.	-	.	ID=transcript:CAA35386.1_0;Parent=gene:UL70;biotype=protein_coding
+X17403.1	feature	gene	103239	104474	.	+	.	ID=gene:UL71;Name=UL71;biotype=protein_coding;gene=UL71
+X17403.1	feature	CDS	103239	104474	.	+	0	ID=CDS:CAA35385.1;Parent=transcript:CAA35385.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P16823,InterPro:IPR007619,UniProtKB/Swiss-Prot:P16823;gene=UL71;protein_id=CAA35385.1
+X17403.1	feature	mRNA	103239	104474	.	+	.	ID=transcript:CAA35385.1_0;Parent=gene:UL71;biotype=protein_coding
+X17403.1	feature	gene	104555	105721	.	-	.	ID=gene:UL72;Name=UL72;biotype=protein_coding;gene=UL72
+X17403.1	feature	CDS	104555	105721	.	-	0	ID=CDS:CAA35387.1;Parent=transcript:CAA35387.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P16824,InterPro:IPR006882,UniProtKB/Swiss-Prot:P16824;gene=UL72;protein_id=CAA35387.1
+X17403.1	feature	mRNA	104555	105721	.	-	.	ID=transcript:CAA35387.1_0;Parent=gene:UL72;biotype=protein_coding
+X17403.1	feature	gene	105737	106153	.	+	.	ID=gene:UL73;Name=UL73;biotype=protein_coding;gene=UL73
+X17403.1	feature	CDS	105737	106153	.	+	0	ID=CDS:CAA35388.1;Parent=transcript:CAA35388.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P16795,InterPro:IPR005211,InterPro:IPR021003,UniProtKB/Swiss-Prot:P16795;gene=UL73;protein_id=CAA35388.1
+X17403.1	feature	mRNA	105737	106153	.	+	.	ID=transcript:CAA35388.1_0;Parent=gene:UL73;biotype=protein_coding
+X17403.1	feature	gene	106125	107525	.	-	.	ID=gene:UL74;Name=UL74;biotype=protein_coding;gene=UL74
+X17403.1	feature	CDS	106125	107525	.	-	0	ID=CDS:CAA35389.1;Parent=transcript:CAA35389.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P16750,InterPro:IPR012564,UniProtKB/Swiss-Prot:P16750;gene=UL74;protein_id=CAA35389.1
+X17403.1	feature	mRNA	106125	107525	.	-	.	ID=transcript:CAA35389.1_0;Parent=gene:UL74;biotype=protein_coding
+X17403.1	feature	gene	107901	110132	.	-	.	ID=gene:UL75;Name=UL75;biotype=protein_coding;gene=UL75
+X17403.1	feature	CDS	107901	110132	.	-	0	ID=CDS:CAA35390.1;Parent=transcript:CAA35390.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P12824,InterPro:IPR003493,UniProtKB/Swiss-Prot:P12824;gene=UL75;protein_id=CAA35390.1
+X17403.1	feature	mRNA	107901	110132	.	-	.	ID=transcript:CAA35390.1_0;Parent=gene:UL75;biotype=protein_coding
+X17403.1	feature	gene	110327	111304	.	+	.	ID=gene:UL76;Name=UL76;biotype=protein_coding;gene=UL76
+X17403.1	feature	CDS	110327	111304	.	+	0	ID=CDS:CAA35391.1;Parent=transcript:CAA35391.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P16725,InterPro:IPR002580,UniProtKB/Swiss-Prot:P16725;gene=UL76;protein_id=CAA35391.1
+X17403.1	feature	mRNA	110327	111304	.	+	.	ID=transcript:CAA35391.1_0;Parent=gene:UL76;biotype=protein_coding
+X17403.1	feature	gene	110907	112835	.	+	.	ID=gene:UL77;Name=UL77;biotype=protein_coding;gene=UL77
+X17403.1	feature	CDS	110907	112835	.	+	0	ID=CDS:CAA35392.1;Parent=transcript:CAA35392.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P16726,InterPro:IPR002493,UniProtKB/Swiss-Prot:P16726;gene=UL77;protein_id=CAA35392.1
+X17403.1	feature	mRNA	110907	112835	.	+	.	ID=transcript:CAA35392.1_0;Parent=gene:UL77;biotype=protein_coding
+X17403.1	feature	gene	112924	114219	.	+	.	ID=gene:UL78;Name=UL78;biotype=protein_coding;gene=UL78
+X17403.1	feature	CDS	112924	114219	.	+	0	ID=CDS:CAA35351.1;Parent=transcript:CAA35351.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P16751,InterPro:IPR017452,UniProtKB/Swiss-Prot:P16751;gene=UL78;protein_id=CAA35351.1
+X17403.1	feature	mRNA	112924	114219	.	+	.	ID=transcript:CAA35351.1_0;Parent=gene:UL78;biotype=protein_coding
+X17403.1	feature	gene	114274	115161	.	-	.	ID=gene:UL79;Name=UL79;biotype=protein_coding;gene=UL79
+X17403.1	feature	CDS	114274	115161	.	-	0	ID=CDS:CAA35352.1;Parent=transcript:CAA35352.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P16752,InterPro:IPR004290,UniProtKB/Swiss-Prot:P16752;gene=UL79;protein_id=CAA35352.1
+X17403.1	feature	mRNA	114274	115161	.	-	.	ID=transcript:CAA35352.1_0;Parent=gene:UL79;biotype=protein_coding
+X17403.1	feature	gene	115198	117324	.	+	.	ID=gene:UL80;Name=UL80;biotype=protein_coding;gene=UL80
+X17403.1	feature	CDS	115198	117324	.	+	0	ID=CDS:CAA35353.1;Parent=transcript:CAA35353.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P16753,InterPro:IPR001847,PDB:1CMV,PDB:1ID4,PDB:1IEC,PDB:1IED,PDB:1IEF,PDB:1IEG,PDB:1JQ6,PDB:1JQ7,PDB:1LAY,PDB:1NJT,PDB:1NJU,PDB:1NKK,PDB:1NKM,PDB:1WPO,PDB:2WPO,UniProtKB/Swiss-Prot:P16753;gene=UL80;protein_id=CAA35353.1
+X17403.1	feature	mRNA	115198	117324	.	+	.	ID=transcript:CAA35353.1_0;Parent=gene:UL80;biotype=protein_coding
+X17403.1	feature	gene	116203	117324	.	+	.	ID=gene:UL80a;Name=UL80a;biotype=protein_coding;gene=UL80a
+X17403.1	feature	CDS	116203	117324	.	+	0	ID=CDS:CAA35354.1;Parent=transcript:CAA35354.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P16753,InterPro:IPR001847,PDB:1CMV,PDB:1ID4,PDB:1IEC,PDB:1IED,PDB:1IEF,PDB:1IEG,PDB:1JQ6,PDB:1JQ7,PDB:1LAY,PDB:1NJT,PDB:1NJU,PDB:1NKK,PDB:1NKM,PDB:1WPO,PDB:2WPO,UniProtKB/Swiss-Prot:P16753;gene=UL80a;protein_id=CAA35354.1
+X17403.1	feature	mRNA	116203	117324	.	+	.	ID=transcript:CAA35354.1_0;Parent=gene:UL80a;biotype=protein_coding
+X17403.1	feature	gene	117308	117658	.	-	.	ID=gene:UL81;Name=UL81;biotype=protein_coding;gene=UL81
+X17403.1	feature	CDS	117308	117658	.	-	0	ID=CDS:CAA35355.1;Parent=transcript:CAA35355.1_0;biotype=protein_coding;codon_start=1;db_xref=UniProtKB/Swiss-Prot:P16825;gene=UL81;protein_id=CAA35355.1
+X17403.1	feature	mRNA	117308	117658	.	-	.	ID=transcript:CAA35355.1_0;Parent=gene:UL81;biotype=protein_coding
+X17403.1	feature	gene	117486	119165	.	-	.	ID=gene:UL82;Name=UL82;biotype=protein_coding;gene=UL82
+X17403.1	feature	CDS	117486	119165	.	-	0	ID=CDS:CAA35356.1;Parent=transcript:CAA35356.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P06726,InterPro:IPR008649,UniProtKB/Swiss-Prot:P06726;gene=UL82;protein_id=CAA35356.1
+X17403.1	feature	mRNA	117486	119165	.	-	.	ID=transcript:CAA35356.1_0;Parent=gene:UL82;biotype=protein_coding
+X17403.1	feature	gene	119352	121037	.	-	.	ID=gene:UL83;Name=UL83;biotype=protein_coding;gene=UL83
+X17403.1	feature	CDS	119352	121037	.	-	0	ID=CDS:CAA35357.1;Parent=transcript:CAA35357.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P06725,InterPro:IPR008649,PDB:2X4R,UniProtKB/Swiss-Prot:P06725;gene=UL83;protein_id=CAA35357.1
+X17403.1	feature	mRNA	119352	121037	.	-	.	ID=transcript:CAA35357.1_0;Parent=gene:UL83;biotype=protein_coding
+X17403.1	feature	gene	121309	123069	.	-	.	ID=gene:UL84;Name=UL84;biotype=protein_coding;gene=UL84
+X17403.1	feature	CDS	121309	123069	.	-	0	ID=CDS:CAA35358.1;Parent=transcript:CAA35358.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P16727,InterPro:IPR010436,UniProtKB/Swiss-Prot:P16727;gene=UL84;protein_id=CAA35358.1
+X17403.1	feature	mRNA	121309	123069	.	-	.	ID=transcript:CAA35358.1_0;Parent=gene:UL84;biotype=protein_coding
+X17403.1	feature	gene	123101	124021	.	-	.	ID=gene:UL85;Name=UL85;biotype=protein_coding;gene=UL85
+X17403.1	feature	CDS	123101	124021	.	-	0	ID=CDS:CAA35359.1;Parent=transcript:CAA35359.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P16728,InterPro:IPR002690,UniProtKB/Swiss-Prot:P16728;gene=UL85;protein_id=CAA35359.1
+X17403.1	feature	mRNA	123101	124021	.	-	.	ID=transcript:CAA35359.1_0;Parent=gene:UL85;biotype=protein_coding
+X17403.1	feature	gene	124183	128295	.	-	.	ID=gene:UL86;Name=UL86;biotype=protein_coding;gene=UL86
+X17403.1	feature	CDS	124183	128295	.	-	0	ID=CDS:CAA35360.1;Parent=transcript:CAA35360.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P16729,InterPro:IPR000912,UniProtKB/Swiss-Prot:P16729;gene=UL86;protein_id=CAA35360.1
+X17403.1	feature	mRNA	124183	128295	.	-	.	ID=transcript:CAA35360.1_0;Parent=gene:UL86;biotype=protein_coding
+X17403.1	feature	gene	128355	131180	.	+	.	ID=gene:UL87;Name=UL87;biotype=protein_coding;gene=UL87
+X17403.1	feature	CDS	128355	131180	.	+	0	ID=CDS:CAA35361.1;Parent=transcript:CAA35361.1_0;biotype=protein_coding;codon_start=1;db_xref=InterPro:IPR004285,InterPro:IPR007618,UniProtKB/Swiss-Prot:P16730;gene=UL87;protein_id=CAA35361.1
+X17403.1	feature	mRNA	128355	131180	.	+	.	ID=transcript:CAA35361.1_0;Parent=gene:UL87;biotype=protein_coding
+X17403.1	feature	gene	131177	132466	.	+	.	ID=gene:UL88;Name=UL88;biotype=protein_coding;gene=UL88
+X17403.1	feature	CDS	131177	132466	.	+	0	ID=CDS:CAA35362.1;Parent=transcript:CAA35362.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P16731,InterPro:IPR007616,UniProtKB/Swiss-Prot:P16731;gene=UL88;protein_id=CAA35362.1
+X17403.1	feature	mRNA	131177	132466	.	+	.	ID=transcript:CAA35362.1_0;Parent=gene:UL88;biotype=protein_coding
+X17403.1	feature	gene	132463	138389	.	-	.	ID=gene:UL89;Name=UL89;biotype=protein_coding;gene=UL89
+X17403.1	feature	CDS	137502	138389	.	-	0	ID=CDS:CAA35363.1;Parent=transcript:CAA35363.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P16732,InterPro:IPR003498,InterPro:IPR003499,UniProtKB/Swiss-Prot:P16732;gene=UL89;protein_id=CAA35363.1
+X17403.1	feature	mRNA	132463	138389	.	-	.	ID=transcript:CAA35363.1_0;Parent=gene:UL89;biotype=protein_coding
+X17403.1	feature	CDS	132463	133599	.	-	0	ID=CDS:CAA35363.1;Parent=transcript:CAA35363.1_1;biotype=protein_coding;codon_start=1;db_xref=GOA:P16732,InterPro:IPR003498,InterPro:IPR003499,UniProtKB/Swiss-Prot:P16732;gene=UL89;protein_id=CAA35363.1
+X17403.1	feature	mRNA	132463	138389	.	-	.	ID=transcript:CAA35363.1_1;Parent=gene:UL89;biotype=protein_coding
+X17403.1	feature	gene	133636	133836	.	-	.	ID=gene:UL90;Name=UL90;biotype=protein_coding;gene=UL90
+X17403.1	feature	CDS	133636	133836	.	-	0	ID=CDS:CAA35364.1;Parent=transcript:CAA35364.1_0;biotype=protein_coding;codon_start=1;db_xref=UniProtKB/Swiss-Prot:P16796;gene=UL90;protein_id=CAA35364.1
+X17403.1	feature	mRNA	133636	133836	.	-	.	ID=transcript:CAA35364.1_0;Parent=gene:UL90;biotype=protein_coding
+X17403.1	feature	gene	133835	134170	.	+	.	ID=gene:UL91;Name=UL91;biotype=protein_coding;gene=UL91
+X17403.1	feature	CDS	133835	134170	.	+	0	ID=CDS:CAA35365.1;Parent=transcript:CAA35365.1_0;biotype=protein_coding;codon_start=1;db_xref=InterPro:IPR020176,UniProtKB/Swiss-Prot:P16797;gene=UL91;protein_id=CAA35365.1
+X17403.1	feature	mRNA	133835	134170	.	+	.	ID=transcript:CAA35365.1_0;Parent=gene:UL91;biotype=protein_coding
+X17403.1	feature	gene	134140	134745	.	+	.	ID=gene:UL92;Name=UL92;biotype=protein_coding;gene=UL92
+X17403.1	feature	CDS	134140	134745	.	+	0	ID=CDS:CAA35366.1;Parent=transcript:CAA35366.1_0;biotype=protein_coding;codon_start=1;db_xref=InterPro:IPR004289,UniProtKB/Swiss-Prot:P16798;gene=UL92;protein_id=CAA35366.1
+X17403.1	feature	mRNA	134140	134745	.	+	.	ID=transcript:CAA35366.1_0;Parent=gene:UL92;biotype=protein_coding
+X17403.1	feature	gene	134711	136495	.	+	.	ID=gene:UL93;Name=UL93;biotype=protein_coding;gene=UL93
+X17403.1	feature	CDS	134711	136495	.	+	0	ID=CDS:CAA35367.1;Parent=transcript:CAA35367.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P16799,InterPro:IPR007640,UniProtKB/Swiss-Prot:P16799;gene=UL93;protein_id=CAA35367.1
+X17403.1	feature	mRNA	134711	136495	.	+	.	ID=transcript:CAA35367.1_0;Parent=gene:UL93;biotype=protein_coding
+X17403.1	feature	gene	136353	137390	.	+	.	ID=gene:UL94;Name=UL94;biotype=protein_coding;gene=UL94
+X17403.1	feature	CDS	136353	137390	.	+	0	ID=CDS:CAA35368.1;Parent=transcript:CAA35368.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P16800,InterPro:IPR004286,UniProtKB/Swiss-Prot:P16800;gene=UL94;protein_id=CAA35368.1
+X17403.1	feature	mRNA	136353	137390	.	+	.	ID=transcript:CAA35368.1_0;Parent=gene:UL94;biotype=protein_coding
+X17403.1	feature	gene	138388	139983	.	+	.	ID=gene:UL95;Name=UL95;biotype=protein_coding;gene=UL95
+X17403.1	feature	CDS	138388	139983	.	+	0	ID=CDS:CAA35369.1;Parent=transcript:CAA35369.1_0;biotype=protein_coding;codon_start=1;db_xref=InterPro:IPR004280,UniProtKB/Swiss-Prot:P16801;gene=UL95;protein_id=CAA35369.1
+X17403.1	feature	mRNA	138388	139983	.	+	.	ID=transcript:CAA35369.1_0;Parent=gene:UL95;biotype=protein_coding
+X17403.1	feature	gene	140016	140363	.	+	.	ID=gene:UL96;Name=UL96;biotype=protein_coding;gene=UL96
+X17403.1	feature	CDS	140016	140363	.	+	0	ID=CDS:CAA35370.1;Parent=transcript:CAA35370.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P16787,InterPro:IPR020197,InterPro:IPR022614,UniProtKB/Swiss-Prot:P16787;gene=UL96;protein_id=CAA35370.1
+X17403.1	feature	mRNA	140016	140363	.	+	.	ID=transcript:CAA35370.1_0;Parent=gene:UL96;biotype=protein_coding
+X17403.1	feature	gene	140484	142607	.	+	.	ID=gene:UL97;Name=UL97;biotype=protein_coding;gene=UL97
+X17403.1	feature	CDS	140484	142607	.	+	0	ID=CDS:CAA35333.1;Parent=transcript:CAA35333.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P16788,InterPro:IPR008266,InterPro:IPR010615,InterPro:IPR011009,UniProtKB/Swiss-Prot:P16788;gene=UL97;protein_id=CAA35333.1
+X17403.1	feature	mRNA	140484	142607	.	+	.	ID=transcript:CAA35333.1_0;Parent=gene:UL97;biotype=protein_coding
+X17403.1	feature	gene	142701	144455	.	+	.	ID=gene:UL98;Name=UL98;biotype=protein_coding;gene=UL98
+X17403.1	feature	CDS	142701	144455	.	+	0	ID=CDS:CAA35334.1;Parent=transcript:CAA35334.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P16789,InterPro:IPR001616,InterPro:IPR011335,UniProtKB/Swiss-Prot:P16789;gene=UL98;protein_id=CAA35334.1
+X17403.1	feature	mRNA	142701	144455	.	+	.	ID=transcript:CAA35334.1_0;Parent=gene:UL98;biotype=protein_coding
+X17403.1	feature	gene	144392	144964	.	+	.	ID=gene:UL99;Name=UL99;biotype=protein_coding;gene=UL99
+X17403.1	feature	CDS	144392	144964	.	+	0	ID=CDS:CAA35335.1;Parent=transcript:CAA35335.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P13200,UniProtKB/Swiss-Prot:P13200;gene=UL99;protein_id=CAA35335.1
+X17403.1	feature	mRNA	144392	144964	.	+	.	ID=transcript:CAA35335.1_0;Parent=gene:UL99;biotype=protein_coding
+X17403.1	feature	gene	145226	146344	.	-	.	ID=gene:UL100;Name=UL100;biotype=protein_coding;gene=UL100
+X17403.1	feature	CDS	145226	146344	.	-	0	ID=CDS:CAA35336.1;Parent=transcript:CAA35336.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P16733,InterPro:IPR000785,UniProtKB/Swiss-Prot:P16733;gene=UL100;protein_id=CAA35336.1
+X17403.1	feature	mRNA	145226	146344	.	-	.	ID=transcript:CAA35336.1_0;Parent=gene:UL100;biotype=protein_coding
+X17403.1	feature	gene	146353	146700	.	+	.	ID=gene:UL101;Name=UL101;biotype=protein_coding;gene=UL101
+X17403.1	feature	CDS	146353	146700	.	+	0	ID=CDS:CAA35337.1;Parent=transcript:CAA35337.1_0;biotype=protein_coding;codon_start=1;db_xref=UniProtKB/Swiss-Prot:P16826;gene=UL101;protein_id=CAA35337.1
+X17403.1	feature	mRNA	146353	146700	.	+	.	ID=transcript:CAA35337.1_0;Parent=gene:UL101;biotype=protein_coding
+X17403.1	feature	gene	146747	149143	.	+	.	ID=gene:UL102;Name=UL102;biotype=protein_coding;gene=UL102
+X17403.1	feature	CDS	146747	149143	.	+	0	ID=CDS:CAA35338.1;Parent=transcript:CAA35338.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P16827,InterPro:IPR004996,UniProtKB/Swiss-Prot:P16827;gene=UL102;protein_id=CAA35338.1
+X17403.1	feature	mRNA	146747	149143	.	+	.	ID=transcript:CAA35338.1_0;Parent=gene:UL102;biotype=protein_coding
+X17403.1	feature	gene	149308	150057	.	-	.	ID=gene:UL103;Name=UL103;biotype=protein_coding;gene=UL103
+X17403.1	feature	CDS	149308	150057	.	-	0	ID=CDS:CAA35339.1;Parent=transcript:CAA35339.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P16734,InterPro:IPR002600,UniProtKB/Swiss-Prot:P16734;gene=UL103;protein_id=CAA35339.1
+X17403.1	feature	mRNA	149308	150057	.	-	.	ID=transcript:CAA35339.1_0;Parent=gene:UL103;biotype=protein_coding
+X17403.1	feature	gene	150005	152098	.	-	.	ID=gene:UL104;Name=UL104;biotype=protein_coding;gene=UL104
+X17403.1	feature	CDS	150005	152098	.	-	0	ID=CDS:CAA35341.1;Parent=transcript:CAA35341.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P16735,InterPro:IPR002660,UniProtKB/Swiss-Prot:P16735;gene=UL104;protein_id=CAA35341.1
+X17403.1	feature	mRNA	150005	152098	.	-	.	ID=transcript:CAA35341.1_0;Parent=gene:UL104;biotype=protein_coding
+X17403.1	feature	gene	151926	154796	.	+	.	ID=gene:UL105;Name=UL105;biotype=protein_coding;gene=UL105
+X17403.1	feature	CDS	151926	154796	.	+	0	ID=CDS:CAA35340.1;Parent=transcript:CAA35340.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P16736,InterPro:IPR003840,UniProtKB/Swiss-Prot:P16736;gene=UL105;protein_id=CAA35340.1
+X17403.1	feature	mRNA	151926	154796	.	+	.	ID=transcript:CAA35340.1_0;Parent=gene:UL105;biotype=protein_coding
+X17403.1	feature	gene	154947	155324	.	-	.	ID=gene:UL106;Name=UL106;biotype=protein_coding;gene=UL106
+X17403.1	feature	CDS	154947	155324	.	-	0	ID=CDS:CAA35342.1;Parent=transcript:CAA35342.1_0;biotype=protein_coding;codon_start=1;db_xref=UniProtKB/Swiss-Prot:P16737;gene=UL106;protein_id=CAA35342.1
+X17403.1	feature	mRNA	154947	155324	.	-	.	ID=transcript:CAA35342.1_0;Parent=gene:UL106;biotype=protein_coding
+X17403.1	feature	gene	155417	155869	.	-	.	ID=gene:UL107;Name=UL107;biotype=protein_coding;gene=UL107
+X17403.1	feature	CDS	155417	155869	.	-	0	ID=CDS:CAA35343.1;Parent=transcript:CAA35343.1_0;biotype=protein_coding;codon_start=1;db_xref=UniProtKB/Swiss-Prot:P16828;gene=UL107;protein_id=CAA35343.1
+X17403.1	feature	mRNA	155417	155869	.	-	.	ID=transcript:CAA35343.1_0;Parent=gene:UL107;biotype=protein_coding
+X17403.1	feature	gene	156016	156387	.	+	.	ID=gene:UL108;Name=UL108;biotype=protein_coding;gene=UL108
+X17403.1	feature	CDS	156016	156387	.	+	0	ID=CDS:CAA35344.1;Parent=transcript:CAA35344.1_0;biotype=protein_coding;codon_start=1;db_xref=UniProtKB/Swiss-Prot:P16829;gene=UL108;protein_id=CAA35344.1
+X17403.1	feature	mRNA	156016	156387	.	+	.	ID=transcript:CAA35344.1_0;Parent=gene:UL108;biotype=protein_coding
+X17403.1	feature	CDS	156456	156491	.	+	0	ID=CDS:CAA35345.1;Parent=transcript:CAA35345.1_0;biotype=protein_coding;codon_start=1;protein_id=CAA35345.1
+X17403.1	feature	mRNA	156456	156491	.	+	.	ID=transcript:CAA35345.1_0;Parent=gene:hypothetical_1;biotype=protein_coding
+X17403.1	feature	CDS	156557	156760	.	+	0	ID=CDS:CAA35346.1;Parent=transcript:CAA35346.1_0;biotype=protein_coding;codon_start=1;protein_id=CAA35346.1
+X17403.1	feature	mRNA	156557	156760	.	+	.	ID=transcript:CAA35346.1_0;Parent=gene:hypothetical_2;biotype=protein_coding
+X17403.1	feature	gene	157514	157810	.	-	.	ID=gene:UL109;Name=UL109;biotype=protein_coding;gene=UL109
+X17403.1	feature	CDS	157514	157810	.	-	0	ID=CDS:CAA35347.1;Parent=transcript:CAA35347.1_0;biotype=protein_coding;codon_start=1;db_xref=UniProtKB/Swiss-Prot:P16738;gene=UL109;protein_id=CAA35347.1
+X17403.1	feature	mRNA	157514	157810	.	-	.	ID=transcript:CAA35347.1_0;Parent=gene:UL109;biotype=protein_coding
+X17403.1	feature	gene	157893	158276	.	-	.	ID=gene:UL110;Name=UL110;biotype=protein_coding;gene=UL110
+X17403.1	feature	CDS	157893	158276	.	-	0	ID=CDS:CAA35348.1;Parent=transcript:CAA35348.1_0;biotype=protein_coding;codon_start=1;db_xref=UniProtKB/Swiss-Prot:P16830;gene=UL110;protein_id=CAA35348.1
+X17403.1	feature	mRNA	157893	158276	.	-	.	ID=transcript:CAA35348.1_0;Parent=gene:UL110;biotype=protein_coding
+X17403.1	feature	gene	159476	159799	.	-	.	ID=gene:UL111;Name=UL111;biotype=protein_coding;gene=UL111
+X17403.1	feature	CDS	159476	159799	.	-	0	ID=CDS:CAA35349.1;Parent=transcript:CAA35349.1_0;biotype=protein_coding;codon_start=1;gene=UL111;protein_id=CAA35349.1
+X17403.1	feature	mRNA	159476	159799	.	-	.	ID=transcript:CAA35349.1_0;Parent=gene:UL111;biotype=protein_coding
+X17403.1	feature	gene	159678	159914	.	+	.	ID=gene:UL111A;Name=UL111A;biotype=protein_coding;gene=UL111A
+X17403.1	feature	CDS	159678	159914	.	+	0	ID=CDS:CAA35350.1;Parent=transcript:CAA35350.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P17150,InterPro:IPR009079,InterPro:IPR012351,InterPro:IPR012352,InterPro:IPR020423,InterPro:IPR020443,PDB:1LQS,UniProtKB/Swiss-Prot:P17150;gene=UL111A;protein_id=CAA35350.1
+X17403.1	feature	mRNA	159678	159914	.	+	.	ID=transcript:CAA35350.1_0;Parent=gene:UL111A;biotype=protein_coding
+X17403.1	feature	gene	160589	162800	.	+	.	ID=gene:UL112%3B UL113;Name=UL112%3B UL113;biotype=protein_coding;gene=UL112%3B UL113
+X17403.1	feature	CDS	160589	161345	.	+	0	ID=CDS:CAA35315.1;Parent=transcript:CAA35315.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P17151,InterPro:IPR004138,UniProtKB/Swiss-Prot:P17151;gene=UL112%3B UL113;protein_id=CAA35315.1
+X17403.1	feature	mRNA	160589	162800	.	+	.	ID=transcript:CAA35315.1_0;Parent=gene:UL112%3B UL113;biotype=protein_coding
+X17403.1	feature	CDS	161503	162800	.	+	0	ID=CDS:CAA35315.1;Parent=transcript:CAA35315.1_1;biotype=protein_coding;codon_start=1;db_xref=GOA:P17151,InterPro:IPR004138,UniProtKB/Swiss-Prot:P17151;gene=UL112%3B UL113;protein_id=CAA35315.1
+X17403.1	feature	mRNA	160589	162800	.	+	.	ID=transcript:CAA35315.1_1;Parent=gene:UL112%3B UL113;biotype=protein_coding
+X17403.1	feature	gene	162970	163722	.	-	.	ID=gene:UL114;Name=UL114;biotype=protein_coding;gene=UL114
+X17403.1	feature	CDS	162970	163722	.	-	0	ID=CDS:CAA35316.1;Parent=transcript:CAA35316.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P16769,InterPro:IPR002043,InterPro:IPR005122,InterPro:IPR018085,UniProtKB/Swiss-Prot:P16769;gene=UL114;protein_id=CAA35316.1
+X17403.1	feature	mRNA	162970	163722	.	-	.	ID=transcript:CAA35316.1_0;Parent=gene:UL114;biotype=protein_coding
+X17403.1	feature	gene	163694	164614	.	-	.	ID=gene:UL115;Name=UL115;biotype=protein_coding;gene=UL115
+X17403.1	feature	CDS	163694	164614	.	-	0	ID=CDS:CAA35317.1;Parent=transcript:CAA35317.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P16832,InterPro:IPR002689,UniProtKB/Swiss-Prot:P16832;gene=UL115;protein_id=CAA35317.1
+X17403.1	feature	mRNA	163694	164614	.	-	.	ID=transcript:CAA35317.1_0;Parent=gene:UL115;biotype=protein_coding
+X17403.1	feature	gene	164530	165564	.	-	.	ID=gene:UL116;Name=UL116;biotype=protein_coding;gene=UL116
+X17403.1	feature	CDS	164530	165564	.	-	0	ID=CDS:CAA35318.1;Parent=transcript:CAA35318.1_0;biotype=protein_coding;codon_start=1;db_xref=UniProtKB/Swiss-Prot:P16833;gene=UL116;protein_id=CAA35318.1
+X17403.1	feature	mRNA	164530	165564	.	-	.	ID=transcript:CAA35318.1_0;Parent=gene:UL116;biotype=protein_coding
+X17403.1	feature	gene	165471	166745	.	-	.	ID=gene:UL117;Name=UL117;biotype=protein_coding;gene=UL117
+X17403.1	feature	CDS	165471	166745	.	-	0	ID=CDS:CAA35319.1;Parent=transcript:CAA35319.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P16770,InterPro:IPR005028,UniProtKB/Swiss-Prot:P16770;gene=UL117;protein_id=CAA35319.1
+X17403.1	feature	mRNA	165471	166745	.	-	.	ID=transcript:CAA35319.1_0;Parent=gene:UL117;biotype=protein_coding
+X17403.1	feature	gene	166858	167487	.	-	.	ID=gene:UL118;Name=UL118;biotype=protein_coding;gene=UL118
+X17403.1	feature	CDS	166858	167487	.	-	0	ID=CDS:CAA35320.1;Parent=transcript:CAA35320.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P16739,UniProtKB/Swiss-Prot:P16739;gene=UL118;protein_id=CAA35320.1
+X17403.1	feature	mRNA	166858	167487	.	-	.	ID=transcript:CAA35320.1_0;Parent=gene:UL118;biotype=protein_coding
+X17403.1	feature	gene	167555	167983	.	-	.	ID=gene:UL119;Name=UL119;biotype=protein_coding;gene=UL119
+X17403.1	feature	CDS	167555	167983	.	-	0	ID=CDS:CAA35321.1;Parent=transcript:CAA35321.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P16739,UniProtKB/Swiss-Prot:P16739;gene=UL119;protein_id=CAA35321.1
+X17403.1	feature	mRNA	167555	167983	.	-	.	ID=transcript:CAA35321.1_0;Parent=gene:UL119;biotype=protein_coding
+X17403.1	feature	gene	168038	168643	.	-	.	ID=gene:UL120;Name=UL120;biotype=protein_coding;gene=UL120
+X17403.1	feature	CDS	168038	168643	.	-	0	ID=CDS:CAA35322.1;Parent=transcript:CAA35322.1_0;biotype=protein_coding;codon_start=1;db_xref=UniProtKB/Swiss-Prot:P16740;gene=UL120;protein_id=CAA35322.1
+X17403.1	feature	mRNA	168038	168643	.	-	.	ID=transcript:CAA35322.1_0;Parent=gene:UL120;biotype=protein_coding
+X17403.1	feature	gene	168694	169236	.	-	.	ID=gene:UL121;Name=UL121;biotype=protein_coding;gene=UL121
+X17403.1	feature	CDS	168694	169236	.	-	0	ID=CDS:CAA35323.1;Parent=transcript:CAA35323.1_0;biotype=protein_coding;codon_start=1;db_xref=InterPro:IPR022545,UniProtKB/Swiss-Prot:P16741;gene=UL121;protein_id=CAA35323.1
+X17403.1	feature	mRNA	168694	169236	.	-	.	ID=transcript:CAA35323.1_0;Parent=gene:UL121;biotype=protein_coding
+X17403.1	feature	gene	169364	170599	.	-	.	ID=gene:UL122;Name=UL122;biotype=protein_coding;gene=UL122
+X17403.1	feature	CDS	169364	170599	.	-	0	ID=CDS:CAA35324.1;Parent=transcript:CAA35324.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P19893,InterPro:IPR005028,InterPro:IPR010855,UniProtKB/Swiss-Prot:P19893;gene=UL122;protein_id=CAA35324.1
+X17403.1	feature	mRNA	169364	170599	.	-	.	ID=transcript:CAA35324.1_0;Parent=gene:UL122;biotype=protein_coding
+X17403.1	feature	gene	171006	172765	.	-	.	ID=gene:UL123;Name=UL123;biotype=protein_coding;gene=UL123
+X17403.1	feature	CDS	172695	172765	.	-	0	ID=CDS:CAA35325.1;Parent=transcript:CAA35325.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P13202,InterPro:IPR010855,UniProtKB/Swiss-Prot:P13202;gene=UL123;protein_id=CAA35325.1
+X17403.1	feature	mRNA	171006	172765	.	-	.	ID=transcript:CAA35325.1_0;Parent=gene:UL123;biotype=protein_coding
+X17403.1	feature	CDS	172396	172580	.	-	0	ID=CDS:CAA35325.1;Parent=transcript:CAA35325.1_1;biotype=protein_coding;codon_start=1;db_xref=GOA:P13202,InterPro:IPR010855,UniProtKB/Swiss-Prot:P13202;gene=UL123;protein_id=CAA35325.1
+X17403.1	feature	mRNA	171006	172765	.	-	.	ID=transcript:CAA35325.1_1;Parent=gene:UL123;biotype=protein_coding
+X17403.1	feature	CDS	171006	172225	.	-	0	ID=CDS:CAA35325.1;Parent=transcript:CAA35325.1_2;biotype=protein_coding;codon_start=1;db_xref=GOA:P13202,InterPro:IPR010855,UniProtKB/Swiss-Prot:P13202;gene=UL123;protein_id=CAA35325.1
+X17403.1	feature	mRNA	171006	172765	.	-	.	ID=transcript:CAA35325.1_2;Parent=gene:UL123;biotype=protein_coding
+X17403.1	feature	gene	172798	173256	.	+	.	ID=gene:UL124;Name=UL124;biotype=protein_coding;gene=UL124
+X17403.1	feature	CDS	172798	173256	.	+	0	ID=CDS:CAA35326.1;Parent=transcript:CAA35326.1_0;biotype=protein_coding;codon_start=1;db_xref=InterPro:IPR020214,UniProtKB/Swiss-Prot:P16742;gene=UL124;protein_id=CAA35326.1
+X17403.1	feature	mRNA	172798	173256	.	+	.	ID=transcript:CAA35326.1_0;Parent=gene:UL124;biotype=protein_coding
+X17403.1	feature	gene	173111	173419	.	-	.	ID=gene:UL125;Name=UL125;biotype=protein_coding;gene=UL125
+X17403.1	feature	CDS	173111	173419	.	-	0	ID=CDS:CAA35327.1;Parent=transcript:CAA35327.1_0;biotype=protein_coding;codon_start=1;db_xref=UniProtKB/Swiss-Prot:P16835;gene=UL125;protein_id=CAA35327.1
+X17403.1	feature	mRNA	173111	173419	.	-	.	ID=transcript:CAA35327.1_0;Parent=gene:UL125;biotype=protein_coding
+X17403.1	feature	gene	173505	173909	.	-	.	ID=gene:UL126;Name=UL126;biotype=protein_coding;gene=UL126
+X17403.1	feature	CDS	173505	173909	.	-	0	ID=CDS:CAA35328.1;Parent=transcript:CAA35328.1_0;biotype=protein_coding;codon_start=1;db_xref=UniProtKB/Swiss-Prot:P16836;gene=UL126;protein_id=CAA35328.1
+X17403.1	feature	mRNA	173505	173909	.	-	.	ID=transcript:CAA35328.1_0;Parent=gene:UL126;biotype=protein_coding
+X17403.1	feature	gene	174495	174890	.	+	.	ID=gene:UL127;Name=UL127;biotype=protein_coding;gene=UL127
+X17403.1	feature	CDS	174495	174890	.	+	0	ID=CDS:CAA35329.1;Parent=transcript:CAA35329.1_0;biotype=protein_coding;codon_start=1;db_xref=UniProtKB/Swiss-Prot:P16771;gene=UL127;protein_id=CAA35329.1
+X17403.1	feature	mRNA	174495	174890	.	+	.	ID=transcript:CAA35329.1_0;Parent=gene:UL127;biotype=protein_coding
+X17403.1	feature	gene	174865	175284	.	-	.	ID=gene:UL128;Name=UL128;biotype=protein_coding;gene=UL128
+X17403.1	feature	CDS	174865	175284	.	-	0	ID=CDS:CAA35330.1;Parent=transcript:CAA35330.1_0;biotype=protein_coding;codon_start=1;db_xref=UniProtKB/Swiss-Prot:P16837;gene=UL128;protein_id=CAA35330.1
+X17403.1	feature	mRNA	174865	175284	.	-	.	ID=transcript:CAA35330.1_0;Parent=gene:UL128;biotype=protein_coding
+X17403.1	feature	gene	175354	175704	.	-	.	ID=gene:UL129;Name=UL129;biotype=protein_coding;gene=UL129
+X17403.1	feature	CDS	175354	175704	.	-	0	ID=CDS:CAA35331.1;Parent=transcript:CAA35331.1_0;biotype=protein_coding;codon_start=1;db_xref=UniProtKB/Swiss-Prot:P16838;gene=UL129;protein_id=CAA35331.1
+X17403.1	feature	mRNA	175354	175704	.	-	.	ID=transcript:CAA35331.1_0;Parent=gene:UL129;biotype=protein_coding
+X17403.1	feature	gene	175662	176306	.	-	.	ID=gene:UL130;Name=UL130;biotype=protein_coding;gene=UL130
+X17403.1	feature	CDS	175662	176306	.	-	0	ID=CDS:CAA35332.1;Parent=transcript:CAA35332.1_0;biotype=protein_coding;codon_start=1;db_xref=InterPro:IPR021038,UniProtKB/Swiss-Prot:P16772;gene=UL130;protein_id=CAA35332.1
+X17403.1	feature	mRNA	175662	176306	.	-	.	ID=transcript:CAA35332.1_0;Parent=gene:UL130;biotype=protein_coding
+X17403.1	feature	gene	176641	176871	.	-	.	ID=gene:UL131;Name=UL131;biotype=protein_coding;gene=UL131
+X17403.1	feature	CDS	176641	176871	.	-	0	ID=CDS:CAA35294.1;Parent=transcript:CAA35294.1_0;biotype=protein_coding;codon_start=1;db_xref=UniProtKB/Swiss-Prot:P16773;gene=UL131;protein_id=CAA35294.1
+X17403.1	feature	mRNA	176641	176871	.	-	.	ID=transcript:CAA35294.1_0;Parent=gene:UL131;biotype=protein_coding
+X17403.1	feature	gene	176931	177743	.	-	.	ID=gene:UL132;Name=UL132;biotype=protein_coding;gene=UL132
+X17403.1	feature	CDS	176931	177743	.	-	0	ID=CDS:CAA35295.1;Parent=transcript:CAA35295.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P69338,InterPro:IPR021023,UniProtKB/Swiss-Prot:P69338;gene=UL132;protein_id=CAA35295.1
+X17403.1	feature	mRNA	176931	177743	.	-	.	ID=transcript:CAA35295.1_0;Parent=gene:UL132;biotype=protein_coding
+X17403.1	feature	gene	177773	178324	.	-	.	ID=gene:IRL14;Name=IRL14;biotype=protein_coding;gene=IRL14
+X17403.1	feature	CDS	177773	178324	.	-	0	ID=CDS:CAA35296.1;Parent=transcript:CAA35296.1_0;biotype=protein_coding;codon_start=1;db_xref=UniProtKB/Swiss-Prot:P21601;gene=IRL14;protein_id=CAA35296.1
+X17403.1	feature	mRNA	177773	178324	.	-	.	ID=transcript:CAA35296.1_0;Parent=gene:IRL14;biotype=protein_coding
+X17403.1	feature	gene	178228	178671	.	-	.	ID=gene:IRL13 %3D TRL13;Name=IRL13 %3D TRL13;biotype=protein_coding;gene=IRL13 %3D TRL13
+X17403.1	feature	CDS	178228	178671	.	-	0	ID=CDS:CAA35297.1;Parent=transcript:CAA35297.1_0;biotype=protein_coding;codon_start=1;db_xref=UniProtKB/Swiss-Prot:P16811;gene=IRL13 %3D TRL13;protein_id=CAA35297.1
+X17403.1	feature	mRNA	178228	178671	.	-	.	ID=transcript:CAA35297.1_0;Parent=gene:IRL13 %3D TRL13;biotype=protein_coding
+X17403.1	feature	gene	178783	180033	.	-	.	ID=gene:IRL12 %3D TRL12;Name=IRL12 %3D TRL12;biotype=protein_coding;gene=IRL12 %3D TRL12
+X17403.1	feature	CDS	178783	180033	.	-	0	ID=CDS:CAA35298.1;Parent=transcript:CAA35298.1_0;biotype=protein_coding;codon_start=1;db_xref=UniProtKB/Swiss-Prot:P16810;gene=IRL12 %3D TRL12;protein_id=CAA35298.1
+X17403.1	feature	mRNA	178783	180033	.	-	.	ID=transcript:CAA35298.1_0;Parent=gene:IRL12 %3D TRL12;biotype=protein_coding
+X17403.1	feature	gene	180037	180741	.	-	.	ID=gene:IRL11 %3D TRL11;Name=IRL11 %3D TRL11;biotype=protein_coding;gene=IRL11 %3D TRL11
+X17403.1	feature	CDS	180037	180741	.	-	0	ID=CDS:CAA35299.1;Parent=transcript:CAA35299.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P16809,UniProtKB/Swiss-Prot:P16809;gene=IRL11 %3D TRL11;protein_id=CAA35299.1
+X17403.1	feature	mRNA	180037	180741	.	-	.	ID=transcript:CAA35299.1_0;Parent=gene:IRL11 %3D TRL11;biotype=protein_coding
+X17403.1	feature	gene	180770	181285	.	-	.	ID=gene:IRL10 %3D TRL10;Name=IRL10 %3D TRL10;biotype=protein_coding;gene=IRL10 %3D TRL10
+X17403.1	feature	CDS	180770	181285	.	-	0	ID=CDS:CAA35300.1;Parent=transcript:CAA35300.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P16808,InterPro:IPR009284,UniProtKB/Swiss-Prot:P16808;gene=IRL10 %3D TRL10;protein_id=CAA35300.1
+X17403.1	feature	mRNA	180770	181285	.	-	.	ID=transcript:CAA35300.1_0;Parent=gene:IRL10 %3D TRL10;biotype=protein_coding
+X17403.1	feature	gene	181535	181966	.	-	.	ID=gene:IRL9 %3D TRL9;Name=IRL9 %3D TRL9;biotype=protein_coding;gene=IRL9 %3D TRL9
+X17403.1	feature	CDS	181535	181966	.	-	0	ID=CDS:CAA35301.1;Parent=transcript:CAA35301.1_0;biotype=protein_coding;codon_start=1;db_xref=UniProtKB/Swiss-Prot:P16807;gene=IRL9 %3D TRL9;protein_id=CAA35301.1
+X17403.1	feature	mRNA	181535	181966	.	-	.	ID=transcript:CAA35301.1_0;Parent=gene:IRL9 %3D TRL9;biotype=protein_coding
+X17403.1	feature	gene	181794	182183	.	-	.	ID=gene:IRL8 %3D TRL8;Name=IRL8 %3D TRL8;biotype=protein_coding;gene=IRL8 %3D TRL8
+X17403.1	feature	CDS	181794	182183	.	-	0	ID=CDS:CAA35302.1;Parent=transcript:CAA35302.1_0;biotype=protein_coding;codon_start=1;db_xref=UniProtKB/Swiss-Prot:P16806;gene=IRL8 %3D TRL8;protein_id=CAA35302.1
+X17403.1	feature	mRNA	181794	182183	.	-	.	ID=transcript:CAA35302.1_0;Parent=gene:IRL8 %3D TRL8;biotype=protein_coding
+X17403.1	feature	gene	182624	182872	.	+	.	ID=gene:IRL7 %3D TRL7;Name=IRL7 %3D TRL7;biotype=protein_coding;gene=IRL7 %3D TRL7
+X17403.1	feature	CDS	182624	182872	.	+	0	ID=CDS:CAA35303.1;Parent=transcript:CAA35303.1_0;biotype=protein_coding;codon_start=1;db_xref=UniProtKB/Swiss-Prot:P16805;gene=IRL7 %3D TRL7;protein_id=CAA35303.1
+X17403.1	feature	mRNA	182624	182872	.	+	.	ID=transcript:CAA35303.1_0;Parent=gene:IRL7 %3D TRL7;biotype=protein_coding
+X17403.1	feature	gene	183520	183855	.	+	.	ID=gene:IRL6 %3D TRL6;Name=IRL6 %3D TRL6;biotype=protein_coding;gene=IRL6 %3D TRL6
+X17403.1	feature	CDS	183520	183855	.	+	0	ID=CDS:CAA35304.1;Parent=transcript:CAA35304.1_0;biotype=protein_coding;codon_start=1;db_xref=UniProtKB/Swiss-Prot:P16804;gene=IRL6 %3D TRL6;protein_id=CAA35304.1
+X17403.1	feature	mRNA	183520	183855	.	+	.	ID=transcript:CAA35304.1_0;Parent=gene:IRL6 %3D TRL6;biotype=protein_coding
+X17403.1	feature	gene	184857	185201	.	-	.	ID=gene:IRL5 %3D TRL5;Name=IRL5 %3D TRL5;biotype=protein_coding;gene=IRL5 %3D TRL5
+X17403.1	feature	CDS	184857	185201	.	-	0	ID=CDS:CAA35306.1;Parent=transcript:CAA35306.1_0;biotype=protein_coding;codon_start=1;db_xref=UniProtKB/Swiss-Prot:P16803;gene=IRL5 %3D TRL5;protein_id=CAA35306.1
+X17403.1	feature	mRNA	184857	185201	.	-	.	ID=transcript:CAA35306.1_0;Parent=gene:IRL5 %3D TRL5;biotype=protein_coding
+X17403.1	feature	gene	185173	185685	.	+	.	ID=gene:IRL4 %3D TRL4;Name=IRL4 %3D TRL4;biotype=protein_coding;gene=IRL4 %3D TRL4
+X17403.1	feature	CDS	185173	185685	.	+	0	ID=CDS:CAA35305.1;Parent=transcript:CAA35305.1_0;biotype=protein_coding;codon_start=1;db_xref=UniProtKB/Swiss-Prot:P09694;gene=IRL4 %3D TRL4;protein_id=CAA35305.1
+X17403.1	feature	mRNA	185173	185685	.	+	.	ID=transcript:CAA35305.1_0;Parent=gene:IRL4 %3D TRL4;biotype=protein_coding
+X17403.1	feature	gene	185931	186275	.	-	.	ID=gene:IRL3 %3D TRL3;Name=IRL3 %3D TRL3;biotype=protein_coding;gene=IRL3 %3D TRL3
+X17403.1	feature	CDS	185931	186275	.	-	0	ID=CDS:CAA35307.1;Parent=transcript:CAA35307.1_0;biotype=protein_coding;codon_start=1;db_xref=UniProtKB/Swiss-Prot:P17142;gene=IRL3 %3D TRL3;protein_id=CAA35307.1
+X17403.1	feature	mRNA	185931	186275	.	-	.	ID=transcript:CAA35307.1_0;Parent=gene:IRL3 %3D TRL3;biotype=protein_coding
+X17403.1	feature	gene	187227	187574	.	-	.	ID=gene:IRL2 %3D TRL2;Name=IRL2 %3D TRL2;biotype=protein_coding;gene=IRL2 %3D TRL2
+X17403.1	feature	CDS	187227	187574	.	-	0	ID=CDS:CAA35308.1;Parent=transcript:CAA35308.1_0;biotype=protein_coding;codon_start=1;db_xref=UniProtKB/Swiss-Prot:P16802;gene=IRL2 %3D TRL2;protein_id=CAA35308.1
+X17403.1	feature	mRNA	187227	187574	.	-	.	ID=transcript:CAA35308.1_0;Parent=gene:IRL2 %3D TRL2;biotype=protein_coding
+X17403.1	feature	gene	187562	188497	.	-	.	ID=gene:IRL1 %3D TRL1;Name=IRL1 %3D TRL1;biotype=protein_coding;gene=IRL1 %3D TRL1
+X17403.1	feature	CDS	187562	188497	.	-	0	ID=CDS:CAA35309.1;Parent=transcript:CAA35309.1_0;biotype=protein_coding;codon_start=1;db_xref=InterPro:IPR016394,UniProtKB/Swiss-Prot:P09710;gene=IRL1 %3D TRL1;protein_id=CAA35309.1
+X17403.1	feature	mRNA	187562	188497	.	-	.	ID=transcript:CAA35309.1_0;Parent=gene:IRL1 %3D TRL1;biotype=protein_coding
+X17403.1	feature	gene	188538	189563	.	+	.	ID=gene:J1I;Name=J1I;biotype=protein_coding;gene=J1I
+X17403.1	feature	CDS	188538	189563	.	+	0	ID=CDS:CAA35310.1;Parent=transcript:CAA35310.1_0;biotype=protein_coding;codon_start=1;db_xref=UniProtKB/Swiss-Prot:P17143;gene=J1I;protein_id=CAA35310.1
+X17403.1	feature	mRNA	188538	189563	.	+	.	ID=transcript:CAA35310.1_0;Parent=gene:J1I;biotype=protein_coding
+X17403.1	feature	gene	189765	192305	.	+	.	ID=gene:IRS1;Name=IRS1;biotype=protein_coding;gene=IRS1
+X17403.1	feature	CDS	189765	192305	.	+	0	ID=CDS:CAA35311.1;Parent=transcript:CAA35311.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P09715,InterPro:IPR003360,UniProtKB/Swiss-Prot:P09715;gene=IRS1;protein_id=CAA35311.1
+X17403.1	feature	mRNA	189765	192305	.	+	.	ID=transcript:CAA35311.1_0;Parent=gene:IRS1;biotype=protein_coding
+X17403.1	feature	gene	192329	192967	.	-	.	ID=gene:US1;Name=US1;biotype=protein_coding;gene=US1
+X17403.1	feature	CDS	192329	192967	.	-	0	ID=CDS:CAA35312.1;Parent=transcript:CAA35312.1_0;biotype=protein_coding;codon_start=1;db_xref=InterPro:IPR004118,UniProtKB/Swiss-Prot:P09714;gene=US1;protein_id=CAA35312.1
+X17403.1	feature	mRNA	192329	192967	.	-	.	ID=transcript:CAA35312.1_0;Parent=gene:US1;biotype=protein_coding
+X17403.1	feature	gene	193116	193715	.	-	.	ID=gene:US2;Name=US2;biotype=protein_coding;gene=US2
+X17403.1	feature	CDS	193116	193715	.	-	0	ID=CDS:CAA35313.1;Parent=transcript:CAA35313.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P09713,InterPro:IPR009237,InterPro:IPR014749,InterPro:IPR014756,PDB:1IM3,UniProtKB/Swiss-Prot:P09713;gene=US2;protein_id=CAA35313.1
+X17403.1	feature	mRNA	193116	193715	.	-	.	ID=transcript:CAA35313.1_0;Parent=gene:US2;biotype=protein_coding
+X17403.1	feature	gene	194130	194690	.	-	.	ID=gene:US3;Name=US3;biotype=protein_coding;gene=US3
+X17403.1	feature	CDS	194130	194690	.	-	0	ID=CDS:CAA35314.1;Parent=transcript:CAA35314.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P09712,InterPro:IPR009237,InterPro:IPR014749,InterPro:IPR014756,UniProtKB/Swiss-Prot:P09712;gene=US3;protein_id=CAA35314.1
+X17403.1	feature	mRNA	194130	194690	.	-	.	ID=transcript:CAA35314.1_0;Parent=gene:US3;biotype=protein_coding
+X17403.1	feature	gene	194832	195191	.	+	.	ID=gene:US4;Name=US4;biotype=protein_coding;gene=US4
+X17403.1	feature	CDS	194832	195191	.	+	0	ID=CDS:CAA35271.1;Parent=transcript:CAA35271.1_0;biotype=protein_coding;codon_start=1;db_xref=UniProtKB/Swiss-Prot:P16839;gene=US4;protein_id=CAA35271.1
+X17403.1	feature	mRNA	194832	195191	.	+	.	ID=transcript:CAA35271.1_0;Parent=gene:US4;biotype=protein_coding
+X17403.1	feature	gene	195230	195610	.	+	.	ID=gene:US5;Name=US5;biotype=protein_coding;gene=US5
+X17403.1	feature	CDS	195230	195610	.	+	0	ID=CDS:CAA35272.1;Parent=transcript:CAA35272.1_0;biotype=protein_coding;codon_start=1;db_xref=UniProtKB/Swiss-Prot:P16840;gene=US5;protein_id=CAA35272.1
+X17403.1	feature	mRNA	195230	195610	.	+	.	ID=transcript:CAA35272.1_0;Parent=gene:US5;biotype=protein_coding
+X17403.1	feature	gene	195400	195951	.	-	.	ID=gene:US6;Name=US6;biotype=protein_coding;gene=US6
+X17403.1	feature	CDS	195400	195951	.	-	0	ID=CDS:CAA35273.1;Parent=transcript:CAA35273.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P14334,UniProtKB/Swiss-Prot:P14334;gene=US6;protein_id=CAA35273.1
+X17403.1	feature	mRNA	195400	195951	.	-	.	ID=transcript:CAA35273.1_0;Parent=gene:US6;biotype=protein_coding
+X17403.1	feature	gene	196374	197051	.	-	.	ID=gene:US7;Name=US7;biotype=protein_coding;gene=US7
+X17403.1	feature	CDS	196374	197051	.	-	0	ID=CDS:CAA35274.1;Parent=transcript:CAA35274.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P09731,InterPro:IPR012536,UniProtKB/Swiss-Prot:P09731;gene=US7;protein_id=CAA35274.1
+X17403.1	feature	mRNA	196374	197051	.	-	.	ID=transcript:CAA35274.1_0;Parent=gene:US7;biotype=protein_coding
+X17403.1	feature	gene	197253	197936	.	-	.	ID=gene:US8;Name=US8;biotype=protein_coding;gene=US8
+X17403.1	feature	CDS	197253	197936	.	-	0	ID=CDS:CAA35275.1;Parent=transcript:CAA35275.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P09730,InterPro:IPR012536,UniProtKB/Swiss-Prot:P09730;gene=US8;protein_id=CAA35275.1
+X17403.1	feature	mRNA	197253	197936	.	-	.	ID=transcript:CAA35275.1_0;Parent=gene:US8;biotype=protein_coding
+X17403.1	feature	gene	197951	198694	.	-	.	ID=gene:US9;Name=US9;biotype=protein_coding;gene=US9
+X17403.1	feature	CDS	197951	198694	.	-	0	ID=CDS:CAA35276.1;Parent=transcript:CAA35276.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P09729,InterPro:IPR012536,UniProtKB/Swiss-Prot:P09729;gene=US9;protein_id=CAA35276.1
+X17403.1	feature	mRNA	197951	198694	.	-	.	ID=transcript:CAA35276.1_0;Parent=gene:US9;biotype=protein_coding
+X17403.1	feature	gene	199080	199637	.	-	.	ID=gene:US10;Name=US10;biotype=protein_coding;gene=US10
+X17403.1	feature	CDS	199080	199637	.	-	0	ID=CDS:CAA35277.1;Parent=transcript:CAA35277.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P09728,UniProtKB/Swiss-Prot:P09728;gene=US10;protein_id=CAA35277.1
+X17403.1	feature	mRNA	199080	199637	.	-	.	ID=transcript:CAA35277.1_0;Parent=gene:US10;biotype=protein_coding
+X17403.1	feature	gene	199713	200360	.	-	.	ID=gene:US11;Name=US11;biotype=protein_coding;gene=US11
+X17403.1	feature	CDS	199713	200360	.	-	0	ID=CDS:CAA35278.1;Parent=transcript:CAA35278.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P09727,InterPro:IPR012536,UniProtKB/Swiss-Prot:P09727;gene=US11;protein_id=CAA35278.1
+X17403.1	feature	mRNA	199713	200360	.	-	.	ID=transcript:CAA35278.1_0;Parent=gene:US11;biotype=protein_coding
+X17403.1	feature	gene	200546	201391	.	-	.	ID=gene:US12;Name=US12;biotype=protein_coding;gene=US12
+X17403.1	feature	CDS	200546	201391	.	-	0	ID=CDS:CAA35279.1;Parent=transcript:CAA35279.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P09721,UniProtKB/Swiss-Prot:P09721;gene=US12;protein_id=CAA35279.1
+X17403.1	feature	mRNA	200546	201391	.	-	.	ID=transcript:CAA35279.1_0;Parent=gene:US12;biotype=protein_coding
+X17403.1	feature	gene	201471	202256	.	-	.	ID=gene:US13;Name=US13;biotype=protein_coding;gene=US13
+X17403.1	feature	CDS	201471	202256	.	-	0	ID=CDS:CAA35280.1;Parent=transcript:CAA35280.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P09720,UniProtKB/Swiss-Prot:P09720;gene=US13;protein_id=CAA35280.1
+X17403.1	feature	mRNA	201471	202256	.	-	.	ID=transcript:CAA35280.1_0;Parent=gene:US13;biotype=protein_coding
+X17403.1	feature	gene	202325	203257	.	-	.	ID=gene:US14;Name=US14;biotype=protein_coding;gene=US14
+X17403.1	feature	CDS	202325	203257	.	-	0	ID=CDS:CAA35281.1;Parent=transcript:CAA35281.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P09719,UniProtKB/Swiss-Prot:P09719;gene=US14;protein_id=CAA35281.1
+X17403.1	feature	mRNA	202325	203257	.	-	.	ID=transcript:CAA35281.1_0;Parent=gene:US14;biotype=protein_coding
+X17403.1	feature	gene	203302	204756	.	-	.	ID=gene:US15;Name=US15;biotype=protein_coding;gene=US15
+X17403.1	feature	CDS	203302	204756	.	-	0	ID=CDS:CAA35282.1;Parent=transcript:CAA35282.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P09718,UniProtKB/Swiss-Prot:P09718;gene=US15;protein_id=CAA35282.1
+X17403.1	feature	mRNA	203302	204756	.	-	.	ID=transcript:CAA35282.1_0;Parent=gene:US15;biotype=protein_coding
+X17403.1	feature	gene	204150	205079	.	-	.	ID=gene:US16;Name=US16;biotype=protein_coding;gene=US16
+X17403.1	feature	CDS	204150	205079	.	-	0	ID=CDS:CAA35283.1;Parent=transcript:CAA35283.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P09717,UniProtKB/Swiss-Prot:P09717;gene=US16;protein_id=CAA35283.1
+X17403.1	feature	mRNA	204150	205079	.	-	.	ID=transcript:CAA35283.1_0;Parent=gene:US16;biotype=protein_coding
+X17403.1	feature	gene	205224	206105	.	-	.	ID=gene:US17;Name=US17;biotype=protein_coding;gene=US17
+X17403.1	feature	CDS	205224	206105	.	-	0	ID=CDS:CAA35284.1;Parent=transcript:CAA35284.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P09716,UniProtKB/Swiss-Prot:P09716;gene=US17;protein_id=CAA35284.1
+X17403.1	feature	mRNA	205224	206105	.	-	.	ID=transcript:CAA35284.1_0;Parent=gene:US17;biotype=protein_coding
+X17403.1	feature	gene	206373	207197	.	-	.	ID=gene:US18;Name=US18;biotype=protein_coding;gene=US18
+X17403.1	feature	CDS	206373	207197	.	-	0	ID=CDS:CAA35285.1;Parent=transcript:CAA35285.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P69334,UniProtKB/Swiss-Prot:P69334;gene=US18;protein_id=CAA35285.1
+X17403.1	feature	mRNA	206373	207197	.	-	.	ID=transcript:CAA35285.1_0;Parent=gene:US18;biotype=protein_coding
+X17403.1	feature	gene	207335	208057	.	-	.	ID=gene:US19;Name=US19;biotype=protein_coding;gene=US19
+X17403.1	feature	CDS	207335	208057	.	-	0	ID=CDS:CAA35286.1;Parent=transcript:CAA35286.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P69336,UniProtKB/Swiss-Prot:P69336;gene=US19;protein_id=CAA35286.1
+X17403.1	feature	mRNA	207335	208057	.	-	.	ID=transcript:CAA35286.1_0;Parent=gene:US19;biotype=protein_coding
+X17403.1	feature	gene	208104	209177	.	-	.	ID=gene:US20;Name=US20;biotype=protein_coding;gene=US20
+X17403.1	feature	CDS	208104	209177	.	-	0	ID=CDS:CAA35287.1;Parent=transcript:CAA35287.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P09724,InterPro:IPR006214,UniProtKB/Swiss-Prot:P09724;gene=US20;protein_id=CAA35287.1
+X17403.1	feature	mRNA	208104	209177	.	-	.	ID=transcript:CAA35287.1_0;Parent=gene:US20;biotype=protein_coding
+X17403.1	feature	gene	208975	209694	.	-	.	ID=gene:US21;Name=US21;biotype=protein_coding;gene=US21
+X17403.1	feature	CDS	208975	209694	.	-	0	ID=CDS:CAA35288.1;Parent=transcript:CAA35288.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P09723,InterPro:IPR006214,UniProtKB/Swiss-Prot:P09723;gene=US21;protein_id=CAA35288.1
+X17403.1	feature	mRNA	208975	209694	.	-	.	ID=transcript:CAA35288.1_0;Parent=gene:US21;biotype=protein_coding
+X17403.1	feature	gene	209871	211652	.	-	.	ID=gene:US22;Name=US22;biotype=protein_coding;gene=US22
+X17403.1	feature	CDS	209871	211652	.	-	0	ID=CDS:CAA35289.1;Parent=transcript:CAA35289.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P09722,InterPro:IPR003360,UniProtKB/Swiss-Prot:P09722;gene=US22;protein_id=CAA35289.1
+X17403.1	feature	mRNA	209871	211652	.	-	.	ID=transcript:CAA35289.1_0;Parent=gene:US22;biotype=protein_coding
+X17403.1	feature	gene	211714	213492	.	-	.	ID=gene:US23;Name=US23;biotype=protein_coding;gene=US23
+X17403.1	feature	CDS	211714	213492	.	-	0	ID=CDS:CAA35290.1;Parent=transcript:CAA35290.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P09701,InterPro:IPR003360,UniProtKB/Swiss-Prot:P09701;gene=US23;protein_id=CAA35290.1
+X17403.1	feature	mRNA	211714	213492	.	-	.	ID=transcript:CAA35290.1_0;Parent=gene:US23;biotype=protein_coding
+X17403.1	feature	gene	213588	215090	.	-	.	ID=gene:US24;Name=US24;biotype=protein_coding;gene=US24
+X17403.1	feature	CDS	213588	215090	.	-	0	ID=CDS:CAA35291.1;Parent=transcript:CAA35291.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P09700,InterPro:IPR003360,UniProtKB/Swiss-Prot:P09700;gene=US24;protein_id=CAA35291.1
+X17403.1	feature	mRNA	213588	215090	.	-	.	ID=transcript:CAA35291.1_0;Parent=gene:US24;biotype=protein_coding
+X17403.1	feature	gene	215097	215636	.	+	.	ID=gene:US25;Name=US25;biotype=protein_coding;gene=US25
+X17403.1	feature	CDS	215097	215636	.	+	0	ID=CDS:CAA35292.1;Parent=transcript:CAA35292.1_0;biotype=protein_coding;codon_start=1;db_xref=UniProtKB/Swiss-Prot:P17145;gene=US25;protein_id=CAA35292.1
+X17403.1	feature	mRNA	215097	215636	.	+	.	ID=transcript:CAA35292.1_0;Parent=gene:US25;biotype=protein_coding
+X17403.1	feature	gene	215727	217538	.	-	.	ID=gene:US26;Name=US26;biotype=protein_coding;gene=US26
+X17403.1	feature	CDS	215727	217538	.	-	0	ID=CDS:CAA35293.1;Parent=transcript:CAA35293.1_0;biotype=protein_coding;codon_start=1;db_xref=InterPro:IPR003360,UniProtKB/Swiss-Prot:P09699;gene=US26;protein_id=CAA35293.1
+X17403.1	feature	mRNA	215727	217538	.	-	.	ID=transcript:CAA35293.1_0;Parent=gene:US26;biotype=protein_coding
+X17403.1	feature	gene	217904	218992	.	+	.	ID=gene:US27;Name=US27;biotype=protein_coding;gene=US27
+X17403.1	feature	CDS	217904	218992	.	+	0	ID=CDS:CAA35259.1;Parent=transcript:CAA35259.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P09703,InterPro:IPR000276,InterPro:IPR017452,UniProtKB/Swiss-Prot:P09703;gene=US27;protein_id=CAA35259.1
+X17403.1	feature	mRNA	217904	218992	.	+	.	ID=transcript:CAA35259.1_0;Parent=gene:US27;biotype=protein_coding
+X17403.1	feature	gene	219200	220171	.	+	.	ID=gene:US28;Name=US28;biotype=protein_coding;gene=US28
+X17403.1	feature	CDS	219200	220171	.	+	0	ID=CDS:CAA35260.1;Parent=transcript:CAA35260.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P69332,InterPro:IPR000276,InterPro:IPR000355,InterPro:IPR017452,UniProtKB/Swiss-Prot:P69332;gene=US28;protein_id=CAA35260.1
+X17403.1	feature	mRNA	219200	220171	.	+	.	ID=transcript:CAA35260.1_0;Parent=gene:US28;biotype=protein_coding
+X17403.1	feature	gene	220426	221814	.	+	.	ID=gene:US29;Name=US29;biotype=protein_coding;gene=US29
+X17403.1	feature	CDS	220426	221814	.	+	0	ID=CDS:CAA35261.1;Parent=transcript:CAA35261.1_0;biotype=protein_coding;codon_start=1;db_xref=UniProtKB/Swiss-Prot:P09705;gene=US29;protein_id=CAA35261.1
+X17403.1	feature	mRNA	220426	221814	.	+	.	ID=transcript:CAA35261.1_0;Parent=gene:US29;biotype=protein_coding
+X17403.1	feature	gene	221618	222667	.	+	.	ID=gene:US30;Name=US30;biotype=protein_coding;gene=US30
+X17403.1	feature	CDS	221618	222667	.	+	0	ID=CDS:CAA35262.1;Parent=transcript:CAA35262.1_0;biotype=protein_coding;codon_start=1;db_xref=UniProtKB/Swiss-Prot:P09706;gene=US30;protein_id=CAA35262.1
+X17403.1	feature	mRNA	221618	222667	.	+	.	ID=transcript:CAA35262.1_0;Parent=gene:US30;biotype=protein_coding
+X17403.1	feature	gene	222674	223267	.	+	.	ID=gene:US31;Name=US31;biotype=protein_coding;gene=US31
+X17403.1	feature	CDS	222674	223267	.	+	0	ID=CDS:CAA35263.1;Parent=transcript:CAA35263.1_0;biotype=protein_coding;codon_start=1;db_xref=UniProtKB/Swiss-Prot:P09707;gene=US31;protein_id=CAA35263.1
+X17403.1	feature	mRNA	222674	223267	.	+	.	ID=transcript:CAA35263.1_0;Parent=gene:US31;biotype=protein_coding
+X17403.1	feature	gene	223385	223936	.	+	.	ID=gene:US32;Name=US32;biotype=protein_coding;gene=US32
+X17403.1	feature	CDS	223385	223936	.	+	0	ID=CDS:CAA35264.1;Parent=transcript:CAA35264.1_0;biotype=protein_coding;codon_start=1;db_xref=InterPro:IPR004118,UniProtKB/Swiss-Prot:P09708;gene=US32;protein_id=CAA35264.1
+X17403.1	feature	mRNA	223385	223936	.	+	.	ID=transcript:CAA35264.1_0;Parent=gene:US32;biotype=protein_coding
+X17403.1	feature	gene	224072	224485	.	-	.	ID=gene:US33;Name=US33;biotype=protein_coding;gene=US33
+X17403.1	feature	CDS	224072	224485	.	-	0	ID=CDS:CAA35266.1;Parent=transcript:CAA35266.1_0;biotype=protein_coding;codon_start=1;db_xref=UniProtKB/Swiss-Prot:P09697;gene=US33;protein_id=CAA35266.1
+X17403.1	feature	mRNA	224072	224485	.	-	.	ID=transcript:CAA35266.1_0;Parent=gene:US33;biotype=protein_coding
+X17403.1	feature	gene	224480	224971	.	+	.	ID=gene:US34;Name=US34;biotype=protein_coding;gene=US34
+X17403.1	feature	CDS	224480	224971	.	+	0	ID=CDS:CAA35265.1;Parent=transcript:CAA35265.1_0;biotype=protein_coding;codon_start=1;db_xref=InterPro:IPR020341,UniProtKB/Swiss-Prot:P09709;gene=US34;protein_id=CAA35265.1
+X17403.1	feature	mRNA	224480	224971	.	+	.	ID=transcript:CAA35265.1_0;Parent=gene:US34;biotype=protein_coding
+X17403.1	feature	gene	225209	225538	.	-	.	ID=gene:US35;Name=US35;biotype=protein_coding;gene=US35
+X17403.1	feature	CDS	225209	225538	.	-	0	ID=CDS:CAA35267.1;Parent=transcript:CAA35267.1_0;biotype=protein_coding;codon_start=1;db_xref=UniProtKB/Swiss-Prot:P09696;gene=US35;protein_id=CAA35267.1
+X17403.1	feature	mRNA	225209	225538	.	-	.	ID=transcript:CAA35267.1_0;Parent=gene:US35;biotype=protein_coding
+X17403.1	feature	gene	225426	225758	.	-	.	ID=gene:US36;Name=US36;biotype=protein_coding;gene=US36
+X17403.1	feature	CDS	225426	225758	.	-	0	ID=CDS:CAA35268.1;Parent=transcript:CAA35268.1_0;biotype=protein_coding;codon_start=1;db_xref=UniProtKB/Swiss-Prot:P16842;gene=US36;protein_id=CAA35268.1
+X17403.1	feature	mRNA	225426	225758	.	-	.	ID=transcript:CAA35268.1_0;Parent=gene:US36;biotype=protein_coding
+X17403.1	feature	gene	226112	228478	.	-	.	ID=gene:TRS1;Name=TRS1;biotype=protein_coding;gene=TRS1
+X17403.1	feature	CDS	226112	228478	.	-	0	ID=CDS:CAA35269.1;Parent=transcript:CAA35269.1_0;biotype=protein_coding;codon_start=1;db_xref=GOA:P09695,InterPro:IPR003360,UniProtKB/Swiss-Prot:P09695;gene=TRS1;protein_id=CAA35269.1
+X17403.1	feature	mRNA	226112	228478	.	-	.	ID=transcript:CAA35269.1_0;Parent=gene:TRS1;biotype=protein_coding
+X17403.1	feature	gene	228680	229354	.	-	.	ID=gene:J1S;Name=J1S;biotype=protein_coding;gene=J1S
+X17403.1	feature	CDS	228680	229354	.	-	0	ID=CDS:CAA35270.1;Parent=transcript:CAA35270.1_0;biotype=protein_coding;codon_start=1;db_xref=UniProtKB/Swiss-Prot:P17144;gene=J1S;protein_id=CAA35270.1
+X17403.1	feature	mRNA	228680	229354	.	-	.	ID=transcript:CAA35270.1_0;Parent=gene:J1S;biotype=protein_coding
