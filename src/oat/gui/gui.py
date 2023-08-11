@@ -431,10 +431,12 @@ class AnalysisGUI(QWidget):
         advanced_layout.addWidget(self.button_outdir, 22, 2)
 
         #%% minknow_dir
+        DEFAULT_MINKNOW_DATA = "/var/lib/minknow/data"
         self.label_minknow_data = QLabel("MinKNOW data output directory:")
         advanced_layout.addWidget(self.label_minknow_data, 23, 0)
 
         self.entry_minknow_data = QLineEdit()
+        self.entry_minknow_data.setText(DEFAULT_MINKNOW_DATA)
         advanced_layout.addWidget(self.entry_minknow_data, 23, 1)
 
         self.button_minknow_data = QPushButton("Browse", self)
@@ -524,7 +526,8 @@ class AnalysisGUI(QWidget):
             import sys
             # generate cli input
             sys.argv = [sys.argv[0]] + [str(x) for x in self.generate_cli_input()]
-            print(sys.argv)
+            print("Command run:")
+            print(' '.join(sys.argv))
             cli.main(sys.argv[1:])
 
     def validate_float(self, title, text):
