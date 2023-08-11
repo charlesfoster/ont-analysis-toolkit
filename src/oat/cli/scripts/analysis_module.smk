@@ -380,14 +380,14 @@ rule trim_amplicon_primers:
             samtools fixmate -u -@ 4 - - 2>>{log} | \
             samtools calmd -u -@ 4 - {params.reference} 2>>{log} | \
             samtools sort -u -@ 4 2>>{log} | \
-            samtools view --write-index -@ 20 -F 4 -o {output.bam}
+            samtools view --write-index -@ 4 -F 4 -o {output.bam}
         else
             samtools ampliconclip --both-ends --strand --soft-clip --filter-len 30 -@ 4 -u -b {params.bed} {input.bam} 2>{log} | \
             samtools sort -u -@ 4 -n 2>>{log} | \
             samtools fixmate -u -@ 4 - - 2>>{log} | \
             samtools calmd -u -@ 4 - {params.reference} 2>>{log} | \
             samtools sort -u -@ 4 2>>{log} | \
-            samtools view --write-index -@ 20 -F 4 -o {output.bam}
+            samtools view --write-index -@ 4 -F 4 -o {output.bam}
         fi
         """
 
@@ -584,12 +584,12 @@ rule clair3_variant:
         cpus=4,
         #gpu=1,
     container:
-        "docker://hkubal/clair3:v1.0.0"
+        "docker://hkubal/clair3:v1.0.4"
     shell:
         """
         mkdir -p {params.candidate_bed_path}
         touch "{params.candidate_bed_path}/FULL_ALN_FILE_{params.refname}"
-        /opt/bin/run_clair3.sh --bam_fn={input.bam} --sample_name={wildcards.sample} --ref_fn={params.reference} --threads={threads} --platform="ont" --model_path="{params.model}" --output={params.output}    --chunk_size=29903 --include_all_ctgs --no_phasing_for_fa --remove_intermediate_dir --enable_long_indel --haploid_sensitive --keep_iupac_bases 2&>{log}
+        /opt/bin/run_clair3.sh --bam_fn={input.bam} --sample_name={wildcards.sample} --ref_fn={params.reference} --threads={threads} --platform="ont" --model_path="{params.model}" --output={params.output}    --chunk_size=29903 --include_all_ctgs --no_phasing_for_fa --remove_intermediate_dir --enable_long_indel --haploid_sensitive --keep_iupac_bases --var_pct_full=1 --ref_pct_full=1 2&>{log}
         """
 
 

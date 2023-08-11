@@ -88,6 +88,7 @@ REFERENCE_DESCRIPTIONS = generate_reference_info()
 GUPPY_MODEL_DESCRIPTIONS = {
     "r941_min_high_g360": "Chemistry version 9, HAC basecalling",
     "r941_min_sup_g507": "Chemistry version 9, SUP basecalling",
+    "r1041_e82_260bps_sup_g632": "Chemistry version 10, SUP basecalling",
     "Other": "Choose your own adventure: specify below",
 }
 
