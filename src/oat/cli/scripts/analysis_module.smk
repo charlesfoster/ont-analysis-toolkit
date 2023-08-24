@@ -295,7 +295,7 @@ rule final_qc:
             columns=["percent_total_reads", "reads_qc"], dtype=object
         )
         outdata = outdata.join(reads_qc, how="outer")
-        outdata.to_csv("~/Programs/ont-analysis-toolkit/TEST.csv", index=None)
+
         sample_dict = dict(tuple(outdata.groupby("id")))
         total_reads = outdata["num_reads"].sum()
         mean_reads = mean(outdata["num_reads"])
@@ -571,7 +571,7 @@ rule clair3_variant:
         cpus=4,
         #gpu=1,
     container:
-        "docker://hkubal/clair3:v1.0.0"
+        "docker://hkubal/clair3:v1.0.4"
     shell:
         """
         mkdir -p {params.candidate_bed_path}
@@ -876,7 +876,7 @@ rule update_nextclade:
     params:
         nextclade_dataset=config["nextclade_dataset"],
     container:
-        "docker://nextstrain/nextclade:2.13.0"
+        "docker://nextstrain/nextclade:2.14.0"
     log:
         os.path.join(RESULT_DIR, "nextclade_update_log.txt"),
     shell:
@@ -898,7 +898,7 @@ rule nextclade:
         nextclade_dataset=config["nextclade_dataset"],
         outdir=os.path.join(RESULT_DIR, "{sample}/nextclade"),
     container:
-        "docker://nextstrain/nextclade:2.13.0"
+        "docker://nextstrain/nextclade:2.14.0"
     resources:
         cpus=1,
     log:

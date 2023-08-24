@@ -5,10 +5,11 @@ channels:
   - defaults
 dependencies:
   - artic-network::rampart=1.2.0
-  - snakemake-minimal=7.2.1
-  - bcftools=1.14
+  - bedtools
+  - snakemake-minimal==7.32.3
+  - bcftools>=1.14
   - jq=1.6
-  - samtools=1.14
+  - samtools>=1.14
   - python=3.9
   - longshot=0.4.5
   - mamba=0.22.1

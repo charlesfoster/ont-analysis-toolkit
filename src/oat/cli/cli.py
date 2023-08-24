@@ -510,7 +510,7 @@ def main(sysargs=sys.argv[1:]):
             my_log.info("Filtering reads")
             filter_reads(variable_dict)
         else:
-            from oat.scripts.demux_and_filter import relocate_and_filter_reads
+            from oat.cli.scripts.demux_and_filter import relocate_and_filter_reads
             my_log.info("Relocating and filtering reads")
             relocate_and_filter_reads(variable_dict)
 
