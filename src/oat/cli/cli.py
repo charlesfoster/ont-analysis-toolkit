@@ -338,6 +338,12 @@ def main(sysargs=sys.argv[1:]):
             ),
     )
     parser.add_argument(
+        "--list_protocols",
+        action="store_true",
+        default=False,
+        help="List available protocols and exit",
+    )
+    parser.add_argument(
         "-MM",
         "--max_memory",
         action="store",
@@ -360,6 +366,12 @@ def main(sysargs=sys.argv[1:]):
     ### end parsing of command args ###
     args.module = args.module.upper()
     os.environ['NUMEXPR_MAX_THREADS'] = str(args.threads)
+
+    ### check if listing protocols
+    if args.list_protocols:
+        from oat.cli.scripts.helper_functions import list_protocols
+        list_protocols()
+        sys.exit(0)
 
     minknow_dir = args.minknow_data
     if not os.path.exists(minknow_dir):

@@ -27,6 +27,12 @@ reference_dir = os.path.join(
     pathlib.Path(__file__).parent.parent.resolve(), "references"
 )
 
+# %% print protocols
+def list_protocols():
+    pdir = os.path.join(script_dir, 'protocols')
+    print("Available protocols:")
+    print([x for x in next(os.walk(pdir))[1] if not x.startswith("_")])
+
 # %% printc
 def printc(thing, level):
     """
