@@ -44,8 +44,10 @@ def demultiplex_reads(variable_dict):
     protocol = variable_dict["protocol"]
     guppy_barcoder = shutil.which("guppy_barcoder")
     if guppy_barcoder is None:
-        my_log.error("No guppy_barcoder detected: exiting")
-        sys.exit()
+        guppy_barcoder = shutil.which("ont_barcoder")
+        if guppy_barcoder is None:
+            my_log.error("No barcoder detected: exiting")
+            sys.exit()
     basecalledPath = variable_dict["basecalledPath"]
     barcode_kit_name = variable_dict["barcode_kit"]
     if "SQK-RBK" in barcode_kit_name:
