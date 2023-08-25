@@ -311,6 +311,9 @@ rule final_qc:
                 qc_result = "FAIL"
             elif num_reads >= read_num_threshold:
                 qc_result = "PASS"
+            else:
+                print(f"Unusual: {sample} {num_reads} {read_num_threshold}")
+                qc_result = "UNKNOWN"
             percent = (num_reads / total_reads) * 100
             outdata.at[sample, "percent_total_reads"] = percent
             if sample_dict[sample]["neg_control"].bool() == True:
