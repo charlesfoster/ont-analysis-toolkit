@@ -43,6 +43,7 @@ BARCODE_KIT_DESCRIPTIONS = {
     "EXP-NBD114": "Native 12-barcode expansion kit 13-24",
     "EXP-NBD196": "Native 96-barcode kit",
     "SQK-RPB004": "Rapid kit for adaptive sampling",
+    "SQK-LSK114": "Ligation kit",
 }
 
 DEMULTIPLEXED_DESCRIPTIONS = {
