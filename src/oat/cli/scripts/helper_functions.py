@@ -109,6 +109,24 @@ def check_arguments(variable_dict, args):
         )
         sys.exit()
 
+    # check for dorado basecall model
+    if variable_dict['rebasecall']:
+        dmodel_check = os.getenv('DORADO_MODEL')
+        if dmodel_check is not None:
+            my_log.info('Setting dorado model based on the $DORADO_MODEL environmental variable ({0})'.format(dmodel_check))
+            variable_dict['dorado_model'] = dmodel_check
+        else:
+            if variable_dict['dorado_model'] is None:
+                my_log.error(
+                    "Rebasecalling selected, but no path provided to a basecall model"
+                )
+                sys.exit()
+        if not os.path.exists(variable_dict['dorado_model']):
+            my_log.error(
+                "Path to provided basecall model does not exist"
+            )
+            sys.exit()
+
     #check guppy model for medaka
     gmodel_check = os.getenv('GUPPY_MODEL')
     if gmodel_check is not None:

@@ -352,6 +352,31 @@ def main(sysargs=sys.argv[1:]):
         ),
         metavar="<int>",
     )
+    parser.add_argument(
+        "--basecaller",
+        action="store",
+        help="ONT tool used for basecalling, demux etc.: either 'dorado' (default) or 'guppy'.",
+        default='dorado',
+    )
+    parser.add_argument(
+        "--rebasecall",
+        action="store_true",
+        help="Rebasecall reads (only used with 'dorado').",
+        default=False,
+    )
+    parser.add_argument(
+        "--min_qscore",
+        action="store",
+        help="Min qscore for reads to be retained (integer). Default: 9",
+        default=9,
+    )
+    parser.add_argument(
+        "--dorado_model",
+        action="store",
+        help="Full path to basecall model to be used with dorado. Mandatory if (re)basecalling reads.",
+        default=None,
+    )
+
     parser.add_argument("--quiet", action="store_true", help="Stop printing of Snakemake commands to screen.")
     parser.add_argument("--report", action="store_true", help="Generate report (currently minimally functional).")
 
@@ -527,7 +552,7 @@ def main(sysargs=sys.argv[1:]):
 
         if not args.demultiplexed:
             from oat.cli.scripts.demux_and_filter import demultiplex_reads, filter_reads
-            demultiplex_reads(variable_dict)
+            variable_dict = demultiplex_reads(variable_dict)
             my_log.info("Filtering reads")
             filter_reads(variable_dict)
         else:
