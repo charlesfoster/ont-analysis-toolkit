@@ -78,6 +78,7 @@ class AnalysisToolGUI(QMainWindow):
         self.reference_dict = generate_reference_info()
         self.setupUI()
         self.resize(800, 550)
+
     def setupUI(self):
         # Create a scroll area for all content
         scroll_area = QScrollArea(self)
@@ -231,7 +232,6 @@ class AnalysisToolGUI(QMainWindow):
         main_layout.addWidget(self.advanced_toggle)
         
         self.advanced_group = QGroupBox("Advanced Options")
-        # Note: We no longer use setCheckable here.
         adv_layout = QGridLayout()
         self.advanced_group.setLayout(adv_layout)
         main_layout.addWidget(self.advanced_group)
@@ -524,6 +524,91 @@ class AnalysisToolGUI(QMainWindow):
     def toggleAdvancedOptions(self, checked):
         self.advanced_group.setVisible(checked)
 
+    def generate_cli_input(self):
+        """Generate a list of CLI arguments from the current GUI options."""
+        args = []
+        # Positional argument: samples file
+        args.append(self.samples_file.text().strip())
+        # Basic options
+        args.extend(["--barcode_kit", self.combo_barcode_kit.currentText()])
+        args.extend(["--consensus_freq", str(self.consensus_freq.value())])
+        args.extend(["--indel_freq", str(self.indel_freq.value())])
+        if self.demultiplexed.isChecked():
+            args.append("--demultiplexed")
+        if self.force.isChecked():
+            args.append("--force")
+        if self.dry_run.isChecked():
+            args.append("--dry_run")
+        args.extend(["--module", self.combo_module.currentText().upper()])
+        args.extend(["--threads", str(self.threads.value())])
+        args.extend(["--reference", self.reference.currentText().strip()])
+        args.extend(["--variant_caller", self.variant_caller.currentText().strip()])
+        args.extend(["--min_depth", str(self.min_depth.value())])
+        # Advanced options (always added)
+        if self.outdir.text().strip():
+            args.extend(["--outdir", self.outdir.text().strip()])
+        args.extend(["--rampart_outdir", self.rampart_outdir.text().strip()])
+        if self.print_dag.isChecked():
+            args.append("--print_dag")
+        if self.create_envs_only.isChecked():
+            args.append("--create_envs_only")
+        args.extend(["--snv_min_freq", str(self.snv_min_freq.value())])
+        guppy_model = (self.guypy_custom.text().strip() if self.combo_guppy_model.currentText() == "Other"
+                       else self.combo_guppy_model.currentText())
+        args.extend(["--guppy_model", guppy_model])
+        clair3_model = (self.clair3_custom.text().strip() if self.combo_clair3_model.currentText() == "Other"
+                        else self.combo_clair3_model.currentText())
+        args.extend(["--clair3_model", clair3_model])
+        if self.alternate_analysis.isChecked():
+            args.append("--alternate_analysis")
+        args.extend(["--alt_cov_max", str(self.alt_cov_max.value())])
+        args.extend(["--alt_cov_min", str(self.alt_cov_min.value())])
+        if self.delete_reads.isChecked():
+            args.append("--delete_reads")
+        if self.redo_analysis.isChecked():
+            args.append("--redo_analysis")
+        if self.additional_nanoq.text().strip():
+            args.extend(["--additional_nanoq", self.additional_nanoq.text().strip()])
+        if self.skip_clipping.isChecked():
+            args.append("--skip_clipping")
+        if self.no_barcodes.isChecked():
+            args.append("--no_barcodes")
+        if self.minknow_data.text().strip():
+            args.extend(["--minknow_data", self.minknow_data.text().strip()])
+        if self.no_update.isChecked():
+            args.append("--no_update")
+        if self.list_protocols.isChecked():
+            args.append("--list_protocols")
+        args.extend(["--max_memory", str(self.max_memory.value())])
+        args.extend(["--basecaller", self.basecaller.currentText().strip()])
+        if self.rebasecall.isChecked():
+            args.append("--rebasecall")
+        args.extend(["--min_qscore", str(self.min_qscore.value())])
+        if self.dorado_model.text().strip():
+            args.extend(["--dorado_model", self.dorado_model.text().strip()])
+        if self.quiet.isChecked():
+            args.append("--quiet")
+        if self.report.isChecked():
+            args.append("--report")
+        return args
+
+    def runAnalysis(self):
+        # Validate mandatory field
+        if not self.samples_file.text().strip():
+            QMessageBox.critical(self, "Error", "Samples file is required.")
+            return
+
+        # Generate CLI input from GUI parameters
+        cli_args = self.generate_cli_input()
+        print("Command run:")
+        print("oat" + " ".join(cli_args))
+
+        # Close the GUI and invoke the CLI main() with the generated arguments
+        self.close()
+        import oat.cli.cli as cli
+        sys.argv = [sys.argv[0]] + cli_args
+        cli.main(sys.argv[1:])
+
     def resetFields(self):
         # Basic Options
         self.samples_file.clear()
@@ -540,9 +625,9 @@ class AnalysisToolGUI(QMainWindow):
             if index != -1:
                 self.reference.setCurrentIndex(index)
         self.variant_caller.setCurrentText("clair3")
-        self.min_depth.setValue(20)
+        self.min_depth.setValue(15)
         # Advanced Options
-        self.outdir.setText()
+        self.outdir.setText("")
         self.rampart_outdir.setText(os.path.join(os.getcwd(), "rampart_files"))
         self.print_dag.setChecked(False)
         self.create_envs_only.setChecked(False)
@@ -573,90 +658,6 @@ class AnalysisToolGUI(QMainWindow):
         self.report.setChecked(False)
         self.advanced_toggle.setChecked(False)  # This hides the advanced group
         self.status_label.setText("")
-
-    def runAnalysis(self):
-        # Validate mandatory fields
-        if not self.samples_file.text().strip():
-            QMessageBox.critical(self, "Error", "Samples file is required.")
-            return
-
-        # Assemble CLI command arguments (advanced options are always included)
-        cmd = ["oat"]
-        # Positional argument
-        cmd.append(self.samples_file.text().strip())
-        # Basic options
-        cmd.extend(["--barcode_kit", self.combo_barcode_kit.currentText()])
-        cmd.extend(["--consensus_freq", str(self.consensus_freq.value())])
-        cmd.extend(["--indel_freq", str(self.indel_freq.value())])
-        if self.demultiplexed.isChecked():
-            cmd.append("--demultiplexed")
-        if self.force.isChecked():
-            cmd.append("--force")
-        if self.dry_run.isChecked():
-            cmd.append("--dry_run")
-        cmd.extend(["--module", self.combo_module.currentText().upper()])
-        cmd.extend(["--threads", str(self.threads.value())])
-        cmd.extend(["--reference", self.reference.currentText().strip()])
-        cmd.extend(["--variant_caller", self.variant_caller.currentText().strip()])
-        cmd.extend(["--min_depth", str(self.min_depth.value())])
-        # Advanced options (always added)
-        cmd.extend(["--outdir", self.outdir.text().strip()])
-        cmd.extend(["--rampart_outdir", self.rampart_outdir.text().strip()])
-        if self.print_dag.isChecked():
-            cmd.append("--print_dag")
-        if self.create_envs_only.isChecked():
-            cmd.append("--create_envs_only")
-        cmd.extend(["--snv_min_freq", str(self.snv_min_freq.value())])
-        # For Guppy model: use custom if "Other" is selected
-        guppy_model = (self.guypy_custom.text().strip() if self.combo_guppy_model.currentText() == "Other"
-                       else self.combo_guppy_model.currentText())
-        cmd.extend(["--guppy_model", guppy_model])
-        # For Clair3 model
-        clair3_model = (self.clair3_custom.text().strip() if self.combo_clair3_model.currentText() == "Other"
-                        else self.combo_clair3_model.currentText())
-        cmd.extend(["--clair3_model", clair3_model])
-        if self.alternate_analysis.isChecked():
-            cmd.append("--alternate_analysis")
-        cmd.extend(["--alt_cov_max", str(self.alt_cov_max.value())])
-        cmd.extend(["--alt_cov_min", str(self.alt_cov_min.value())])
-        if self.delete_reads.isChecked():
-            cmd.append("--delete_reads")
-        if self.redo_analysis.isChecked():
-            cmd.append("--redo_analysis")
-        if self.additional_nanoq.text().strip():
-            cmd.extend(["--additional_nanoq", self.additional_nanoq.text().strip()])
-        if self.skip_clipping.isChecked():
-            cmd.append("--skip_clipping")
-        if self.no_barcodes.isChecked():
-            cmd.append("--no_barcodes")
-        if self.minknow_data.text().strip():
-            cmd.extend(["--minknow_data", self.minknow_data.text().strip()])
-        if self.no_update.isChecked():
-            cmd.append("--no_update")
-        if self.list_protocols.isChecked():
-            cmd.append("--list_protocols")
-        cmd.extend(["--max_memory", str(self.max_memory.value())])
-        cmd.extend(["--basecaller", self.basecaller.currentText().strip()])
-        if self.rebasecall.isChecked():
-            cmd.append("--rebasecall")
-        cmd.extend(["--min_qscore", str(self.min_qscore.value())])
-        if self.dorado_model.text().strip():
-            cmd.extend(["--dorado_model", self.dorado_model.text().strip()])
-        if self.quiet.isChecked():
-            cmd.append("--quiet")
-        if self.report.isChecked():
-            cmd.append("--report")
-
-        # Display the assembled command for user feedback
-        self.status_label.setText("Executing: " + " ".join(cmd))
-        try:
-            result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-            if result.returncode != 0:
-                self.status_label.setText("Error: " + result.stderr)
-            else:
-                self.status_label.setText("Success: " + result.stdout)
-        except Exception as e:
-            self.status_label.setText("Execution failed: " + str(e))
 
 def main():
     app = QApplication(sys.argv)
