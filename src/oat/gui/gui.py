@@ -542,7 +542,7 @@ class AnalysisToolGUI(QMainWindow):
         self.variant_caller.setCurrentText("clair3")
         self.min_depth.setValue(20)
         # Advanced Options
-        self.outdir.setText(os.path.join(os.getcwd(), "analysis_results"))
+        self.outdir.setText()
         self.rampart_outdir.setText(os.path.join(os.getcwd(), "rampart_files"))
         self.print_dag.setChecked(False)
         self.create_envs_only.setChecked(False)
