@@ -26,7 +26,7 @@ def main():
         print("\n\t* To see the CLI options: oat --help\n")
         sys.exit(1)
     if sys.argv[1] == 'gui':
-        import oat.gui.gui as gui
+        import src.oat.gui.gui as gui
         gui.main()
     else:
         import oat.cli.cli as cli

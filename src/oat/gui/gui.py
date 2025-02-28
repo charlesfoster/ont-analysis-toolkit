@@ -1,39 +1,44 @@
-from PyQt5.QtWidgets import (QApplication, QWidget, QVBoxLayout, QGridLayout, QCheckBox,
-                             QLabel, QComboBox, QLineEdit, QPushButton, QFileDialog, QMessageBox, QGroupBox)
+#!/usr/bin/env python3
 import sys
-import psutil
 import os
-from functools import partial
+import subprocess
+import psutil
 import re
 
-## FUNCTIONS
-def bytesto(bytes, to, bsize=1024):
-    """convert bytes to megabytes, etc.
-    sample code:
-        print('mb= ' + str(bytesto(314575262000000, 'm')))
-    sample output:
-        mb= 300002347.946
+from PyQt5.QtWidgets import (
+    QApplication, QMainWindow, QWidget, QVBoxLayout, QGridLayout, QLineEdit,
+    QLabel, QPushButton, QHBoxLayout, QGroupBox, QSpinBox, QDoubleSpinBox,
+    QFileDialog, QCheckBox, QComboBox, QScrollArea, QMessageBox
+)
+from PyQt5.QtCore import Qt
+
+def get_default_max_memory():
+    """Return available memory in MB (rounded)."""
+    return int(round(psutil.virtual_memory().available / (1024 * 1024)))
+
+def generate_reference_info():
     """
+    Dynamically generate a dictionary mapping reference IDs (derived from fasta filenames)
+    to descriptions by scanning all .fasta files in the ../cli/references folder.
+    """
+    thisdir = os.path.abspath(os.path.dirname(__file__))
+    refdir = os.path.join(thisdir, "..", "cli", "references")
+    ref_dict = {}
+    try:
+        for filename in os.listdir(refdir):
+            if filename.endswith(".fasta"):
+                ref_id = filename.replace(".fasta", "")
+                with open(os.path.join(refdir, filename), "r") as f:
+                    header = f.readline().strip()
+                    # Remove any trailing info after a comma
+                    description = re.sub(r",.*", "", " ".join(header.split(" ")[1:]))
+                ref_dict[ref_id] = description
+    except Exception as e:
+        # Fallback in case of error
+        ref_dict = {"MN908947.3": "Default: SARS-CoV-2 (Wuhan Hu-1)"}
+    return ref_dict
 
-    a = {"k": 1, "m": 2, "g": 3, "t": 4, "p": 5, "e": 6}
-    r = float(bytes)
-    for i in range(a[to]):
-        r = r / bsize
-
-    return r
-
-def check_env_variables():
-    gmodel_check = os.getenv('GUPPY_MODEL')
-    if gmodel_check is None:
-        gmodel_check = 'r941_min_high_g360'
-    c3model_check = os.getenv('CLAIR3_MODEL')
-    if c3model_check is None:
-        c3model_check = '/opt/models/r941_prom_hac_g360+g422'
-    return([gmodel_check,c3model_check])
-
-## DEFINE VARIABLES ##
-important_models = check_env_variables()
-
+# Dictionaries for option descriptions
 BARCODE_KIT_DESCRIPTIONS = {
     "SQK-RBK004": "Rapid 12-barcode kit",
     "SQK-RBK110-96": "Rapid 96-barcode kit",
@@ -46,537 +51,617 @@ BARCODE_KIT_DESCRIPTIONS = {
     "SQK-LSK114": "Ligation kit",
 }
 
-DEMULTIPLEXED_DESCRIPTIONS = {
-    "True": "Sample demultiplexing handled via MinKNOW",
-    "False": "Sample demultiplexing not handled via MinKNOW",
-}
-
-SKIP_CLIPPING_DESCRIPTIONS = {
-    "True": "Do not attempt to clip amplicon primers (useful for capture data)",
-    "False": "Do not skip clipping of amplicon primers (recommended for amplicon data)",
-}
-
-NO_BARCODES_DESCRIPTIONS = {
-    "True": "No barcodes were used during library prep (or pretend none were used)",
-    "False": "Barcodes WERE used (or at least pretend so)",
-}
-
 MODULE_DESCRIPTIONS = {
     "All": "Monitor run with RAMPART then run analysis",
     "Rampart": "Monitor run with RAMPART only",
     "Analysis": "Run analysis only",
 }
 
-def generate_reference_info():
-    thisdir = os.path.abspath(os.path.dirname(__file__))
-    refdir = os.path.join(thisdir,'..','cli','references')
-    d = {}
-    for ref in [x for x in os.listdir(refdir) if x.endswith(".fasta")]:
-        name = ref.replace(".fasta","")
-        with open(os.path.join(refdir,ref),'r') as f:
-            header = f.readline().strip()
-            description = re.sub(",.*","",' '.join(header.split(" ")[1:]))
-        d[name] = description
-    return d
-
-REFERENCE_DESCRIPTIONS = generate_reference_info()
-
-# REFERENCE_DESCRIPTIONS = {
-#     "MN908947.3": "SARS-CoV-2 (Wuhan Hu-1)",
-#     "NC_006273.2": "Human cytomegalovirus (Merlin)",
-# }
-
 GUPPY_MODEL_DESCRIPTIONS = {
-    "r941_min_high_g360": "Chemistry version 9, HAC basecalling",
-    "r941_min_sup_g507": "Chemistry version 9, SUP basecalling",
-    "r1041_e82_260bps_sup_g632": "Chemistry version 10, SUP basecalling",
+    "r941_min_high_g360": "Chemistry v9, HAC basecalling",
+    "r941_min_sup_g507": "Chemistry v9, SUP basecalling",
+    "r1041_e82_260bps_sup_g632": "Chemistry v10, SUP basecalling",
     "Other": "Choose your own adventure: specify below",
 }
 
-if os.getenv('GUPPY_MODEL') is not None:
-    update_dict = GUPPY_MODEL_DESCRIPTIONS
-    GUPPY_MODEL_DESCRIPTIONS = {important_models[0]:f"Default set by environmental variable"}
-    GUPPY_MODEL_DESCRIPTIONS.update(update_dict)
-
 CLAIR3_MODEL_DESCRIPTIONS = {
-    "/opt/models/r941_prom_hac_g360+g422": "Default within clair3 Singularity container",
+    "/opt/models/r941_prom_hac_g360+g422": "Default within clair3 container",
     "/opt/models/r941_prom_sup_g5014": "Super accurate model for v9.4.1 chemistry",
     "Other": "Choose your own adventure: specify below",
 }
 
-if os.getenv('CLAIR3_MODEL') is not None:
-    update_dict = CLAIR3_MODEL_DESCRIPTIONS
-    CLAIR3_MODEL_DESCRIPTIONS = {important_models[1]:f"Default set by environmental variable"}
-    CLAIR3_MODEL_DESCRIPTIONS.update(update_dict)
-
-max_threads = psutil.cpu_count(logical=True)
-max_mem = round(bytesto(psutil.virtual_memory().available, "m"))
-
-
-## DEFINE CLASSES ##
-class AnalysisParameters:
-    def __init__(self):
-        self.barcode_kit = ""
-        self.variant_caller = ""
-        self.consensus_freq = 0.75
-        self.indel_freq = 0.4
-        self.reference = ""
-        self.module = ""
-        self.demultiplexed = ""
-        # entry parameters
-        self.samples_file = ""
-        self.outdir = ""
-        self.minknow_data = ""
-        # advanced params
-        self.snv_min_freq = ""
-        self.min_depth = ""
-        self.guppy_model = ""
-        self.clair3_model = ""
-        self.threads = ""
-        self.max_memory = ""
-        self.skip_clipping = ""
-        self.no_barcodes = ""
-        # checkbox params
-        self.demultiplexed = ""
-        self.force = ""
-        self.redo_analysis = ""
-        self.delete_reads = ""
-        self.print_dag = ""
-        self.dry_run = ""
-        self.create_envs_only = ""
-        self.no_update = ""
-        self.quiet = ""
-        self.float_params = ['consensus_freq',
-                             'indel_freq',
-                             'snv_min_freq',
-                             ]
-        self.checkbox_params = ['demultiplexed',
-                                'skip_clipping',
-                                'no_barcodes',
-                                'force',
-                                'redo_analysis',
-                                'delete_reads',
-                                'print_dag',
-                                'dry_run',
-                                'create_envs_only',
-                                'no_update',
-                                'quiet',
-                                ]  # Add the keys of the parameters derived from checkboxes
-
-class AnalysisGUI(QWidget):
+class AnalysisToolGUI(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.parameters = AnalysisParameters()
-        self.initUI()
+        self.setWindowTitle("ONT Analysis Toolkit GUI v3")
+        # Dynamically generate the reference info from fasta files.
+        self.reference_dict = generate_reference_info()
+        self.setupUI()
+        self.resize(800, 550)
+    def setupUI(self):
+        # Create a scroll area for all content
+        scroll_area = QScrollArea(self)
+        scroll_area.setWidgetResizable(True)
+        container = QWidget()
+        scroll_area.setWidget(container)
+        self.setCentralWidget(scroll_area)
+        main_layout = QVBoxLayout(container)
 
-    def initUI(self):
-        self.setWindowTitle("oat: ONT Analysis Toolkit")
+        # ----- BASIC PARAMETERS GROUP -----
+        basic_group = QGroupBox("Basic Parameters")
+        basic_layout = QGridLayout()
+        basic_group.setLayout(basic_layout)
+        main_layout.addWidget(basic_group)
+        row = 0
 
-        # main layout
-        layout = QVBoxLayout()
-        self.setLayout(layout)
+        # Samples File (CSV)
+        basic_layout.addWidget(QLabel("Samples File (CSV):"), row, 0)
+        self.samples_file = QLineEdit()
+        samples_file_btn = QPushButton("Browse")
+        samples_file_btn.clicked.connect(self.browseSamplesFile)
+        samples_file_layout = QHBoxLayout()
+        samples_file_layout.addWidget(self.samples_file)
+        samples_file_layout.addWidget(samples_file_btn)
+        basic_layout.addLayout(samples_file_layout, row, 1)
+        basic_layout.addWidget(QLabel("CSV file with sample metadata."), row, 2)
+        row += 1
 
-        grid_layout = QGridLayout()
-        layout.addLayout(grid_layout)
-
-        # advanced options layout
-        self.advanced_group = QGroupBox("Advanced Options")
-        self.advanced_group.setCheckable(True)
-        self.advanced_group.setChecked(False)
-        layout.addWidget(self.advanced_group)
-        advanced_layout = QGridLayout()
-        self.advanced_group.setLayout(advanced_layout)
-
-        ## MAIN OPTIONS ##
-        #%% Barcode kit
-        self.label_barcode_kit = QLabel("Barcode kit:")
-        grid_layout.addWidget(self.label_barcode_kit, 0, 0)
-
+        # Barcode Kit
+        basic_layout.addWidget(QLabel("Barcode Kit:"), row, 0)
         self.combo_barcode_kit = QComboBox()
         self.combo_barcode_kit.addItems(list(BARCODE_KIT_DESCRIPTIONS.keys()))
         self.combo_barcode_kit.setCurrentText("SQK-RBK004")
         self.combo_barcode_kit.currentTextChanged.connect(
-            lambda option: self.update_desc(self.label_barcode_kit_desc, BARCODE_KIT_DESCRIPTIONS, option)
+            lambda option: self.update_desc(self.label_barcode_desc, BARCODE_KIT_DESCRIPTIONS, option)
         )
-        grid_layout.addWidget(self.combo_barcode_kit, 0, 1)
+        basic_layout.addWidget(self.combo_barcode_kit, row, 1)
+        self.label_barcode_desc = QLabel(BARCODE_KIT_DESCRIPTIONS["SQK-RBK004"])
+        basic_layout.addWidget(self.label_barcode_desc, row, 2)
+        row += 1
 
-        self.label_barcode_kit_desc = QLabel("Rapid 12-barcode kit")
-        grid_layout.addWidget(self.label_barcode_kit_desc, 0, 2)
+        # Consensus Frequency
+        basic_layout.addWidget(QLabel("Consensus Frequency:"), row, 0)
+        self.consensus_freq = QDoubleSpinBox()
+        self.consensus_freq.setDecimals(2)
+        self.consensus_freq.setRange(0.0, 1.0)
+        self.consensus_freq.setSingleStep(0.05)
+        self.consensus_freq.setValue(0.0)
+        basic_layout.addWidget(self.consensus_freq, row, 1)
+        basic_layout.addWidget(QLabel("SNP incorporation threshold."), row, 2)
+        row += 1
 
-        #%% Demultiplexing
-        self.label_demultiplexed = QLabel("Demultiplexed:")
-        grid_layout.addWidget(self.label_demultiplexed, 1, 0)
+        # Indel Frequency
+        basic_layout.addWidget(QLabel("Indel Frequency:"), row, 0)
+        self.indel_freq = QDoubleSpinBox()
+        self.indel_freq.setDecimals(2)
+        self.indel_freq.setRange(0.0, 1.0)
+        self.indel_freq.setSingleStep(0.05)
+        self.indel_freq.setValue(0.40)
+        basic_layout.addWidget(self.indel_freq, row, 1)
+        basic_layout.addWidget(QLabel("Indel incorporation threshold."), row, 2)
+        row += 1
 
-        # self.combo_demultiplexed = QComboBox()
-        # self.combo_demultiplexed.addItems(["True", "False"])
-        # self.combo_demultiplexed.setCurrentText("True")
-        # self.combo_demultiplexed.currentTextChanged.connect(
-        #     lambda option: self.update_desc(self.label_demultiplexed_desc, DEMULTIPLEXED_DESCRIPTIONS, option)
-        # )
-        # grid_layout.addWidget(self.combo_demultiplexed, 1, 1)
+        # Demultiplexed (checkbox)
+        basic_layout.addWidget(QLabel("Demultiplexed:"), row, 0)
+        self.demultiplexed = QCheckBox("Reads already demultiplexed")
+        self.demultiplexed.setChecked(True)
+        basic_layout.addWidget(self.demultiplexed, row, 1)
+        basic_layout.addWidget(QLabel("Handled via MinKNOW."), row, 2)
+        row += 1
 
-        # self.label_demultiplexed_desc = QLabel("Sample demultiplexing handled via MinKNOW")
-        # grid_layout.addWidget(self.label_demultiplexed_desc, 1, 2)
-        self.checkbox_demultiplexed = QCheckBox("")
-        self.checkbox_demultiplexed.setChecked(True)
-        grid_layout.addWidget(self.checkbox_demultiplexed, 1, 1)
-        self.label_demultiplexed_desc = QLabel("Sample demultiplexing handled via MinKNOW")
-        grid_layout.addWidget(self.label_demultiplexed_desc, 1, 2)
+        # Force Overwrite
+        basic_layout.addWidget(QLabel("Force:"), row, 0)
+        self.force = QCheckBox("Force overwrite of completed files")
+        basic_layout.addWidget(self.force, row, 1)
+        basic_layout.addWidget(QLabel("Overwrite previous outputs."), row, 2)
+        row += 1
 
-        # %% Reference
-        self.label_reference = QLabel("Reference:")
-        grid_layout.addWidget(self.label_reference, 2, 0)
+        # Dry Run
+        basic_layout.addWidget(QLabel("Dry Run:"), row, 0)
+        self.dry_run = QCheckBox("Dry run only")
+        basic_layout.addWidget(self.dry_run, row, 1)
+        basic_layout.addWidget(QLabel("Simulate analysis."), row, 2)
+        row += 1
 
-        self.combo_reference = QComboBox()
-        self.combo_reference.addItems(list(REFERENCE_DESCRIPTIONS.keys()))
-        self.combo_reference.setCurrentText("MN908947.3")
-        self.combo_reference.currentTextChanged.connect(
-            lambda option: self.update_desc(self.label_reference_desc, REFERENCE_DESCRIPTIONS, option)
-        )
-        grid_layout.addWidget(self.combo_reference, 2, 1)
-
-        self.label_reference_desc = QLabel("SARS-CoV-2 (Wuhan Hu-1)")
-        grid_layout.addWidget(self.label_reference_desc, 2, 2)
-
-        # %% Module
-        self.label_module = QLabel("Module:")
-        grid_layout.addWidget(self.label_module, 3, 0)
-
+        # Module
+        basic_layout.addWidget(QLabel("Module:"), row, 0)
         self.combo_module = QComboBox()
-        self.combo_module.addItems(["All", "Rampart", "Analysis"])
-        self.combo_module.setCurrentText("True")
+        self.combo_module.addItems(list(MODULE_DESCRIPTIONS.keys()))
+        self.combo_module.setCurrentText("All")
         self.combo_module.currentTextChanged.connect(
             lambda option: self.update_desc(self.label_module_desc, MODULE_DESCRIPTIONS, option)
         )
-        grid_layout.addWidget(self.combo_module, 3, 1)
+        basic_layout.addWidget(self.combo_module, row, 1)
+        self.label_module_desc = QLabel(MODULE_DESCRIPTIONS["All"])
+        basic_layout.addWidget(self.label_module_desc, row, 2)
+        row += 1
 
-        self.label_module_desc = QLabel("Monitor run with RAMPART then run analysis")
-        grid_layout.addWidget(self.label_module_desc, 3, 2)
+        # Threads
+        basic_layout.addWidget(QLabel("Threads:"), row, 0)
+        self.threads = QSpinBox()
+        self.threads.setMinimum(1)
+        self.threads.setMaximum(256)
+        self.threads.setValue(psutil.cpu_count(logical=True))
+        basic_layout.addWidget(self.threads, row, 1)
+        basic_layout.addWidget(QLabel("CPU threads to use."), row, 2)
+        row += 1
 
-        #%% Input spreadsheet widget
-        self.label_samples_file = QLabel("Input Spreadsheet:")
-        grid_layout.addWidget(self.label_samples_file, 4, 0)
-
-        self.entry_samples_file = QLineEdit()
-        grid_layout.addWidget(self.entry_samples_file, 4, 1)
-
-        self.button_samples_file = QPushButton("Browse", self)
-        self.button_samples_file.clicked.connect(
-            lambda option: self.browse_file(self.entry_samples_file)
+        # Reference Genome (dynamically generated from fasta files)
+        basic_layout.addWidget(QLabel("Reference Genome:"), row, 0)
+        self.reference = QComboBox()
+        # Populate using keys from the dynamically generated dictionary
+        self.reference.addItems(list(self.reference_dict.keys()))
+        # Set default to "MN908947.3" if available
+        if "MN908947.3" in self.reference_dict:
+            index = self.reference.findText("MN908947.3")
+            if index != -1:
+                self.reference.setCurrentIndex(index)
+        self.reference.currentTextChanged.connect(
+            lambda option: self.update_desc(self.label_reference_desc, self.reference_dict, option)
         )
-        grid_layout.addWidget(self.button_samples_file, 4, 2)
+        basic_layout.addWidget(self.reference, row, 1)
+        default_ref_desc = self.reference_dict.get(self.reference.currentText(), "")
+        self.label_reference_desc = QLabel(default_ref_desc)
+        basic_layout.addWidget(self.label_reference_desc, row, 2)
+        row += 1
 
-        ## ADVANCED OPTIONS ##
-        #%% snv min freq widget
-        self.label_snv_min_freq = QLabel("SNV minimum frequency:")
-        advanced_layout.addWidget(self.label_snv_min_freq, 0, 0)
+        # Variant Caller
+        basic_layout.addWidget(QLabel("Variant Caller:"), row, 0)
+        self.variant_caller = QComboBox()
+        self.variant_caller.addItems(["clair3", "medaka"])
+        self.variant_caller.setCurrentText("clair3")
+        basic_layout.addWidget(self.variant_caller, row, 1)
+        basic_layout.addWidget(QLabel("Select variant caller."), row, 2)
+        row += 1
 
-        self.entry_snv_min_freq = QLineEdit("0.2")
-        self.entry_snv_min_freq.textChanged.connect(partial(self.validate_float, "SNV minimum frequency"))
-        advanced_layout.addWidget(self.entry_snv_min_freq, 0, 1)
+        # Minimum Depth
+        basic_layout.addWidget(QLabel("Minimum Depth:"), row, 0)
+        self.min_depth = QSpinBox()
+        self.min_depth.setMinimum(1)
+        self.min_depth.setMaximum(10000)
+        self.min_depth.setValue(15)
+        basic_layout.addWidget(self.min_depth, row, 1)
+        basic_layout.addWidget(QLabel("Minimum read depth."), row, 2)
+        row += 1
 
-        self.label_snv_min_freq_desc = QLabel("Minimum allele frequency for an SNV to be kept during variant calling.")
-        advanced_layout.addWidget(self.label_snv_min_freq_desc, 0, 2)
+        # ----- ADVANCED OPTIONS GROUP -----
+        # Add a separate checkbox to toggle the visibility of advanced options.
+        self.advanced_toggle = QCheckBox("Show Advanced Options")
+        self.advanced_toggle.toggled.connect(self.toggleAdvancedOptions)
+        main_layout.addWidget(self.advanced_toggle)
+        
+        self.advanced_group = QGroupBox("Advanced Options")
+        # Note: We no longer use setCheckable here.
+        adv_layout = QGridLayout()
+        self.advanced_group.setLayout(adv_layout)
+        main_layout.addWidget(self.advanced_group)
+        self.advanced_group.setVisible(False)  # Initially hidden
+        arow = 0
 
-        #%% Consensus SNP Frequency widget
-        self.label_consensus_freq = QLabel("Consensus SNP frequency:")
-        advanced_layout.addWidget(self.label_consensus_freq, 1, 0)
+        # Output Directory
+        adv_layout.addWidget(QLabel("Output Directory:"), arow, 0)
+        self.outdir = QLineEdit()
+        outdir_btn = QPushButton("Browse")
+        outdir_btn.clicked.connect(lambda: self.browseDirectory(self.outdir))
+        outdir_layout = QHBoxLayout()
+        outdir_layout.addWidget(self.outdir)
+        outdir_layout.addWidget(outdir_btn)
+        adv_layout.addLayout(outdir_layout, arow, 1)
+        adv_layout.addWidget(QLabel("Where results are saved."), arow, 2)
+        arow += 1
 
-        self.entry_consensus_freq = QLineEdit("0")
-        self.entry_consensus_freq.textChanged.connect(partial(self.validate_float, "Consensus SNP frequency"))
+        # Rampart Outdir
+        adv_layout.addWidget(QLabel("Rampart Outdir:"), arow, 0)
+        self.rampart_outdir = QLineEdit(os.path.join(os.getcwd(), "rampart_files"))
+        ramp_btn = QPushButton("Browse")
+        ramp_btn.clicked.connect(lambda: self.browseDirectory(self.rampart_outdir))
+        ramp_layout = QHBoxLayout()
+        ramp_layout.addWidget(self.rampart_outdir)
+        ramp_layout.addWidget(ramp_btn)
+        adv_layout.addLayout(ramp_layout, arow, 1)
+        adv_layout.addWidget(QLabel("Directory for Rampart files."), arow, 2)
+        arow += 1
 
-        advanced_layout.addWidget(self.entry_consensus_freq, 1, 1)
+        # Print DAG
+        adv_layout.addWidget(QLabel("Print DAG:"), arow, 0)
+        self.print_dag = QCheckBox("Print workflow DAG")
+        adv_layout.addWidget(self.print_dag, arow, 1)
+        adv_layout.addWidget(QLabel("Display the DAG and exit."), arow, 2)
+        arow += 1
 
-        self.label_consensus_freq_desc = QLabel("Variant allele frequency threshold for an SNP to be incorporated into consensus genome.\nVariants below this frequency will be incorporated with an IUPAC ambiguity.\nSet to 0 to incorporate the majority or most common base.\nNote: currently do not recommend anything except the default - debugging.\n")
-        advanced_layout.addWidget(self.label_consensus_freq_desc, 1, 2)
+        # Create Envs Only
+        adv_layout.addWidget(QLabel("Create Envs:"), arow, 0)
+        self.create_envs_only = QCheckBox("Create conda environments only")
+        adv_layout.addWidget(self.create_envs_only, arow, 1)
+        adv_layout.addWidget(QLabel("Only create environments, don't run analysis."), arow, 2)
+        arow += 1
 
-        #%% Consensus Indel Frequency widget
-        self.label_indel_freq = QLabel("Consensus indel frequency:")
-        advanced_layout.addWidget(self.label_indel_freq, 2, 0)
+        # SNV Minimum Frequency
+        adv_layout.addWidget(QLabel("SNV Minimum Frequency:"), arow, 0)
+        self.snv_min_freq = QDoubleSpinBox()
+        self.snv_min_freq.setDecimals(2)
+        self.snv_min_freq.setRange(0.0, 1.0)
+        self.snv_min_freq.setSingleStep(0.05)
+        self.snv_min_freq.setValue(0.2)
+        adv_layout.addWidget(self.snv_min_freq, arow, 1)
+        adv_layout.addWidget(QLabel("Minimum allele frequency for SNVs."), arow, 2)
+        arow += 1
 
-        self.entry_indel_freq = QLineEdit("0.4")
-        self.entry_indel_freq.textChanged.connect(partial(self.validate_float, "Consensus indel frequency"))
-        advanced_layout.addWidget(self.entry_indel_freq, 2, 1)
-
-        self.label_indel_freq_desc = QLabel("Variant allele frequency threshold for an indel to be incorporated into consensus genome.\nVariants below this frequency will not be incorporated.\nSet to 0 to incorporate the majority or most common base.")
-        advanced_layout.addWidget(self.label_indel_freq_desc, 2, 2)
-
-        #%% Minimum depth
-        self.label_min_depth = QLabel("Minimum depth:")
-        advanced_layout.addWidget(self.label_min_depth, 3, 0)
-
-        self.entry_min_depth = QLineEdit("15")
-        advanced_layout.addWidget(self.entry_min_depth, 3, 1)
-
-        self.label_min_depth_desc = QLabel("Minimum depth for (1) an SNV to be kept and (2) consensus genome generation.")
-        advanced_layout.addWidget(self.label_min_depth_desc, 3, 2)
-
-        #%% variant caller
-        self.label_variant_caller = QLabel("Variant caller:")
-        advanced_layout.addWidget(self.label_variant_caller, 4, 0)
-
-        self.combo_variant_caller = QComboBox()
-        self.combo_variant_caller.addItems(['clair3', 'medaka'])
-        self.combo_variant_caller.setCurrentText("clair3")
-        advanced_layout.addWidget(self.combo_variant_caller, 4, 1)
-
-        #%% guppy model
-        self.label_guppy_model = QLabel("Guppy model:")
-        advanced_layout.addWidget(self.label_guppy_model, 5, 0)
-
+        # Guppy Model (with custom option)
+        adv_layout.addWidget(QLabel("Guppy Model:"), arow, 0)
         self.combo_guppy_model = QComboBox()
         self.combo_guppy_model.addItems(list(GUPPY_MODEL_DESCRIPTIONS.keys()))
-        self.combo_guppy_model.setCurrentText(str(important_models[0]))
-        advanced_layout.addWidget(self.combo_guppy_model, 5, 1)
-        self.label_guppy_model_desc = QLabel("Select a guppy model or select 'Other' and specify")
+        self.combo_guppy_model.setCurrentText("r941_min_high_g360")
         self.combo_guppy_model.currentTextChanged.connect(
-            lambda option, label=self.label_guppy_model_desc, input_dict=GUPPY_MODEL_DESCRIPTIONS: self.update_desc(label, input_dict, option)
+            lambda opt: self.update_desc(self.label_guppy_desc, GUPPY_MODEL_DESCRIPTIONS, opt)
         )
-        advanced_layout.addWidget(self.label_guppy_model_desc, 5, 2)
+        adv_layout.addWidget(self.combo_guppy_model, arow, 1)
+        self.label_guppy_desc = QLabel(GUPPY_MODEL_DESCRIPTIONS["r941_min_high_g360"])
+        adv_layout.addWidget(self.label_guppy_desc, arow, 2)
+        arow += 1
 
-        self.entry_other = QLineEdit()
-        advanced_layout.addWidget(self.entry_other, 6, 1)
+        adv_layout.addWidget(QLabel("Custom Guppy Model:"), arow, 0)
+        self.guypy_custom = QLineEdit()
+        self.guypy_custom.setEnabled(False)
+        adv_layout.addWidget(self.guypy_custom, arow, 1)
+        self.combo_guppy_model.currentTextChanged.connect(self.updateGuppyCustom)
+        arow += 1
 
-        self.combo_guppy_model.currentTextChanged.connect(self.update_other_entry)
-
-        #%% clair3 model
-        self.label_clair3_model = QLabel("Clair3 model:")
-        advanced_layout.addWidget(self.label_clair3_model, 7, 0)
-
+        # Clair3 Model (with custom option)
+        adv_layout.addWidget(QLabel("Clair3 Model:"), arow, 0)
         self.combo_clair3_model = QComboBox()
         self.combo_clair3_model.addItems(list(CLAIR3_MODEL_DESCRIPTIONS.keys()))
-        self.combo_clair3_model.setCurrentText(str(important_models[1]))
-        advanced_layout.addWidget(self.combo_clair3_model, 7, 1)
-        self.label_clair3_model_desc = QLabel("Select a clair3 model or select 'Other' and specify")
+        self.combo_clair3_model.setCurrentText("/opt/models/r941_prom_hac_g360+g422")
         self.combo_clair3_model.currentTextChanged.connect(
-            lambda option, label=self.label_clair3_model_desc, input_dict=CLAIR3_MODEL_DESCRIPTIONS: self.update_desc(label, input_dict, option)
+            lambda opt: self.update_desc(self.label_clair3_desc, CLAIR3_MODEL_DESCRIPTIONS, opt)
         )
-        advanced_layout.addWidget(self.label_clair3_model_desc, 7, 2)
+        adv_layout.addWidget(self.combo_clair3_model, arow, 1)
+        self.label_clair3_desc = QLabel(CLAIR3_MODEL_DESCRIPTIONS["/opt/models/r941_prom_hac_g360+g422"])
+        adv_layout.addWidget(self.label_clair3_desc, arow, 2)
+        arow += 1
 
-        self.entry_other = QLineEdit()
-        advanced_layout.addWidget(self.entry_other, 8, 1)
+        adv_layout.addWidget(QLabel("Custom Clair3 Model:"), arow, 0)
+        self.clair3_custom = QLineEdit()
+        self.clair3_custom.setEnabled(False)
+        adv_layout.addWidget(self.clair3_custom, arow, 1)
+        self.combo_clair3_model.currentTextChanged.connect(self.updateClair3Custom)
+        arow += 1
 
-        self.combo_clair3_model.currentTextChanged.connect(self.update_other_entry)
+        # Alternate Analysis
+        adv_layout.addWidget(QLabel("Alternate Analysis:"), arow, 0)
+        self.alternate_analysis = QCheckBox("Alternate Analysis")
+        adv_layout.addWidget(self.alternate_analysis, arow, 1)
+        adv_layout.addWidget(QLabel("Enable alternate analysis mode."), arow, 2)
+        arow += 1
 
-        #%% threads
-        self.label_threads = QLabel("Number of threads:")
-        advanced_layout.addWidget(self.label_threads, 9, 0)
+        # Alt Cov Max
+        adv_layout.addWidget(QLabel("Alt Cov Max:"), arow, 0)
+        self.alt_cov_max = QDoubleSpinBox()
+        self.alt_cov_max.setDecimals(2)
+        self.alt_cov_max.setRange(0.0, 1000.0)
+        self.alt_cov_max.setSingleStep(1.0)
+        self.alt_cov_max.setValue(80.0)
+        adv_layout.addWidget(self.alt_cov_max, arow, 1)
+        adv_layout.addWidget(QLabel("Alternate analysis maximum coverage."), arow, 2)
+        arow += 1
 
-        self.entry_threads = QLineEdit(str(max_threads))
-        advanced_layout.addWidget(self.entry_threads, 9, 1)
+        # Alt Cov Min
+        adv_layout.addWidget(QLabel("Alt Cov Min:"), arow, 0)
+        self.alt_cov_min = QDoubleSpinBox()
+        self.alt_cov_min.setDecimals(2)
+        self.alt_cov_min.setRange(0.0, 1000.0)
+        self.alt_cov_min.setSingleStep(1.0)
+        self.alt_cov_min.setValue(40.0)
+        adv_layout.addWidget(self.alt_cov_min, arow, 1)
+        adv_layout.addWidget(QLabel("Alternate analysis minimum coverage."), arow, 2)
+        arow += 1
 
-        #%% max memory
-        self.label_max_memory = QLabel("Maximum memory (in MB):")
-        advanced_layout.addWidget(self.label_max_memory, 10, 0)
+        # Delete Reads
+        adv_layout.addWidget(QLabel("Delete Reads:"), arow, 0)
+        self.delete_reads = QCheckBox("Delete demultiplexed reads after analysis")
+        adv_layout.addWidget(self.delete_reads, arow, 1)
+        adv_layout.addWidget(QLabel("Remove reads post-analysis."), arow, 2)
+        arow += 1
 
-        self.entry_max_memory = QLineEdit(str(max_mem))
-        advanced_layout.addWidget(self.entry_max_memory, 10, 1)
+        # Redo Analysis
+        adv_layout.addWidget(QLabel("Redo Analysis:"), arow, 0)
+        self.redo_analysis = QCheckBox("Redo analysis (fresh run)")
+        adv_layout.addWidget(self.redo_analysis, arow, 1)
+        adv_layout.addWidget(QLabel("Delete output directory for a fresh run."), arow, 2)
+        arow += 1
 
-        self.label_max_memory_desc = QLabel("Defaults to using most of your available RAM")
-        advanced_layout.addWidget(self.label_max_memory_desc, 10, 2)
+        # Additional nanoq parameters
+        adv_layout.addWidget(QLabel("Additional nanoq parameters:"), arow, 0)
+        self.additional_nanoq = QLineEdit()
+        adv_layout.addWidget(self.additional_nanoq, arow, 1)
+        adv_layout.addWidget(QLabel("Extra parameters for nanoq."), arow, 2)
+        arow += 1
 
-        #%% ADD OTHER OPTIONS HEADING
-        self.label_other_options = QLabel("Other options:")
-        advanced_layout.addWidget(self.label_other_options, 11, 0)
+        # Skip Clipping
+        adv_layout.addWidget(QLabel("Skip Clipping:"), arow, 0)
+        self.skip_clipping = QCheckBox("Skip clipping of amplicon primers")
+        adv_layout.addWidget(self.skip_clipping, arow, 1)
+        adv_layout.addWidget(QLabel("Do not clip amplicon primers."), arow, 2)
+        arow += 1
 
-        #%% overwrite analysis
-        self.checkbox_force = QCheckBox("Overwrite previous analysis from Snakemake stage")
-        advanced_layout.addWidget(self.checkbox_force, 12, 1)
+        # No Barcodes
+        adv_layout.addWidget(QLabel("No Barcodes:"), arow, 0)
+        self.no_barcodes = QCheckBox("No barcodes used during library prep")
+        adv_layout.addWidget(self.no_barcodes, arow, 1)
+        adv_layout.addWidget(QLabel("Specify if no barcodes were used."), arow, 2)
+        arow += 1
 
-        #%% redo analysis
-        self.checkbox_redo_analysis = QCheckBox("Redo previous analysis from scratch")
-        advanced_layout.addWidget(self.checkbox_redo_analysis, 13, 1)
+        # MinKNOW Data Directory
+        adv_layout.addWidget(QLabel("MinKNOW Data Directory:"), arow, 0)
+        self.minknow_data = QLineEdit("/var/lib/minknow/data")
+        minknow_btn = QPushButton("Browse")
+        minknow_btn.clicked.connect(lambda: self.browseDirectory(self.minknow_data))
+        minknow_layout = QHBoxLayout()
+        minknow_layout.addWidget(self.minknow_data)
+        minknow_layout.addWidget(minknow_btn)
+        adv_layout.addLayout(minknow_layout, arow, 1)
+        adv_layout.addWidget(QLabel("Directory for MinKNOW data."), arow, 2)
+        arow += 1
 
-        #%% delete reads
-        self.checkbox_delete_reads = QCheckBox("Delete demultiplexed reads after analysis")
-        advanced_layout.addWidget(self.checkbox_delete_reads, 14, 1)
+        # No Update
+        adv_layout.addWidget(QLabel("No Update:"), arow, 0)
+        self.no_update = QCheckBox("Disable container version updating")
+        adv_layout.addWidget(self.no_update, arow, 1)
+        adv_layout.addWidget(QLabel("Prevent updating container versions."), arow, 2)
+        arow += 1
 
-        #%% skip clipping
-        self.checkbox_skip_clipping = QCheckBox("Skip amplicon primer clipping (when no amplicon scheme used)")
-        advanced_layout.addWidget(self.checkbox_skip_clipping, 15, 1)
+        # List Protocols
+        adv_layout.addWidget(QLabel("List Protocols:"), arow, 0)
+        self.list_protocols = QCheckBox("List available protocols and exit")
+        adv_layout.addWidget(self.list_protocols, arow, 1)
+        adv_layout.addWidget(QLabel("Display protocols and exit."), arow, 2)
+        arow += 1
 
-        #%% no barcodes
-        self.checkbox_no_barcodes = QCheckBox("No barcodes were used during library prep (or pretend none were used)")
-        advanced_layout.addWidget(self.checkbox_no_barcodes, 16, 1)
+        # Max Memory
+        adv_layout.addWidget(QLabel("Max Memory (MB):"), arow, 0)
+        self.max_memory = QSpinBox()
+        self.max_memory.setMinimum(1)
+        self.max_memory.setMaximum(100000)
+        self.max_memory.setValue(get_default_max_memory())
+        adv_layout.addWidget(self.max_memory, arow, 1)
+        adv_layout.addWidget(QLabel("Maximum memory in MB."), arow, 2)
+        arow += 1
 
-        #%% print DAG
-        self.checkbox_print_dag = QCheckBox("Print analysis DAG then quit")
-        advanced_layout.addWidget(self.checkbox_print_dag, 17, 1)
+        # Basecaller
+        adv_layout.addWidget(QLabel("Basecaller:"), arow, 0)
+        self.basecaller = QComboBox()
+        self.basecaller.addItems(["dorado", "guppy"])
+        self.basecaller.setCurrentText("dorado")
+        adv_layout.addWidget(self.basecaller, arow, 1)
+        adv_layout.addWidget(QLabel("Select the basecaller."), arow, 2)
+        arow += 1
 
-        #%% dry run
-        self.checkbox_dry_run = QCheckBox("Dry run only")
-        advanced_layout.addWidget(self.checkbox_dry_run, 18, 1)
+        # Rebasecall
+        adv_layout.addWidget(QLabel("Rebasecall:"), arow, 0)
+        self.rebasecall = QCheckBox("Rebasecall reads (for dorado)")
+        adv_layout.addWidget(self.rebasecall, arow, 1)
+        adv_layout.addWidget(QLabel("Enable rebasecalling."), arow, 2)
+        arow += 1
 
-        #%% create envs only
-        self.checkbox_create_envs_only = QCheckBox("Create conda envs only")
-        advanced_layout.addWidget(self.checkbox_create_envs_only, 19, 1)
+        # Minimum QScore
+        adv_layout.addWidget(QLabel("Minimum QScore:"), arow, 0)
+        self.min_qscore = QSpinBox()
+        self.min_qscore.setMinimum(1)
+        self.min_qscore.setMaximum(100)
+        self.min_qscore.setValue(9)
+        adv_layout.addWidget(self.min_qscore, arow, 1)
+        adv_layout.addWidget(QLabel("Minimum basecalling quality score."), arow, 2)
+        arow += 1
 
-        #%% no update
-        self.checkbox_no_update = QCheckBox("Disable updating of container versions for SARS-CoV-2 analysis.")
-        advanced_layout.addWidget(self.checkbox_no_update, 20, 1)
+        # Dorado Model
+        adv_layout.addWidget(QLabel("Dorado Model (full path):"), arow, 0)
+        self.dorado_model = QLineEdit()
+        adv_layout.addWidget(self.dorado_model, arow, 1)
+        adv_layout.addWidget(QLabel("Full path to the Dorado model."), arow, 2)
+        arow += 1
 
-        #%% quiet
-        self.checkbox_quiet = QCheckBox("Stop printing of Snakemake commands to screen")
-        advanced_layout.addWidget(self.checkbox_quiet, 21, 1)
+        # Quiet
+        adv_layout.addWidget(QLabel("Quiet:"), arow, 0)
+        self.quiet = QCheckBox("Quiet mode (suppress commands)")
+        adv_layout.addWidget(self.quiet, arow, 1)
+        adv_layout.addWidget(QLabel("Suppress printing of commands."), arow, 2)
+        arow += 1
 
-        #%% Outdir
-        self.label_outdir = QLabel("Output directory:")
-        advanced_layout.addWidget(self.label_outdir, 22, 0)
+        # Report
+        adv_layout.addWidget(QLabel("Report:"), arow, 0)
+        self.report = QCheckBox("Generate Snakemake report")
+        adv_layout.addWidget(self.report, arow, 1)
+        adv_layout.addWidget(QLabel("Generate a report after analysis."), arow, 2)
+        arow += 1
 
-        self.entry_outdir = QLineEdit()
-        advanced_layout.addWidget(self.entry_outdir, 22, 1)
+        # ----- BUTTONS & STATUS -----
+        btn_layout = QHBoxLayout()
+        run_btn = QPushButton("Run Analysis")
+        run_btn.setStyleSheet("background-color: green; color: white; font-weight: bold;")
+        run_btn.clicked.connect(self.runAnalysis)
+        btn_layout.addWidget(run_btn)
+        reset_btn = QPushButton("Reset")
+        reset_btn.setStyleSheet("background-color: red; color: white; font-weight: bold;")
+        reset_btn.clicked.connect(self.resetFields)
+        btn_layout.addWidget(reset_btn)
+        main_layout.addLayout(btn_layout)
+        self.status_label = QLabel("")
+        self.status_label.setWordWrap(True)
+        main_layout.addWidget(self.status_label)
 
-        self.button_outdir = QPushButton("Browse", self)
-        self.button_outdir.clicked.connect(
-            lambda option: self.browse_directory(self.entry_outdir)
+    # -----------------------
+    # Helper Methods
+    # -----------------------
+    def update_desc(self, label, desc_dict, option):
+        label.setText(desc_dict.get(option, ""))
+
+    def browseSamplesFile(self):
+        file_path, _ = QFileDialog.getOpenFileName(
+            self, "Select Samples CSV", "", "CSV Files (*.csv);;All Files (*)"
         )
-        advanced_layout.addWidget(self.button_outdir, 22, 2)
+        if file_path:
+            self.samples_file.setText(file_path)
 
-        #%% minknow_dir
-        DEFAULT_MINKNOW_DATA = "/var/lib/minknow/data"
-        self.label_minknow_data = QLabel("MinKNOW data output directory:")
-        advanced_layout.addWidget(self.label_minknow_data, 23, 0)
+    def browseDirectory(self, target_line_edit):
+        directory = QFileDialog.getExistingDirectory(self, "Select Directory")
+        if directory:
+            target_line_edit.setText(directory)
 
-        self.entry_minknow_data = QLineEdit()
-        self.entry_minknow_data.setText(DEFAULT_MINKNOW_DATA)
-        advanced_layout.addWidget(self.entry_minknow_data, 23, 1)
-
-        self.button_minknow_data = QPushButton("Browse", self)
-        self.button_minknow_data.clicked.connect(
-            lambda option: self.browse_directory(self.entry_minknow_data)
-        )
-        advanced_layout.addWidget(self.button_minknow_data, 23, 2)
-
-        ## RUN ANALYSIS ##
-        #%% Run analysis button
-        self.button_run_analysis = QPushButton("Run Analysis", self)
-        self.button_run_analysis.setStyleSheet("background-color: lightpink; font-weight: bold;")
-        self.button_run_analysis.clicked.connect(self.run_analysis)
-        layout.addWidget(self.button_run_analysis)
-
-    def update_other_entry(self, selected_option):
-        if selected_option == 'Other':
-            self.entry_other.setEnabled(True)
+    def updateGuppyCustom(self, text):
+        if text == "Other":
+            self.guypy_custom.setEnabled(True)
         else:
-            self.entry_other.setEnabled(False)
-            self.entry_other.clear()
+            self.guypy_custom.setEnabled(False)
+            self.guypy_custom.clear()
 
-    def update_desc(self, label_desc, input_dict, option):
-        description = input_dict[option]
-        label_desc.setText(description)
+    def updateClair3Custom(self, text):
+        if text == "Other":
+            self.clair3_custom.setEnabled(True)
+        else:
+            self.clair3_custom.setEnabled(False)
+            self.clair3_custom.clear()
 
-    def browse_file(self, entry):
-        filename, _ = QFileDialog.getOpenFileName()
-        entry.setText(filename)
+    def toggleAdvancedOptions(self, checked):
+        self.advanced_group.setVisible(checked)
 
-    def browse_directory(self, entry):
-        directory = QFileDialog.getExistingDirectory()
-        entry.setText(directory)
+    def resetFields(self):
+        # Basic Options
+        self.samples_file.clear()
+        self.combo_barcode_kit.setCurrentText("SQK-RBK004")
+        self.consensus_freq.setValue(0.0)
+        self.indel_freq.setValue(0.40)
+        self.demultiplexed.setChecked(True)
+        self.force.setChecked(False)
+        self.dry_run.setChecked(False)
+        self.combo_module.setCurrentText("All")
+        self.threads.setValue(psutil.cpu_count(logical=True))
+        if "MN908947.3" in self.reference_dict:
+            index = self.reference.findText("MN908947.3")
+            if index != -1:
+                self.reference.setCurrentIndex(index)
+        self.variant_caller.setCurrentText("clair3")
+        self.min_depth.setValue(20)
+        # Advanced Options
+        self.outdir.setText(os.path.join(os.getcwd(), "analysis_results"))
+        self.rampart_outdir.setText(os.path.join(os.getcwd(), "rampart_files"))
+        self.print_dag.setChecked(False)
+        self.create_envs_only.setChecked(False)
+        self.snv_min_freq.setValue(0.2)
+        self.combo_guppy_model.setCurrentText("r941_min_high_g360")
+        self.guypy_custom.clear()
+        self.guypy_custom.setEnabled(False)
+        self.combo_clair3_model.setCurrentText("/opt/models/r941_prom_hac_g360+g422")
+        self.clair3_custom.clear()
+        self.clair3_custom.setEnabled(False)
+        self.alternate_analysis.setChecked(False)
+        self.alt_cov_max.setValue(80.0)
+        self.alt_cov_min.setValue(40.0)
+        self.delete_reads.setChecked(False)
+        self.redo_analysis.setChecked(False)
+        self.additional_nanoq.clear()
+        self.skip_clipping.setChecked(False)
+        self.no_barcodes.setChecked(False)
+        self.minknow_data.setText("/var/lib/minknow/data")
+        self.no_update.setChecked(False)
+        self.list_protocols.setChecked(False)
+        self.max_memory.setValue(get_default_max_memory())
+        self.basecaller.setCurrentText("dorado")
+        self.rebasecall.setChecked(False)
+        self.min_qscore.setValue(9)
+        self.dorado_model.clear()
+        self.quiet.setChecked(False)
+        self.report.setChecked(False)
+        self.advanced_toggle.setChecked(False)  # This hides the advanced group
+        self.status_label.setText("")
 
-    def check_parameters(self):
-        if not 0 <= float(self.entry_consensus_freq.text()) <= 1:
-            QMessageBox.warning(self, "Invalid consensus SNP frequency",
-                                "Value must be between 0 and 1.")
-            return False
-        if not 0 <= float(self.entry_indel_freq.text()) <= 1:
-            QMessageBox.warning(self, "Invalid consensus indel frequency",
-                                "Value must be between 0 and 1.")
-            return False
-        if not 0 <= float(self.entry_snv_min_freq.text()) <= 1:
-            QMessageBox.warning(self, "Invalid SNV minimum frequency",
-                                "Value must be between 0 and 1.")
-            return False
-        if int(self.entry_threads.text()) < 1:
-            QMessageBox.warning(self, "Invalid number of threads",
-                                "Value must be >= 1.")
-            return False
-        if max_threads < int(self.entry_threads.text()):
-            QMessageBox.warning(self, "Too many threads",
-                                f"Value should not exceed the maximum threads available ({max_threads}).")
-            return False
-        if not self.entry_samples_file.text():
-            QMessageBox.critical(self, "Error", "Hmm, forgetting something? You need to choose an input spreadsheet.")
-            return False
-        QMessageBox.information(self, "Run successfully deployed",
-                                "Run deployed. Check the Terminal to monitor the analysis.")
-        return True
+    def runAnalysis(self):
+        # Validate mandatory fields
+        if not self.samples_file.text().strip():
+            QMessageBox.critical(self, "Error", "Samples file is required.")
+            return
 
-    def generate_cli_input(self):
-        cli_input = []
-        for key, value in vars(self.parameters).items():
-            if key in ["checkbox_params","float_params"]:
-                continue
-            elif key in self.parameters.checkbox_params:
-                if value:
-                    cli_input.append('--' + str(key))
-            elif key != "samples_file":
-                cli_input.append('--' + str(key))
-                cli_input.append(str(value))
-            elif key == "samples_file":
-                cli_input.append(value)
-            else:
-                print("Something went wrong")
-        return cli_input
+        # Assemble CLI command arguments (advanced options are always included)
+        cmd = ["oat"]
+        # Positional argument
+        cmd.append(self.samples_file.text().strip())
+        # Basic options
+        cmd.extend(["--barcode_kit", self.combo_barcode_kit.currentText()])
+        cmd.extend(["--consensus_freq", str(self.consensus_freq.value())])
+        cmd.extend(["--indel_freq", str(self.indel_freq.value())])
+        if self.demultiplexed.isChecked():
+            cmd.append("--demultiplexed")
+        if self.force.isChecked():
+            cmd.append("--force")
+        if self.dry_run.isChecked():
+            cmd.append("--dry_run")
+        cmd.extend(["--module", self.combo_module.currentText().upper()])
+        cmd.extend(["--threads", str(self.threads.value())])
+        cmd.extend(["--reference", self.reference.currentText().strip()])
+        cmd.extend(["--variant_caller", self.variant_caller.currentText().strip()])
+        cmd.extend(["--min_depth", str(self.min_depth.value())])
+        # Advanced options (always added)
+        cmd.extend(["--outdir", self.outdir.text().strip()])
+        cmd.extend(["--rampart_outdir", self.rampart_outdir.text().strip()])
+        if self.print_dag.isChecked():
+            cmd.append("--print_dag")
+        if self.create_envs_only.isChecked():
+            cmd.append("--create_envs_only")
+        cmd.extend(["--snv_min_freq", str(self.snv_min_freq.value())])
+        # For Guppy model: use custom if "Other" is selected
+        guppy_model = (self.guypy_custom.text().strip() if self.combo_guppy_model.currentText() == "Other"
+                       else self.combo_guppy_model.currentText())
+        cmd.extend(["--guppy_model", guppy_model])
+        # For Clair3 model
+        clair3_model = (self.clair3_custom.text().strip() if self.combo_clair3_model.currentText() == "Other"
+                        else self.combo_clair3_model.currentText())
+        cmd.extend(["--clair3_model", clair3_model])
+        if self.alternate_analysis.isChecked():
+            cmd.append("--alternate_analysis")
+        cmd.extend(["--alt_cov_max", str(self.alt_cov_max.value())])
+        cmd.extend(["--alt_cov_min", str(self.alt_cov_min.value())])
+        if self.delete_reads.isChecked():
+            cmd.append("--delete_reads")
+        if self.redo_analysis.isChecked():
+            cmd.append("--redo_analysis")
+        if self.additional_nanoq.text().strip():
+            cmd.extend(["--additional_nanoq", self.additional_nanoq.text().strip()])
+        if self.skip_clipping.isChecked():
+            cmd.append("--skip_clipping")
+        if self.no_barcodes.isChecked():
+            cmd.append("--no_barcodes")
+        if self.minknow_data.text().strip():
+            cmd.extend(["--minknow_data", self.minknow_data.text().strip()])
+        if self.no_update.isChecked():
+            cmd.append("--no_update")
+        if self.list_protocols.isChecked():
+            cmd.append("--list_protocols")
+        cmd.extend(["--max_memory", str(self.max_memory.value())])
+        cmd.extend(["--basecaller", self.basecaller.currentText().strip()])
+        if self.rebasecall.isChecked():
+            cmd.append("--rebasecall")
+        cmd.extend(["--min_qscore", str(self.min_qscore.value())])
+        if self.dorado_model.text().strip():
+            cmd.extend(["--dorado_model", self.dorado_model.text().strip()])
+        if self.quiet.isChecked():
+            cmd.append("--quiet")
+        if self.report.isChecked():
+            cmd.append("--report")
 
-    def run_analysis(self):
-        self.update_parameters()
-        success = self.check_parameters()
-        if success:
-            self.close()
-            # Add your code here to run the analysis with the updated parameters
-            import oat.cli.cli as cli
-            import sys
-            # generate cli input
-            sys.argv = [sys.argv[0]] + [str(x) for x in self.generate_cli_input()]
-            print("Command run:")
-            print(' '.join(sys.argv))
-            cli.main(sys.argv[1:])
-
-    def validate_float(self, title, text):
+        # Display the assembled command for user feedback
+        self.status_label.setText("Executing: " + " ".join(cmd))
         try:
-            value = float(text)
-            if not 0 <= value <= 1:
-                QMessageBox.warning(self, f"Invalid {title}", "Value must be between 0 and 1.")
-        except ValueError:
-                pass
-    def update_parameters(self):
-        # main options
-        self.parameters.barcode_kit = self.combo_barcode_kit.currentText()
-        self.parameters.reference = self.combo_reference.currentText()
-        self.parameters.module = self.combo_module.currentText()
-        # advanced options
-        self.parameters.variant_caller = self.combo_variant_caller.currentText()
-        self.parameters.consensus_freq = float(self.entry_consensus_freq.text())
-        self.parameters.snv_min_freq = float(self.entry_snv_min_freq.text())
-        self.parameters.indel_freq = float(self.entry_indel_freq.text())
-        self.parameters.min_depth = int(self.entry_min_depth.text())
-        self.parameters.guppy_model = self.combo_guppy_model.currentText()
-        self.parameters.clair3_model = self.combo_clair3_model.currentText()
-        self.parameters.threads = int(self.entry_threads.text())
-        self.parameters.max_memory = int(self.entry_max_memory.text())
-        self.parameters.outdir = self.entry_outdir.text()
-        self.parameters.minknow_data = self.entry_minknow_data.text()
-
-        # checkbox parameters = flag-only options ('store_true')
-        self.parameters.demultiplexed = self.checkbox_demultiplexed.isChecked()
-        self.parameters.force = self.checkbox_force.isChecked()
-        self.parameters.redo_analysis = self.checkbox_redo_analysis.isChecked()
-        self.parameters.delete_reads = self.checkbox_delete_reads.isChecked()
-        self.parameters.skip_clipping = self.checkbox_skip_clipping.isChecked()
-        self.parameters.no_barcodes = self.checkbox_no_barcodes.isChecked()
-        self.parameters.print_dag = self.checkbox_print_dag.isChecked()
-        self.parameters.dry_run = self.checkbox_dry_run.isChecked()
-        self.parameters.create_envs_only = self.checkbox_create_envs_only.isChecked()
-        self.parameters.no_update = self.checkbox_no_update.isChecked()
-        self.parameters.quiet = self.checkbox_quiet.isChecked()
-        # positional argument
-        self.parameters.samples_file = self.entry_samples_file.text()
-
+            result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            if result.returncode != 0:
+                self.status_label.setText("Error: " + result.stderr)
+            else:
+                self.status_label.setText("Success: " + result.stdout)
+        except Exception as e:
+            self.status_label.setText("Execution failed: " + str(e))
 
 def main():
     app = QApplication(sys.argv)
-    analysis_gui = AnalysisGUI()
-    analysis_gui.show()
+    gui = AnalysisToolGUI()
+    gui.show()
     sys.exit(app.exec_())
 
 if __name__ == "__main__":
