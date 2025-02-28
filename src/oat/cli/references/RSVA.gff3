@@ -1,0 +1,35 @@
+##gff-version 3
+##sequence-region NC_038235.1 1 15222
+RSVA	annotation	remark	1	15222	.	.	.	accessions=NC_038235;comment=REVIEWED REFSEQ: This record has been curated by NCBI staff. The%0Areference sequence is identical to M74568.%0ACOMPLETENESS: full length.;data_file_division=VRL;date=11-DEC-2020;keywords=RefSeq;molecule_type=cRNA;organism=human respiratory syncytial virus;references=location: %5B0:15222%5D%0Aauthors: Mink%2CM.A.%2C Stec%2CD.S. and Collins%2CP.L.%0Atitle: Nucleotide sequences of the 3%27 leader and 5%27 trailer regions of human respiratory syncytial virus genomic RNA%0Ajournal: Virology 185 %282%29%2C 615-624 %281991%29%0Amedline id: %0Apubmed id: 1840712%0Acomment:,location: %5B0:15222%5D%0Aauthors: Stec%2CD.S.%2C Hill%2CM.G. III and Collins%2CP.L.%0Atitle: Sequence analysis of the polymerase L gene of human respiratory syncytial virus and predicted phylogeny of nonsegmented negative-strand viruses%0Ajournal: Virology 183 %281%29%2C 273-287 %281991%29%0Amedline id: %0Apubmed id: 2053282%0Acomment:,location: %5B0:15222%5D%0Aauthors: Collins%2CP.L.%2C Olmsted%2CR.A.%2C Spriggs%2CM.K.%2C Johnson%2CP.R. and Buckler-White%2CA.J.%0Atitle: Gene overlap and site-specific attenuation of transcription of the viral polymerase L gene of human respiratory syncytial virus%0Ajournal: Proc. Natl. Acad. Sci. U.S.A. 84 %2815%29%2C 5134-5138 %281987%29%0Amedline id: %0Apubmed id: 2440043%0Acomment:,location: %5B0:15222%5D%0Aauthors: %0Aconsrtm: NCBI Genome Project%0Atitle: Direct Submission%0Ajournal: Submitted %2813-AUG-2018%29 National Center for Biotechnology Information%2C NIH%2C Bethesda%2C MD 20894%2C USA%0Amedline id: %0Apubmed id: %0Acomment:;sequence_version=1;source=human respiratory syncytial virus %28HRSV%29;taxonomy=Viruses,Riboviria,Orthornavirae,Negarnaviricota,Haploviricotina,Monjiviricetes,Mononegavirales,Pneumoviridae,Orthopneumovirus,Orthopneumovirus hominis;topology=linear
+RSVA	feature	gene	45	576	.	+	.	ID=gene:NS1;Name=NS1;biotype=protein_coding;db_xref=GeneID:37607636;gene=NS1;locus_tag=DZD21_gp01
+RSVA	feature	CDS	99	518	.	+	0	ID=CDS:YP_009518850.1;Parent=transcript:YP_009518850.1_0;biotype=protein_coding;codon_start=1;db_xref=GeneID:37607636;gene=NS1;locus_tag=DZD21_gp01;protein_id=YP_009518850.1
+RSVA	feature	mRNA	99	518	.	+	.	ID=transcript:YP_009518850.1_0;Parent=gene:NS1;biotype=protein_coding
+RSVA	feature	gene	596	1098	.	+	.	ID=gene:NS2;Name=NS2;biotype=protein_coding;db_xref=GeneID:37607637;gene=NS2;locus_tag=DZD21_gp02
+RSVA	feature	CDS	628	1002	.	+	0	ID=CDS:YP_009518851.1;Parent=transcript:YP_009518851.1_0;biotype=protein_coding;codon_start=1;db_xref=GeneID:37607637;gene=NS2;locus_tag=DZD21_gp02;protein_id=YP_009518851.1
+RSVA	feature	mRNA	628	1002	.	+	.	ID=transcript:YP_009518851.1_0;Parent=gene:NS2;biotype=protein_coding
+RSVA	feature	gene	1125	2327	.	+	.	ID=gene:N;Name=N;biotype=protein_coding;db_xref=GeneID:37607638;gene=N;locus_tag=DZD21_gp03
+RSVA	feature	CDS	1140	2315	.	+	0	ID=CDS:YP_009518852.1;Parent=transcript:YP_009518852.1_0;biotype=protein_coding;codon_start=1;db_xref=GeneID:37607638;gene=N;locus_tag=DZD21_gp03;protein_id=YP_009518852.1
+RSVA	feature	mRNA	1140	2315	.	+	.	ID=transcript:YP_009518852.1_0;Parent=gene:N;biotype=protein_coding
+RSVA	feature	gene	2329	3242	.	+	.	ID=gene:P;Name=P;biotype=protein_coding;db_xref=GeneID:37607639;gene=P;locus_tag=DZD21_gp04
+RSVA	feature	CDS	2346	3071	.	+	0	ID=CDS:YP_009518853.1;Parent=transcript:YP_009518853.1_0;biotype=protein_coding;codon_start=1;db_xref=GeneID:37607639;gene=P;locus_tag=DZD21_gp04;protein_id=YP_009518853.1
+RSVA	feature	mRNA	2346	3071	.	+	.	ID=transcript:YP_009518853.1_0;Parent=gene:P;biotype=protein_coding
+RSVA	feature	gene	3252	4209	.	+	.	ID=gene:M;Name=M;biotype=protein_coding;db_xref=GeneID:37607640;gene=M;locus_tag=DZD21_gp05
+RSVA	feature	CDS	3261	4031	.	+	0	ID=CDS:YP_009518854.1;Parent=transcript:YP_009518854.1_0;biotype=protein_coding;codon_start=1;db_xref=GeneID:37607640;gene=M;locus_tag=DZD21_gp05;protein_id=YP_009518854.1
+RSVA	feature	mRNA	3261	4031	.	+	.	ID=transcript:YP_009518854.1_0;Parent=gene:M;biotype=protein_coding
+RSVA	feature	gene	4219	4628	.	+	.	ID=gene:SH;Name=SH;biotype=protein_coding;db_xref=GeneID:37607641;gene=SH;locus_tag=DZD21_gp06
+RSVA	feature	CDS	4303	4497	.	+	0	ID=CDS:YP_009518855.1;Parent=transcript:YP_009518855.1_0;biotype=protein_coding;codon_start=1;db_xref=GeneID:37607641;gene=SH;locus_tag=DZD21_gp06;protein_id=YP_009518855.1
+RSVA	feature	mRNA	4303	4497	.	+	.	ID=transcript:YP_009518855.1_0;Parent=gene:SH;biotype=protein_coding
+RSVA	feature	gene	4673	5595	.	+	.	ID=gene:G;Name=G;biotype=protein_coding;db_xref=GeneID:37607642;gene=G;locus_tag=DZD21_gp07
+RSVA	feature	CDS	4688	5584	.	+	0	ID=CDS:YP_009518856.1;Parent=transcript:YP_009518856.1_0;biotype=protein_coding;codon_start=1;db_xref=GeneID:37607642;gene=G;locus_tag=DZD21_gp07;protein_id=YP_009518856.1
+RSVA	feature	mRNA	4688	5584	.	+	.	ID=transcript:YP_009518856.1_0;Parent=gene:G;biotype=protein_coding
+RSVA	feature	gene	5648	7550	.	+	.	ID=gene:F;Name=F;biotype=protein_coding;db_xref=GeneID:37607643;gene=F;locus_tag=DZD21_gp08
+RSVA	feature	CDS	5661	7385	.	+	0	ID=CDS:YP_009518857.1;Parent=transcript:YP_009518857.1_0;biotype=protein_coding;codon_start=1;db_xref=GeneID:37607643;gene=F;locus_tag=DZD21_gp08;protein_id=YP_009518857.1
+RSVA	feature	mRNA	5661	7385	.	+	.	ID=transcript:YP_009518857.1_0;Parent=gene:F;biotype=protein_coding
+RSVA	feature	gene	7597	8557	.	+	.	ID=gene:M2;Name=M2;biotype=protein_coding;db_xref=GeneID:37607644;gene=M2;locus_tag=DZD21_gp09
+RSVA	feature	CDS	7606	8190	.	+	0	ID=CDS:YP_009518858.1;Parent=transcript:YP_009518858.1_0;biotype=protein_coding;codon_start=1;db_xref=GeneID:37607644;gene=M2;locus_tag=DZD21_gp09;protein_id=YP_009518858.1
+RSVA	feature	mRNA	7606	8190	.	+	.	ID=transcript:YP_009518858.1_0;Parent=gene:M2;biotype=protein_coding
+RSVA	feature	CDS	8159	8431	.	+	0	ID=CDS:YP_009518859.1;Parent=transcript:YP_009518859.1_0;biotype=protein_coding;codon_start=1;db_xref=GeneID:37607644;gene=M2;locus_tag=DZD21_gp09;protein_id=YP_009518859.1
+RSVA	feature	mRNA	8159	8431	.	+	.	ID=transcript:YP_009518859.1_0;Parent=gene:M2;biotype=protein_coding
+RSVA	feature	gene	8489	15067	.	+	.	ID=gene:L;Name=L;biotype=protein_coding;db_xref=GeneID:37607645;gene=L;locus_tag=DZD21_gp10
+RSVA	feature	CDS	8498	14995	.	+	0	ID=CDS:YP_009518860.1;Parent=transcript:YP_009518860.1_0;biotype=protein_coding;codon_start=1;db_xref=GeneID:37607645;gene=L;locus_tag=DZD21_gp10;protein_id=YP_009518860.1
+RSVA	feature	mRNA	8498	14995	.	+	.	ID=transcript:YP_009518860.1_0;Parent=gene:L;biotype=protein_coding

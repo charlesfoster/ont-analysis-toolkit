@@ -1,0 +1,35 @@
+##gff-version 3
+##sequence-region RSVB 1 15225
+RSVB	annotation	remark	1	15225	.	.	.	accessions=NC_001781;comment=REVIEWED REFSEQ: This record has been curated by NCBI staff. The%0Areference sequence is identical to AF013254.%0ACOMPLETENESS: full length.;data_file_division=VRL;date=11-DEC-2020;keywords=RefSeq;molecule_type=RNA;organism=human respiratory syncytial virus;references=location: %5B0:15225%5D%0Aauthors: Karron%2CR.A.%2C Buonagurio%2CD.A.%2C Georgiu%2CA.F.%2C Whitehead%2CS.S.%2C Adamus%2CJ.E.%2C Clements-Mann%2CM.L.%2C Harris%2CD.O.%2C Randolph%2CV.B.%2C Udem%2CS.A.%2C Murphy%2CB.R. and Sidhu%2CM.S.%0Atitle: Respiratory syncytial virus %28RSV%29 SH and G proteins are not essential for viral replication in vitro: clinical evaluation and molecular characterization of a cold-passaged%2C attenuated RSV subgroup B mutant%0Ajournal: Proc. Natl. Acad. Sci. U.S.A. 94 %2825%29%2C 13961-13966 %281997%29%0Amedline id: %0Apubmed id: 9391135%0Acomment:,location: %5B0:15225%5D%0Aauthors: %0Aconsrtm: NCBI Genome Project%0Atitle: Direct Submission%0Ajournal: Submitted %2801-AUG-2000%29 National Center for Biotechnology Information%2C NIH%2C Bethesda%2C MD 20894%2C USA%0Amedline id: %0Apubmed id: %0Acomment:,location: %5B0:15225%5D%0Aauthors: Sidhu%2CM.S.%2C Udem%2CS.A. and Murphy%2CB.R.%0Atitle: Direct Submission%0Ajournal: Submitted %2809-JUL-1997%29 Viral Vaccine Research%2C Wyeth-Lederle Vaccines and Pediatrics%2C 401 N. Middletown Rd.%2C Pearl River%2C NY 10965%2C USA%0Amedline id: %0Apubmed id: %0Acomment:;sequence_version=1;source=human respiratory syncytial virus %28HRSV%29;taxonomy=Viruses,Riboviria,Orthornavirae,Negarnaviricota,Haploviricotina,Monjiviricetes,Mononegavirales,Pneumoviridae,Orthopneumovirus,Orthopneumovirus hominis;topology=linear
+RSVB	feature	gene	45	577	.	+	.	ID=gene:NS1;Name=NS1;biotype=protein_coding;db_xref=GeneID:1489818;gene=NS1;locus_tag=HRSVgp01
+RSVB	feature	CDS	99	518	.	+	0	ID=CDS:NP_056856.1;Parent=transcript:NP_056856.1_0;biotype=protein_coding;codon_start=1;db_xref=GeneID:1489818;gene=NS1;locus_tag=HRSVgp01;protein_id=NP_056856.1
+RSVB	feature	mRNA	99	518	.	+	.	ID=transcript:NP_056856.1_0;Parent=gene:NS1;biotype=protein_coding
+RSVB	feature	gene	594	1098	.	+	.	ID=gene:NS2;Name=NS2;biotype=protein_coding;db_xref=GeneID:1489819;gene=NS2;locus_tag=HRSVgp02
+RSVB	feature	CDS	626	1000	.	+	0	ID=CDS:NP_056857.1;Parent=transcript:NP_056857.1_0;biotype=protein_coding;codon_start=1;db_xref=GeneID:1489819;gene=NS2;locus_tag=HRSVgp02;protein_id=NP_056857.1
+RSVB	feature	mRNA	626	1000	.	+	.	ID=transcript:NP_056857.1_0;Parent=gene:NS2;biotype=protein_coding
+RSVB	feature	gene	1125	2327	.	+	.	ID=gene:N;Name=N;biotype=protein_coding;db_xref=GeneID:1489820;gene=N;locus_tag=HRSVgp03
+RSVB	feature	CDS	1140	2315	.	+	0	ID=CDS:NP_056858.1;Parent=transcript:NP_056858.1_0;biotype=protein_coding;codon_start=1;db_xref=GeneID:1489820;gene=N;locus_tag=HRSVgp03;protein_id=NP_056858.1
+RSVB	feature	mRNA	1140	2315	.	+	.	ID=transcript:NP_056858.1_0;Parent=gene:N;biotype=protein_coding
+RSVB	feature	gene	2331	3244	.	+	.	ID=gene:P;Name=P;biotype=protein_coding;db_xref=GeneID:1489821;gene=P;locus_tag=HRSVgp04
+RSVB	feature	CDS	2348	3073	.	+	0	ID=CDS:NP_056859.1;Parent=transcript:NP_056859.1_0;biotype=protein_coding;codon_start=1;db_xref=GeneID:1489821;gene=P;locus_tag=HRSVgp04;protein_id=NP_056859.1
+RSVB	feature	mRNA	2348	3073	.	+	.	ID=transcript:NP_056859.1_0;Parent=gene:P;biotype=protein_coding
+RSVB	feature	gene	3254	4208	.	+	.	ID=gene:M;Name=M;biotype=protein_coding;db_xref=GeneID:1489822;gene=M;locus_tag=HRSVgp05
+RSVB	feature	CDS	3263	4033	.	+	0	ID=CDS:NP_056860.1;Parent=transcript:NP_056860.1_0;biotype=protein_coding;codon_start=1;db_xref=GeneID:1489822;gene=M;locus_tag=HRSVgp05;protein_id=NP_056860.1
+RSVB	feature	mRNA	3263	4033	.	+	.	ID=transcript:NP_056860.1_0;Parent=gene:M;biotype=protein_coding
+RSVB	feature	gene	4218	4630	.	+	.	ID=gene:SH;Name=SH;biotype=protein_coding;db_xref=GeneID:1489823;gene=SH;locus_tag=HRSVgp06
+RSVB	feature	CDS	4303	4500	.	+	0	ID=CDS:NP_056861.1;Parent=transcript:NP_056861.1_0;biotype=protein_coding;codon_start=1;db_xref=GeneID:1489823;gene=SH;locus_tag=HRSVgp06;protein_id=NP_056861.1
+RSVB	feature	mRNA	4303	4500	.	+	.	ID=transcript:NP_056861.1_0;Parent=gene:SH;biotype=protein_coding
+RSVB	feature	gene	4675	5600	.	+	.	ID=gene:G;Name=G;biotype=protein_coding;db_xref=GeneID:1489824;gene=G;locus_tag=HRSVgp07
+RSVB	feature	CDS	4690	5589	.	+	0	ID=CDS:NP_056862.1;Parent=transcript:NP_056862.1_0;biotype=protein_coding;codon_start=1;db_xref=GeneID:1489824;gene=G;locus_tag=HRSVgp07;protein_id=NP_056862.1
+RSVB	feature	mRNA	4690	5589	.	+	.	ID=transcript:NP_056862.1_0;Parent=gene:G;biotype=protein_coding
+RSVB	feature	gene	5653	7552	.	+	.	ID=gene:F;Name=F;biotype=protein_coding;db_xref=GeneID:1489825;gene=F;locus_tag=HRSVgp08
+RSVB	feature	CDS	5666	7390	.	+	0	ID=CDS:NP_056863.1;Parent=transcript:NP_056863.1_0;biotype=protein_coding;codon_start=1;db_xref=GeneID:1489825;gene=F;locus_tag=HRSVgp08;protein_id=NP_056863.1
+RSVB	feature	mRNA	5666	7390	.	+	.	ID=transcript:NP_056863.1_0;Parent=gene:F;biotype=protein_coding
+RSVB	feature	gene	7609	8568	.	+	.	ID=gene:M2;Name=M2;biotype=protein_coding;db_xref=GeneID:1489826;gene=M2;locus_tag=HRSVgp09
+RSVB	feature	CDS	7618	8205	.	+	0	ID=CDS:NP_056864.1;Parent=transcript:NP_056864.1_0;biotype=protein_coding;codon_start=1;db_xref=GeneID:1489826;gene=M2;locus_tag=HRSVgp09;protein_id=NP_056864.1
+RSVB	feature	mRNA	7618	8205	.	+	.	ID=transcript:NP_056864.1_0;Parent=gene:M2;biotype=protein_coding
+RSVB	feature	CDS	8171	8443	.	+	0	ID=CDS:NP_056865.3;Parent=transcript:NP_056865.3_0;biotype=protein_coding;codon_start=1;db_xref=GeneID:1489826;gene=M2;locus_tag=HRSVgp09;protein_id=NP_056865.3
+RSVB	feature	mRNA	8171	8443	.	+	.	ID=transcript:NP_056865.3_0;Parent=gene:M2;biotype=protein_coding
+RSVB	feature	gene	8501	15080	.	+	.	ID=gene:L;Name=L;biotype=protein_coding;db_xref=GeneID:1489827;gene=L;locus_tag=HRSVgp10
+RSVB	feature	CDS	8509	15009	.	+	0	ID=CDS:NP_056866.1;Parent=transcript:NP_056866.1_0;biotype=protein_coding;codon_start=1;db_xref=GeneID:1489827;gene=L;locus_tag=HRSVgp10;protein_id=NP_056866.1
+RSVB	feature	mRNA	8509	15009	.	+	.	ID=transcript:NP_056866.1_0;Parent=gene:L;biotype=protein_coding

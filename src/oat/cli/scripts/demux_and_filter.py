@@ -285,6 +285,7 @@ def filter_reads(variable_dict):
         )
         fqdir = os.path.join(bcodeDir, bcode)
         outfile = os.path.join(outdir, "reads", sample + ".fastq")
+        nanoq_log = os.path.join(outdir, "reads", sample + ".nanoq.log")
         fastqs = glob.glob(fqdir + "/*.fastq")
         if os.path.exists(outfile):
             my_log.warning(
@@ -295,8 +296,8 @@ def filter_reads(variable_dict):
             )
         else:
             for fastq in fastqs:
-                cmd = "nanoq --min-len {0} --max-len {1} -i {2} >> {3}".format(
-                    variable_dict["min_len"], variable_dict["max_len"], fastq, outfile
+                cmd = "nanoq -H --stats {4} --min-len {0} --max-len {1} -i {2} >> {3}".format(
+                    variable_dict["min_len"], variable_dict["max_len"], fastq, outfile, nanoq_log
                 )
                 subprocess.Popen(
                     cmd,
@@ -324,6 +325,11 @@ def filter_reads(variable_dict):
 
 
 def relocate_and_filter_reads(variable_dict):
+    import os
+    import sys
+    import shlex
+    import subprocess
+
     my_log = variable_dict["my_log"]
     outdir = variable_dict["outdir"]
     variable_dict["reads_dir"] = os.path.join(outdir, "reads")
@@ -349,17 +355,19 @@ def relocate_and_filter_reads(variable_dict):
             my_log.warning("Not all reads can be located in the 'oat' outdir")
             my_log.warning("Working with reads in {0}".format(variable_dict['basecalledPath']))
     variable_dict["my_log"].info("Filtering reads by length with 'nanoq'")
+
+    # Get batch size from the variable_dict if provided, else default to 100.
+    batch_size = variable_dict.get("batch_size", 100)
+
     for sample in sample_dict:
-        bcode = "".join(sample_dict[sample]["barcode"].to_list()).replace(
-            "BC", "barcode"
-        )
+        bcode = "".join(sample_dict[sample]["barcode"].to_list()).replace("BC", "barcode")
         fqdir = os.path.join(bcodeDir, bcode)
         if not os.path.isdir(fqdir):
             os.makedirs(fqdir)
         outfile = os.path.join(outdir, "reads", sample + ".fastq")
+        nanoq_log = os.path.join(outdir, "reads", sample + ".nanoq.log")
         if not os.path.isfile(outfile):
-            readsDir = os.path.join(variable_dict["basecalledPath"] + "/" + bcode)
-            print(readsDir)
+            readsDir = os.path.join(variable_dict["basecalledPath"], bcode)
             if not os.path.exists(readsDir):
                 variable_dict["my_log"].error(
                     "Cannot find demultiplexed reads for {0} in the expected location ({1})".format(
@@ -370,29 +378,43 @@ def relocate_and_filter_reads(variable_dict):
                     "Ensure that demultiplexing worked successfully with MinKNOW, or demultiplex again using this pipeline with option '-d'"
                 )
                 sys.exit(1)
-            fastqs = [
-                readsDir + "/" + file
-                for file in os.listdir(readsDir)
-                if file.endswith(".fastq")
-            ]
-            for fastq in fastqs:
-                print(fastq)
-                cmd = "nanoq --min-len {0} --max-len {1} -i {2} >> {3}".format(
-                    variable_dict["min_len"], variable_dict["max_len"], fastq, outfile
+
+            # List all FASTQ files
+            fastqs = [os.path.join(readsDir, file) for file in os.listdir(readsDir) if file.endswith(".fastq")]
+            my_log.info("Found {0} FASTQ file(s) for sample {1}".format(len(fastqs), sample))
+            
+            # If the number of files exceeds the batch size, use find and xargs to process in batches.
+            if len(fastqs) > batch_size:
+                # Note: Using find with -print0 and xargs with -0 and -n {batch_size} ensures
+                # that cat is called on batches of files and the outputs are concatenated.
+                cmd = (
+                    f"find {readsDir} -maxdepth 1 -name '*.fastq' -print0 | "
+                    f"xargs -0 -n {batch_size} cat | "
+                    f"nanoq --json --report {nanoq_log} --min-len {variable_dict['min_len']} "
+                    f"--max-len {variable_dict['max_len']} > {outfile}"
                 )
-                subprocess.Popen(
-                    cmd,
-                    shell=True,
-                    stdin=subprocess.PIPE,
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.STDOUT,
-                    universal_newlines=True,
-                ).communicate()
-            cmd = "ln -s {0} {1}".format(
-                outfile, os.path.join(fqdir, os.path.basename(outfile))
-            )
+            else:
+                # If few files, join them normally.
+                fastqs_joined = ' '.join(fastqs)
+                cmd = (
+                    f"cat {fastqs_joined} | "
+                    f"nanoq --json --report {nanoq_log} --min-len {variable_dict['min_len']} "
+                    f"--max-len {variable_dict['max_len']} > {outfile}"
+                )
+            my_log.info("Running command: " + cmd)
             subprocess.Popen(
-                shlex.split(cmd),
+                cmd,
+                shell=True,
+                stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                universal_newlines=True,
+            ).communicate()
+
+            # Create a symlink in the barcode-specific folder for easier access.
+            link_cmd = "ln -s {0} {1}".format(outfile, os.path.join(fqdir, os.path.basename(outfile)))
+            subprocess.Popen(
+                shlex.split(link_cmd),
                 shell=False,
                 stdin=subprocess.PIPE,
                 stdout=subprocess.PIPE,
@@ -400,4 +422,5 @@ def relocate_and_filter_reads(variable_dict):
                 universal_newlines=True,
             ).communicate()
         else:
-            f"{outfile} already exists - skipping filtering..."
+            my_log.info(f"{outfile} already exists - skipping filtering...")
+

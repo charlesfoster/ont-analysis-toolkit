@@ -419,7 +419,6 @@ def main(sysargs=sys.argv[1:]):
     find_runDirs(variable_dict, main_dir, minknow_dir)
     my_log = variable_dict["my_log"]
 
-
     if args.module == 'RAMPART':
         from oat.cli.scripts.rampart_module import rampart_json, rampart_run, rampart_watchdog
         if args.rampart_outdir:

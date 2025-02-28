@@ -16,5 +16,5 @@ dependencies:
   - artic-porechop=0.3.2pre
   - pip=23.0.1
   - imagemagick=7.1.0_27
-  - nanoq=0.8.6
+  - nanoq=0.10.0
   - singularity=3.7.1
